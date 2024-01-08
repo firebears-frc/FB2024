@@ -13,11 +13,11 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.util.spark.ClosedLoopConfiguration;
-import frc.robot.util.spark.CurrentLimitConfiguration;
-import frc.robot.util.spark.FeedbackConfiguration;
-import frc.robot.util.spark.SparkConfiguration;
-import frc.robot.util.spark.StatusFrameConfiguration;
+import com.seiford.util.spark.ClosedLoopConfiguration;
+import com.seiford.util.spark.CurrentLimitConfiguration;
+import com.seiford.util.spark.FeedbackConfiguration;
+import com.seiford.util.spark.SparkConfiguration;
+import com.seiford.util.spark.StatusFrameConfiguration;
 
 public class SwerveModule {
     private static final class Constants {
