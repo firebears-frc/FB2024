@@ -5,12 +5,12 @@ import java.util.function.Supplier;
 //import org.littletonrobotics.junction.AutoLogOutput;
 //import org.littletonrobotics.junction.Logger;
 
-//import com.pathplanner.lib.auto.AutoBuilder;
-//import com.pathplanner.lib.pathfinding.Pathfinding;
-//import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-//import com.pathplanner.lib.util.PIDConstants;
-//import com.pathplanner.lib.util.PathPlannerLogging;
-//import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,12 +27,12 @@ public class Drive extends SubsystemBase {
         public static final double XY_CONTROLLER_P = 5.0;
         public static final double R_CONTROLLER_P = 5.0;
 
-        //public static final HolonomicPathFollowerConfig CONFIG = new HolonomicPathFollowerConfig(
-        //        new PIDConstants(XY_CONTROLLER_P, 0.0, 0.0),
-        //        new PIDConstants(R_CONTROLLER_P, 0.0, 0.0),
-        //        MAX_AUTO_VELOCITY,
-        //        Chassis.WHEEL_RADIUS,
-        //        new ReplanningConfig());
+        public static final HolonomicPathFollowerConfig CONFIG = new HolonomicPathFollowerConfig(
+                new PIDConstants(XY_CONTROLLER_P, 0.0, 0.0),
+                new PIDConstants(R_CONTROLLER_P, 0.0, 0.0),
+                MAX_AUTO_VELOCITY,
+                Chassis.WHEEL_RADIUS,
+                new ReplanningConfig());
     }
 
     private final Chassis chassis;
@@ -42,29 +42,30 @@ public class Drive extends SubsystemBase {
         chassis = new Chassis();
         localization = new Localization(chassis.getKinematics(), chassis.getModulePositions());
 
-        //AutoBuilder.configureHolonomic(
-        //        localization::getPose,
-        //        this::setPose,
-        //        chassis::getSpeeds,
-        //        chassis::driveRobotRelative,
-        //        Constants.CONFIG,
-        //        () -> {
-        //            var alliance = DriverStation.getAlliance();
-        //            if (alliance.isPresent())
-        //                return alliance.get() == DriverStation.Alliance.Red;
+        AutoBuilder.configureHolonomic(
+                localization::getPose,
+                this::setPose,
+                chassis::getSpeeds,
+                chassis::driveRobotRelative,
+                Constants.CONFIG,
+                () -> {
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent())
+                        return alliance.get() == DriverStation.Alliance.Red;
 
-        //            return false;
-        //        },
-        //        this);
+                    return false;
+                },
+                this);
 
-        //Pathfinding.setPathfinder(new LocalADStarAK());
-        //PathPlannerLogging.setLogTargetPoseCallback(pose -> Logger.recordOutput("Drive/Path/TargetPose", pose));
-        //PathPlannerLogging.setLogActivePathCallback(poses -> {
-        //    Logger.recordOutput("Drive/Path/Poses", poses);
-        //    Logger.recordOutput("Drive/Path/Start", poses.get(0));
-        //    Logger.recordOutput("Drive/Path/Middle", poses.get(poses.size() / 2));
-        //    Logger.recordOutput("Drive/Path/End", poses.get(poses.size()));
-        //});
+        // Pathfinding.setPathfinder(new LocalADStarAK());
+        // PathPlannerLogging.setLogTargetPoseCallback(pose ->
+        // Logger.recordOutput("Drive/Path/TargetPose", pose));
+        // PathPlannerLogging.setLogActivePathCallback(poses -> {
+        // Logger.recordOutput("Drive/Path/Poses", poses);
+        // Logger.recordOutput("Drive/Path/Start", poses.get(0));
+        // Logger.recordOutput("Drive/Path/Middle", poses.get(poses.size() / 2));
+        // Logger.recordOutput("Drive/Path/End", poses.get(poses.size()));
+        // });
     }
 
     private void setPose(Pose2d pose) {
