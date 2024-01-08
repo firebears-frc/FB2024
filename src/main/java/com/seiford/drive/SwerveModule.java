@@ -1,6 +1,6 @@
 package com.seiford.drive;
 
-//import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
@@ -64,7 +64,7 @@ public class SwerveModule {
     private final Rotation2d angleOffset;
     private final String name;
 
-    //@AutoLogOutput(key = "Drive/Modules/{name}/Target")
+    @AutoLogOutput(key = "Drive/Modules/{name}/Target")
     private SwerveModuleState desiredState;
 
     public SwerveModule(SwerveModuleConfiguration configuration) {
@@ -95,14 +95,14 @@ public class SwerveModule {
         desiredState = state;
     }
 
-    //@AutoLogOutput(key = "Drive/Modules/{name}/Position")
+    @AutoLogOutput(key = "Drive/Modules/{name}/Position")
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
                 drivingEncoder.getPosition(),
                 Rotation2d.fromDegrees(turningEncoder.getPosition()).minus(angleOffset));
     }
 
-    //@AutoLogOutput(key = "Drive/Modules/{name}/Actual")
+    @AutoLogOutput(key = "Drive/Modules/{name}/Actual")
     public SwerveModuleState getState() {
         return new SwerveModuleState(
                 drivingEncoder.getVelocity(),

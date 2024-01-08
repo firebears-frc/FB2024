@@ -1,6 +1,6 @@
 package com.seiford.drive;
 
-//import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -57,7 +57,7 @@ public class Chassis {
         return kinematics;
     }
 
-    //@AutoLogOutput(key = "Drive/Chassis/ModulePositions")
+    @AutoLogOutput(key = "Drive/Chassis/ModulePositions")
     public SwerveModulePosition[] getModulePositions() {
         // Build up position array
         SwerveModulePosition result[] = new SwerveModulePosition[modules.length];
@@ -67,7 +67,7 @@ public class Chassis {
         return result;
     }
 
-    //@AutoLogOutput(key = "Drive/Chassis/ModuleStates")
+    @AutoLogOutput(key = "Drive/Chassis/ModuleStates")
     public SwerveModuleState[] getModuleStates() {
         // Build up state array
         SwerveModuleState result[] = new SwerveModuleState[modules.length];
@@ -77,7 +77,7 @@ public class Chassis {
         return result;
     }
 
-    //@AutoLogOutput(key = "Drive/Chassis/Speeds")
+    @AutoLogOutput(key = "Drive/Chassis/Speeds")
     public ChassisSpeeds getSpeeds() {
         return kinematics.toChassisSpeeds(getModuleStates());
     }

@@ -1,6 +1,6 @@
 package com.seiford.drive;
 
-//import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -37,12 +37,12 @@ public class Localization {
         vision = new Vision(this::visionPose);
     }
 
-    //@AutoLogOutput(key = "Drive/Localization/Active")
+    @AutoLogOutput(key = "Drive/Localization/Active")
     public boolean isActive() {
         return navX != null && poseEstimator != null;
     }
 
-    //@AutoLogOutput(key = "Drive/Localization/RawYaw")
+    @AutoLogOutput(key = "Drive/Localization/RawYaw")
     public Rotation2d getRawYaw() {
         if (!isActive())
             return Rotation2d.fromDegrees(0.0);
@@ -58,7 +58,7 @@ public class Localization {
         poseEstimator.resetPosition(getRawYaw(), modulePositions, pose);
     }
 
-    //@AutoLogOutput(key = "Drive/Localization/Pose")
+    @AutoLogOutput(key = "Drive/Localization/Pose")
     public Pose2d getPose() {
         if (!isActive())
             return new Pose2d();

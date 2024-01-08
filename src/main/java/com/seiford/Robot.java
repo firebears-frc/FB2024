@@ -48,17 +48,17 @@ public class Robot extends LoggedRobot {
     }
 
     private void initializeLogging() {
-        //Logger.recordMetadata("Project Name", BuildConstants.MAVEN_NAME);
-        //Logger.recordMetadata("Branch Name", BuildConstants.GIT_BRANCH);
-        //Logger.recordMetadata("Commit Hash (Short)", BuildConstants.GIT_SHA.substring(0, 8));
-        //Logger.recordMetadata("Commit Hash (Full)", BuildConstants.GIT_SHA);
-        //Logger.recordMetadata("Build Time", BuildConstants.BUILD_DATE);
-        //Logger.recordMetadata("Dirty",
-        //        switch (BuildConstants.DIRTY) {
-        //            case 0 -> "All changes committed";
-        //            case 1 -> "Uncommitted changes";
-        //            default -> "Unknown";
-        //        });
+        Logger.recordMetadata("Project Name", BuildConstants.MAVEN_NAME);
+        Logger.recordMetadata("Branch Name", BuildConstants.GIT_BRANCH);
+        Logger.recordMetadata("Commit Hash (Short)", BuildConstants.GIT_SHA.substring(0, 8));
+        Logger.recordMetadata("Commit Hash (Full)", BuildConstants.GIT_SHA);
+        Logger.recordMetadata("Build Time", BuildConstants.BUILD_DATE);
+        Logger.recordMetadata("Dirty",
+                switch (BuildConstants.DIRTY) {
+                    case 0 -> "All changes committed";
+                    case 1 -> "Uncommitted changes";
+                    default -> "Unknown";
+                });
 
         if (isReal()) {
             // Log to USB & Network Tables
