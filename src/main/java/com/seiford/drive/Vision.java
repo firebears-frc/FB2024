@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
+//import org.littletonrobotics.junction.AutoLogOutput;
+//import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -36,7 +36,7 @@ public class Vision {
     private final PhotonPoseEstimator poseEstimator;
     private final BiConsumer<Pose2d, Double> consumer;
 
-    @AutoLogOutput(key = "Drive/Localization/Vision/Status")
+    //@AutoLogOutput(key = "Drive/Localization/Vision/Status")
     private Status status;
 
     public Vision(BiConsumer<Pose2d, Double> consumer) {
@@ -101,9 +101,9 @@ public class Vision {
         }
 
         consumer.accept(result.estimatedPose.toPose2d(), result.timestampSeconds);
-        Logger.recordOutput("Drive/Localization/Vision/Pose", result.estimatedPose);
-        Logger.recordOutput("Drive/Localization/Vision/Timestamp", result.timestampSeconds);
-        Logger.recordOutput("Drive/Localization/Vision/Strategy", result.strategy);
+        //Logger.recordOutput("Drive/Localization/Vision/Pose", result.estimatedPose);
+        //Logger.recordOutput("Drive/Localization/Vision/Timestamp", result.timestampSeconds);
+        //Logger.recordOutput("Drive/Localization/Vision/Strategy", result.strategy);
         return Status.POSE_FOUND;
     }
 
