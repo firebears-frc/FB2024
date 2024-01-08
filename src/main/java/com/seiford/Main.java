@@ -1,4 +1,4 @@
-package frc.robot;
+package com.seiford;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
