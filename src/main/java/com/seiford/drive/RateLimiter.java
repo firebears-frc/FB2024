@@ -1,7 +1,7 @@
 package com.seiford.drive;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
+//import org.littletonrobotics.junction.AutoLogOutput;
+//import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -17,9 +17,9 @@ public class RateLimiter {
 
     private SlewRateLimiter magnitudeLimiter = new SlewRateLimiter(Constants.MAGNITUDE_SLEW_RATE);
     private SlewRateLimiter rotationLimiter = new SlewRateLimiter(Constants.ROTATION_SLEW_RATE);
-    @AutoLogOutput(key = "Drive/RateLimiter/CurrentDirection")
+    //@AutoLogOutput(key = "Drive/RateLimiter/CurrentDirection")
     private double currentDirection = 0.0;
-    @AutoLogOutput(key = "Drive/RateLimiter/CurrentMagnitude")
+    //@AutoLogOutput(key = "Drive/RateLimiter/CurrentMagnitude")
     private double currentMagnitude = 0.0;
     private double previousTime = WPIUtilJNI.now() * 1e-6;
 
@@ -64,7 +64,7 @@ public class RateLimiter {
 
     public ChassisSpeeds calculate(ChassisSpeeds command) {
         // Convert XY to polar for rate limiting
-        Logger.recordOutput("Drive/RateLimiter/Input", command);
+        //Logger.recordOutput("Drive/RateLimiter/Input", command);
         double inputDirection = Math.atan2(command.vyMetersPerSecond, command.vxMetersPerSecond);
         double inputMagnitude = Math
                 .sqrt(Math.pow(command.vxMetersPerSecond, 2) + Math.pow(command.vyMetersPerSecond, 2));
@@ -103,7 +103,7 @@ public class RateLimiter {
         command.vyMetersPerSecond = currentMagnitude * Math.sin(currentDirection);
         command.omegaRadiansPerSecond = rotationLimiter.calculate(command.omegaRadiansPerSecond);
 
-        Logger.recordOutput("Drive/RateLimiter/Output", command);
+        //Logger.recordOutput("Drive/RateLimiter/Output", command);
         return command;
     }
 }

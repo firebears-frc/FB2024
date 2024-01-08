@@ -1,6 +1,6 @@
 package com.seiford.drive;
 
-import org.littletonrobotics.junction.AutoLogOutput;
+//import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -49,12 +49,12 @@ public class Localization {
         pitchVelocity = Rotation2d.fromDegrees(0.0);
     }
 
-    @AutoLogOutput(key = "Drive/Localization/Active")
+    //@AutoLogOutput(key = "Drive/Localization/Active")
     public boolean isActive() {
         return navX != null && poseEstimator != null;
     }
 
-    @AutoLogOutput(key = "Drive/Localization/RawYaw")
+    //@AutoLogOutput(key = "Drive/Localization/RawYaw")
     public Rotation2d getRawYaw() {
         if (!isActive())
             return Rotation2d.fromDegrees(0.0);
@@ -70,7 +70,7 @@ public class Localization {
         poseEstimator.resetPosition(getRawYaw(), modulePositions, pose);
     }
 
-    @AutoLogOutput(key = "Drive/Localization/Pose")
+    //@AutoLogOutput(key = "Drive/Localization/Pose")
     public Pose2d getPose() {
         if (!isActive())
             return new Pose2d();
@@ -92,27 +92,27 @@ public class Localization {
 
     }
 
-    @AutoLogOutput(key = "Drive/Localization/ChargeStation/Pitch")
+    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/Pitch")
     public Rotation2d getPitch() {
         return pitch;
     }
 
-    @AutoLogOutput(key = "Drive/Localization/ChargeStation/PitchVelocity")
+    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/PitchVelocity")
     private Rotation2d getPitchVelocity() {
         return pitchVelocity;
     }
 
-    @AutoLogOutput(key = "Drive/Localization/ChargeStation/IsLevel")
+    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/IsLevel")
     public boolean isLevel() {
         return Math.abs(pitch.getRadians()) < Constants.LEVEL_TOLERANCE.getRadians();
     }
 
-    @AutoLogOutput(key = "Drive/Localization/ChargeStation/IsOnChargeStation")
+    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/IsOnChargeStation")
     public boolean isOnChargeStation() {
         return Math.abs(pitch.getRadians()) > Constants.ON_TOLERANCE.getRadians();
     }
 
-    @AutoLogOutput(key = "Drive/Localization/ChargeStation/IsNotPitching")
+    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/IsNotPitching")
     public boolean isNotPitching() {
         return Math.abs(pitchVelocity.getRadians()) < Constants.PITCH_VELOCITY_MAX.getRadians();
     }
