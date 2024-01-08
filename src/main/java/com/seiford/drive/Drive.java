@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-//import frc.robot.util.ChargeStationStatus;
 
 public class Drive extends SubsystemBase {
     private static final class Constants {
@@ -34,15 +33,10 @@ public class Drive extends SubsystemBase {
         //        MAX_AUTO_VELOCITY,
         //        Chassis.WHEEL_RADIUS,
         //        new ReplanningConfig());
-
-        public static final double BALANCE_ON_CHARGE_STATION_SPEED = 0.5; // meters per second
-        public static final double DRIVE_ONTO_CHARGE_STATION_SPEED = 2.0; // meters per second
     }
 
     private final Chassis chassis;
     private final Localization localization;
-
-    //private ChargeStationStatus chargeStationStatus = ChargeStationStatus.NONE;
 
     public Drive() {
         chassis = new Chassis();
@@ -80,7 +74,6 @@ public class Drive extends SubsystemBase {
     @Override
     public void periodic() {
         localization.periodic(chassis.getModulePositions());
-        //updateChargeStationStatus();
     }
 
     public Command zeroHeading() {
@@ -100,53 +93,4 @@ public class Drive extends SubsystemBase {
         return new DefaultCommand(commandSupplier,
                 speeds -> chassis.driveFieldRelative(speeds, localization.getRawYaw()), slowMode, this);
     }
-
-    public Command autoBalance() {
-        return Commands.sequence(
-                // Drive until we are at a high enough angle
-                runOnce(() -> chassis
-                        .driveRobotRelative(new ChassisSpeeds(Constants.DRIVE_ONTO_CHARGE_STATION_SPEED, 0.0, 0.0))),
-                Commands.waitUntil(localization::isOnChargeStation),
-
-                // Rock back and forth until it stops and is level
-                run(() -> {
-                    if (!localization.isNotPitching()) {
-                        // Charge station is moving, stop!
-                        chassis.setX();
-                        return;
-                    }
-
-                    // Depending on what way the charge station is tipped, go to middle
-                    ChassisSpeeds speeds = new ChassisSpeeds(Constants.BALANCE_ON_CHARGE_STATION_SPEED, 0.0, 0.0);
-                    if (localization.getPitch().getRadians() < 0)
-                        speeds.vxMetersPerSecond *= -1.0;
-                    chassis.driveRobotRelative(speeds);
-                }).until(() -> localization.isNotPitching() && localization.isLevel()));
-    }
-
-    //@AutoLogOutput(key = "Drive/ChargeStationStatus")
-    //public ChargeStationStatus chargeStationStatus() {
-    //    return chargeStationStatus;
-    //}
-
-    //private void updateChargeStationStatus() {
-    //    switch (chargeStationStatus) {
-    //        case ENGAGED:
-    //            if (!localization.isLevel() || !localization.isNotPitching()) {
-    //                chargeStationStatus = ChargeStationStatus.DOCKED;
-    //            }
-    //            break;
-    //        case DOCKED:
-    //            if (localization.isLevel() && localization.isNotPitching()) {
-    //                chargeStationStatus = ChargeStationStatus.ENGAGED;
-    //            }
-    //            break;
-    //        case NONE:
-    //        default:
-    //            if (localization.isOnChargeStation()) {
-    //                chargeStationStatus = ChargeStationStatus.DOCKED;
-    //            }
-    //            break;
-    //    }
-    //}
 }

@@ -13,19 +13,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 
 public class Localization {
-    private static final class Constants {
-        public static final Rotation2d LEVEL_TOLERANCE = Rotation2d.fromDegrees(2.0);
-        public static final Rotation2d ON_TOLERANCE = Rotation2d.fromDegrees(10.0);
-        public static final Rotation2d PITCH_VELOCITY_MAX = Rotation2d.fromDegrees(0.2); // per cycle
-    }
-
     private final SwerveDrivePoseEstimator poseEstimator;
     private final Vision vision;
 
     private AHRS navX;
-
-    // Charge Station
-    private Rotation2d pitch, pitchVelocity;
 
     public Localization(SwerveDriveKinematics kinematics, SwerveModulePosition[] initiaModulePositions) {
         try {
@@ -44,9 +35,6 @@ public class Localization {
                 initiaModulePositions,
                 new Pose2d());
         vision = new Vision(this::visionPose);
-
-        pitch = Rotation2d.fromDegrees(0.0);
-        pitchVelocity = Rotation2d.fromDegrees(0.0);
     }
 
     //@AutoLogOutput(key = "Drive/Localization/Active")
@@ -84,36 +72,5 @@ public class Localization {
 
         poseEstimator.update(getRawYaw(), modulePositions);
         vision.periodic();
-
-        // Update pitch velocity and charge station status
-        Rotation2d currentPitch = Rotation2d.fromDegrees(navX.getPitch());
-        pitchVelocity = currentPitch.minus(pitch);
-        pitch = currentPitch;
-
-    }
-
-    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/Pitch")
-    public Rotation2d getPitch() {
-        return pitch;
-    }
-
-    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/PitchVelocity")
-    private Rotation2d getPitchVelocity() {
-        return pitchVelocity;
-    }
-
-    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/IsLevel")
-    public boolean isLevel() {
-        return Math.abs(pitch.getRadians()) < Constants.LEVEL_TOLERANCE.getRadians();
-    }
-
-    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/IsOnChargeStation")
-    public boolean isOnChargeStation() {
-        return Math.abs(pitch.getRadians()) > Constants.ON_TOLERANCE.getRadians();
-    }
-
-    //@AutoLogOutput(key = "Drive/Localization/ChargeStation/IsNotPitching")
-    public boolean isNotPitching() {
-        return Math.abs(pitchVelocity.getRadians()) < Constants.PITCH_VELOCITY_MAX.getRadians();
     }
 }

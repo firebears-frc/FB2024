@@ -50,7 +50,7 @@ public class Vision {
 
         AprilTagFieldLayout fieldLayout = null;
         try {
-            fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+            fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
         } catch (IOException e) {
             System.out.println("Failed to load AprilTag layout!");
             e.printStackTrace();
