@@ -2,8 +2,8 @@ package com.seiford.drive;
 
 import java.util.function.Supplier;
 
-//import org.littletonrobotics.junction.AutoLogOutput;
-//import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -57,15 +57,14 @@ public class Drive extends SubsystemBase {
                 },
                 this);
 
-        // Pathfinding.setPathfinder(new LocalADStarAK());
-        // PathPlannerLogging.setLogTargetPoseCallback(pose ->
-        // Logger.recordOutput("Drive/Path/TargetPose", pose));
-        // PathPlannerLogging.setLogActivePathCallback(poses -> {
-        // Logger.recordOutput("Drive/Path/Poses", poses);
-        // Logger.recordOutput("Drive/Path/Start", poses.get(0));
-        // Logger.recordOutput("Drive/Path/Middle", poses.get(poses.size() / 2));
-        // Logger.recordOutput("Drive/Path/End", poses.get(poses.size()));
-        // });
+        Pathfinding.setPathfinder(new LocalADStarAK());
+        PathPlannerLogging.setLogTargetPoseCallback(pose -> Logger.recordOutput("Drive/Path/TargetPose", pose));
+        PathPlannerLogging.setLogActivePathCallback(poses -> {
+            // Logger.recordOutput("Drive/Path/Poses", poses);
+            Logger.recordOutput("Drive/Path/Start", poses.get(0));
+            Logger.recordOutput("Drive/Path/Middle", poses.get(poses.size() / 2));
+            Logger.recordOutput("Drive/Path/End", poses.get(poses.size()));
+        });
     }
 
     private void setPose(Pose2d pose) {
