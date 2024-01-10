@@ -60,7 +60,7 @@ public class Drive extends SubsystemBase {
         Pathfinding.setPathfinder(new LocalADStarAK());
         PathPlannerLogging.setLogTargetPoseCallback(pose -> Logger.recordOutput("Drive/Path/TargetPose", pose));
         PathPlannerLogging.setLogActivePathCallback(poses -> {
-            Logger.recordOutput("Drive/Path/Poses", poses);
+            // Logger.recordOutput("Drive/Path/Poses", poses);
             Logger.recordOutput("Drive/Path/Start", poses.get(0));
             Logger.recordOutput("Drive/Path/Middle", poses.get(poses.size() / 2));
             Logger.recordOutput("Drive/Path/End", poses.get(poses.size()));

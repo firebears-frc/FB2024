@@ -29,7 +29,7 @@ task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
     mainClass = "org.littletonrobotics.junction.CheckInstall"
     classpath = sourceSets.main.runtimeClasspath
 }
-// compileJava.finalizedBy checkAkitInstall TODO!
+compileJava.finalizedBy checkAkitInstall
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
