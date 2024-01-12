@@ -92,14 +92,13 @@ public class DriveSubsystem extends SubsystemBase {
                         m_rearRight.getPosition()
                 });
 
-        Logger logger = Logger.getInstance();
-        logger.recordOutput("Chassis/Actual", new SwerveModuleState[] {
+        Logger.recordOutput("Chassis/Actual", new SwerveModuleState[] {
                 m_frontLeft.getState(),
                 m_frontRight.getState(),
                 m_rearLeft.getState(),
                 m_rearRight.getState()
         });
-        logger.recordOutput("Chassis/Pose", getPose());
+        Logger.recordOutput("Chassis/Pose", getPose());
     }
 
     /**
