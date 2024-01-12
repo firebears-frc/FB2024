@@ -63,9 +63,6 @@ public class DriveSubsystem extends SubsystemBase {
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
-    private double lastPitch;
-    private double pitchVelocity;
-    private LinearFilter pitchVelolcityFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
     private boolean currentBrakeMode = false;
 
     // Odometry class for tracking robot pose
@@ -95,14 +92,14 @@ public class DriveSubsystem extends SubsystemBase {
                         m_rearRight.getPosition()
                 });
 
-        //Logger logger = Logger.getInstance();
-        //logger.recordOutput("Chassis/Actual", new SwerveModuleState[] {
-          //      m_frontLeft.getState(),
-            //    m_frontRight.getState(),
-              //  m_rearLeft.getState(),
-                //m_rearRight.getState()
-    //    });
-      //  logger.recordOutput("Chassis/Pose", getPose());
+        Logger logger = Logger.getInstance();
+        logger.recordOutput("Chassis/Actual", new SwerveModuleState[] {
+                m_frontLeft.getState(),
+                m_frontRight.getState(),
+                m_rearLeft.getState(),
+                m_rearRight.getState()
+        });
+        logger.recordOutput("Chassis/Pose", getPose());
     }
 
     /**
@@ -129,14 +126,6 @@ public class DriveSubsystem extends SubsystemBase {
                         m_rearRight.getPosition()
                 },
                 pose);
-    }
-
-    public double getPitch() {
-        return m_gyro.getPitch();
-    }
-
-    public double getpitchVelocity() {
-        return pitchVelocity;
     }
 
     /**
