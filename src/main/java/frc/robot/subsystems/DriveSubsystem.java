@@ -1,8 +1,7 @@
 package frc.robot.subsystems;
 
+import java.lang.System.Logger;
 import java.util.List;
-
-import org.littletonrobotics.junction.Logger;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
@@ -23,12 +22,12 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.util.WPIUtilJNI;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import frc.robot.constants.AutoConstants;
+import frc.robot.constants.DriveConstants;
+import frc.utils.SwerveUtils;
 
 public class DriveSubsystem extends SubsystemBase {
     // Create MAXSwerveModules
@@ -96,17 +95,14 @@ public class DriveSubsystem extends SubsystemBase {
                         m_rearRight.getPosition()
                 });
 
-        pitchVelocity = pitchVelolcityFilter.calculate(getPitch() - lastPitch);
-        lastPitch = getPitch();
-
-        Logger logger = Logger.getInstance();
-        logger.recordOutput("Chassis/Actual", new SwerveModuleState[] {
-                m_frontLeft.getState(),
-                m_frontRight.getState(),
-                m_rearLeft.getState(),
-                m_rearRight.getState()
-        });
-        logger.recordOutput("Chassis/Pose", getPose());
+        //Logger logger = Logger.getInstance();
+        //logger.recordOutput("Chassis/Actual", new SwerveModuleState[] {
+          //      m_frontLeft.getState(),
+            //    m_frontRight.getState(),
+              //  m_rearLeft.getState(),
+                //m_rearRight.getState()
+    //    });
+      //  logger.recordOutput("Chassis/Pose", getPose());
     }
 
     /**
@@ -221,7 +217,7 @@ public class DriveSubsystem extends SubsystemBase {
         m_frontRight.setDesiredState(swerveModuleStates[1]);
         m_rearLeft.setDesiredState(swerveModuleStates[2]);
         m_rearRight.setDesiredState(swerveModuleStates[3]);
-        Logger.getInstance().recordOutput("Chassis/Target", swerveModuleStates);
+        //Logger.getInstance().recordOutput("Chassis/Target", swerveModuleStates);
     }
 
     /**
@@ -248,7 +244,7 @@ public class DriveSubsystem extends SubsystemBase {
         m_frontRight.setDesiredState(desiredStates[1]);
         m_rearLeft.setDesiredState(desiredStates[2]);
         m_rearRight.setDesiredState(desiredStates[3]);
-        Logger.getInstance().recordOutput("Chassis/Target", desiredStates);
+        //Logger.getInstance().recordOutput("Chassis/Target", desiredStates);
     }
 
     /** Resets the drive encoders to currently read a position of 0. */
