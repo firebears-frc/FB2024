@@ -22,6 +22,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    initializeLogging();
   }
 
   @Override
