@@ -6,11 +6,17 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import frc.robot.subsystems.Bass;
 
 public class RobotContainer {
   public RobotContainer() {
     configureBindings();
   }
+
+  private final Bass m_robotDrive = new Bass();
+  private final CommandJoystick one = new CommandJoystick(0);
+  private final CommandJoystick two = new CommandJoystick(1);
 
   private void configureBindings() {}
 
