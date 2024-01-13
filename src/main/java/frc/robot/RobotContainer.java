@@ -16,10 +16,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.constants.OIConstants;
 import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
+import frc.robot.subsystems.UpBeat;
 
 public class RobotContainer {
   private final Bass m_robotDrive = new Bass();
   private final DownBeat m_intake = new DownBeat();
+  private final UpBeat m_shooter = new UpBeat();
   private final CommandJoystick one = new CommandJoystick(0);
   private final CommandJoystick two = new CommandJoystick(1);
 
@@ -48,6 +50,13 @@ public class RobotContainer {
     xboxController.y().onTrue(new InstantCommand(m_intake::dischargeNote, m_intake))
         .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
     
+    xboxController.a().onTrue(new InstantCommand(m_shooter::shootNote, m_shooter))
+        .onFalse(new InstantCommand(m_shooter::stopUpBeat, m_shooter));
+    
+
+    xboxController.b().onTrue(new InstantCommand(m_shooter::reverseShootNote, m_shooter))
+        .onFalse(new InstantCommand(m_shooter::stopUpBeat, m_shooter));
+   
   }
 
   public Command getAutonomousCommand() {
