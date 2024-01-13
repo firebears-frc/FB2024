@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-//your mom
-
 import java.util.List;
 
 import org.littletonrobotics.junction.Logger;
