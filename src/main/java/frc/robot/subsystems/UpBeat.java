@@ -12,14 +12,14 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class UpBeat extends SubsystemBase {
-    private CANSparkMax downBeatMotor;
+    private CANSparkMax upBeatMotor;
     private SparkPIDController pid;
 
     public UpBeat() {
         upBeatMotor = new CANSparkMax(10, MotorType.kBrushed);
         upBeatMotor.setSmartCurrentLimit(10, 10);
         upBeatMotor.setSecondaryCurrentLimit(20);
-        downBeatMotor.restoreFactoryDefaults();
+        upBeatMotor.restoreFactoryDefaults();
         upBeatMotor.setInverted(false);
         upBeatMotor.setIdleMode(IdleMode.kBrake);
         pid = upBeatMotor.getPIDController();
@@ -28,7 +28,7 @@ public class UpBeat extends SubsystemBase {
         pid.setP(1.0);
         pid.setI(0);
         pid.setD(0);
-        downBeatMotor.burnFlash();
+        upBeatMotor.burnFlash();
     }
         public void shootNote() {
             pid.setReference(0.7, ControlType.kDutyCycle);
