@@ -34,7 +34,12 @@ public class DownBeat extends SubsystemBase {
             pid.setReference(0.7, ControlType.kDutyCycle);
         }
 
-        public void stop() {
+        public void dischargeNote() {
+            pid.setReference(-0.7, ControlType.kDutyCycle);
+        }
+
+
+        public void stopDownBeat() {
             pid.setReference(0, ControlType.kDutyCycle);
         }
 

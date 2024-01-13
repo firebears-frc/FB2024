@@ -43,7 +43,11 @@ public class RobotContainer {
 
     JoystickButton xboxXButton = new JoystickButton(xboxController, XboxController.Button.kX.value);
     xboxXButton.onTrue(new InstantCommand(m_intake::intakeNote, m_intake));
+    xboxXButton.onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
 
+    JoystickButton xboxYButton = new JoystickButton(xboxController, XboxController.Button.kX.value);
+    xboxYButton.onTrue(new InstantCommand(m_intake::dischargeNote, m_intake));
+    xboxYButton.onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
   }
 
   public XboxController getXboxController() {
