@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.constants.OIConstants;
 import frc.robot.subsystems.Bass;
@@ -18,16 +19,16 @@ import frc.robot.subsystems.DownBeat;
 
 public class RobotContainer {
   private final Bass m_robotDrive = new Bass();
-   private final DownBeat m_intake = new DownBeat();
+  private final DownBeat m_intake = new DownBeat();
   private final CommandJoystick one = new CommandJoystick(0);
   private final CommandJoystick two = new CommandJoystick(1);
 
-  private final XboxController xboxController = new XboxController(2);
+  private final CommandXboxController xboxController = new CommandXboxController(2);
 
   public RobotContainer() {
     configureBindings();
 
-      m_robotDrive.setDefaultCommand(
+    m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
@@ -40,17 +41,16 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    xboxController.x().onTrue(new InstantCommand(m_intake::intakeNote, m_intake))
+        .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
+    
 
-    JoystickButton xboxXButton = new JoystickButton(xboxController, XboxController.Button.kX.value);
-    xboxXButton.onTrue(new InstantCommand(m_intake::intakeNote, m_intake));
-    xboxXButton.onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
-
-    JoystickButton xboxYButton = new JoystickButton(xboxController, XboxController.Button.kX.value);
-    xboxYButton.onTrue(new InstantCommand(m_intake::dischargeNote, m_intake));
-    xboxYButton.onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
+    xboxController.y().onTrue(new InstantCommand(m_intake::dischargeNote, m_intake))
+        .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
+    
   }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
-  }  
+  }
 }
