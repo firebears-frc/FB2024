@@ -50,10 +50,6 @@ public class RobotContainer {
     xboxYButton.onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
   }
 
-  public XboxController getXboxController() {
-    return xboxController;
-  }
-
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }  
