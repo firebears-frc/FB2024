@@ -4,12 +4,17 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -18,39 +23,35 @@ import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
 
 public class RobotContainer {
-  private final Bass m_robotDrive = new Bass();
-  private final DownBeat m_intake = new DownBeat();
-  private final CommandJoystick one = new CommandJoystick(0);
-  private final CommandJoystick two = new CommandJoystick(1);
+    private final Bass m_robotDrive = new Bass();
+    private final CommandJoystick one = new CommandJoystick(0);
+    private final CommandJoystick two = new CommandJoystick(1);
+    private final LoggedDashboardChooser<Command> autoChooser;
 
-  private final CommandXboxController xboxController = new CommandXboxController(2);
+    public RobotContainer() {
+        configureBindings();
 
-  public RobotContainer() {
-    configureBindings();
+        m_robotDrive.setDefaultCommand(
+                // The left stick controls translation of the robot.
+                // Turning is controlled by the X axis of the right stick.
+                new RunCommand(
+                        () -> m_robotDrive.drive(
+                                -MathUtil.applyDeadband(one.getY(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(one.getX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(two.getX(), OIConstants.kDriveDeadband),
+                                true, true),
+                        m_robotDrive));
+      autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
+    }
 
-    m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(one.getY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(one.getX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(two.getX(), OIConstants.kDriveDeadband),
-                true, true),
-            m_robotDrive));
-  }
+    private void configureBindings() {
+        one.trigger().toggleOnTrue(new StartEndCommand(m_robotDrive::setX, () -> {
+        }, m_robotDrive));
 
-  private void configureBindings() {
-    xboxController.x().onTrue(new InstantCommand(m_intake::intakeNote, m_intake))
-        .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
-    
+        two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+    }
 
-    xboxController.y().onTrue(new InstantCommand(m_intake::dischargeNote, m_intake))
-        .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
-    
-  }
-
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+    public Command getAutonomousCommand() {
+        return autoChooser.get();
+    }
 }
