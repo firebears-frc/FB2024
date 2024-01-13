@@ -5,6 +5,8 @@ import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
@@ -194,18 +196,32 @@ public class Bass extends SubsystemBase {
         double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
 
-        var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-                fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                                getPose().getRotation())
-                        : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-        m_frontLeft.setDesiredState(swerveModuleStates[0]);
-        m_frontRight.setDesiredState(swerveModuleStates[1]);
-        m_rearLeft.setDesiredState(swerveModuleStates[2]);
-        m_rearRight.setDesiredState(swerveModuleStates[3]);
-        //Logger.getInstance().recordOutput("Chassis/Target", swerveModuleStates);
+        drive(new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered), fieldRelative);
+    }
+
+    public void driveRobotRelative(ChassisSpeeds speeds){
+        drive(speeds, false);
+    }
+
+    public void drive(ChassisSpeeds speeds,boolean fieldRelative){
+        if(fieldRelative)
+            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation());
+        var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        setModuleStates(swerveModuleStates);
+    }
+
+    public ChassisSpeeds getRobotRelativeSpeeds(){
+        return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
+    }
+
+    public SwerveModuleState[] getModuleStates(){
+        return new SwerveModuleState[]{
+            m_frontLeft.getState(),
+            m_frontRight.getState(),
+            m_rearLeft.getState(),
+            m_rearRight.getState()
+        };
     }
 
     /**
