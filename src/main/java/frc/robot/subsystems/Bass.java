@@ -1,14 +1,14 @@
 package frc.robot.subsystems;
 
-import java.lang.System.Logger;
 import java.util.List;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -77,7 +77,7 @@ public class Bass extends SubsystemBase {
             });
 
     /** Creates a new DriveSubsystem. */
-    public DriveSubsystem() {
+    public Bass() {
     }
 
     @Override
