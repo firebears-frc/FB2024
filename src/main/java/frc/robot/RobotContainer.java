@@ -5,18 +5,24 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.constants.OIConstants;
 import frc.robot.subsystems.Bass;
+import frc.robot.subsystems.DownBeat;
 
 public class RobotContainer {
   private final Bass m_robotDrive = new Bass();
+   private final DownBeat m_intake = new DownBeat();
   private final CommandJoystick one = new CommandJoystick(0);
   private final CommandJoystick two = new CommandJoystick(1);
 
+  private final XboxController xboxController = new XboxController(2);
 
   public RobotContainer() {
     configureBindings();
@@ -33,7 +39,16 @@ public class RobotContainer {
             m_robotDrive));
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+
+    JoystickButton xboxXButton = new JoystickButton(xboxController, XboxController.Button.kX.value);
+    xboxXButton.onTrue(new InstantCommand(m_intake::intakeNote, m_intake));
+
+  }
+
+  public XboxController getXboxController() {
+    return xboxController;
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
