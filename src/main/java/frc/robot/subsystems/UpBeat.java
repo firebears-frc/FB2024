@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.littletonrobotics.junction.Logger;
@@ -30,26 +29,21 @@ public class UpBeat extends SubsystemBase {
         pid.setD(0);
         upBeatMotor.burnFlash();
     }
-        public void shootNote() {
-            pid.setReference(0.7, ControlType.kDutyCycle);
-        }
 
-        public void reverseShootNote() {
-            pid.setReference(-0.7, ControlType.kDutyCycle);
-        }
-
-
-        public void stopUpBeat() {
-            pid.setReference(0, ControlType.kDutyCycle);
-        }
-
-        @Override
-        public void periodic() {
-            Logger.recordOutput("upBeat/presentOutput", upBeatMotor.getAppliedOutput());
-        }
-
-        @Override
-        public void simulationPeriodic() {
-
-        }
+    public void shootNote() {
+        pid.setReference(0.7, ControlType.kDutyCycle);
     }
+
+    public void reverseShootNote() {
+        pid.setReference(-0.7, ControlType.kDutyCycle);
+    }
+
+    public void stopUpBeat() {
+        pid.setReference(0, ControlType.kDutyCycle);
+    }
+
+    @Override
+    public void periodic() {
+        Logger.recordOutput("upBeat/presentOutput", upBeatMotor.getAppliedOutput());
+    }
+}

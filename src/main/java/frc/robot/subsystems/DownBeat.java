@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.littletonrobotics.junction.Logger;
@@ -30,26 +29,21 @@ public class DownBeat extends SubsystemBase {
         pid.setD(0);
         downBeatMotor.burnFlash();
     }
-        public void intakeNote() {
-            pid.setReference(0.7, ControlType.kDutyCycle);
-        }
 
-        public void dischargeNote() {
-            pid.setReference(-0.7, ControlType.kDutyCycle);
-        }
-
-
-        public void stopDownBeat() {
-            pid.setReference(0, ControlType.kDutyCycle);
-        }
-
-        @Override
-        public void periodic() {
-            Logger.recordOutput("downBeat/presentOutput", downBeatMotor.getAppliedOutput());
-        }
-
-        @Override
-        public void simulationPeriodic() {
-
-        }
+    public void intakeNote() {
+        pid.setReference(0.7, ControlType.kDutyCycle);
     }
+
+    public void dischargeNote() {
+        pid.setReference(-0.7, ControlType.kDutyCycle);
+    }
+
+    public void stopDownBeat() {
+        pid.setReference(0, ControlType.kDutyCycle);
+    }
+
+    @Override
+    public void periodic() {
+        Logger.recordOutput("downBeat/presentOutput", downBeatMotor.getAppliedOutput());
+    }
+}
