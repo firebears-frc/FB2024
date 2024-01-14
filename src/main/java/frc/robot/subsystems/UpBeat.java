@@ -10,40 +10,40 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-public class DownBeat extends SubsystemBase {
-    private CANSparkMax downBeatMotor;
+public class UpBeat extends SubsystemBase {
+    private CANSparkMax upBeatMotor;
     private SparkPIDController pid;
 
-    public DownBeat() {
-        downBeatMotor = new CANSparkMax(9, MotorType.kBrushed);
-        downBeatMotor.setSmartCurrentLimit(10, 10);
-        downBeatMotor.setSecondaryCurrentLimit(20);
-        downBeatMotor.restoreFactoryDefaults();
-        downBeatMotor.setInverted(false);
-        downBeatMotor.setIdleMode(IdleMode.kBrake);
-        pid = downBeatMotor.getPIDController();
+    public UpBeat() {
+        upBeatMotor = new CANSparkMax(10, MotorType.kBrushed);
+        upBeatMotor.setSmartCurrentLimit(10, 10);
+        upBeatMotor.setSecondaryCurrentLimit(20);
+        upBeatMotor.restoreFactoryDefaults();
+        upBeatMotor.setInverted(false);
+        upBeatMotor.setIdleMode(IdleMode.kBrake);
+        pid = upBeatMotor.getPIDController();
 
         // set p value of pid to 1
         pid.setP(1.0);
         pid.setI(0);
         pid.setD(0);
-        downBeatMotor.burnFlash();
+        upBeatMotor.burnFlash();
     }
 
-    public void intakeNote() {
+    public void shootNote() {
         pid.setReference(0.7, ControlType.kDutyCycle);
     }
 
-    public void dischargeNote() {
+    public void reverseShootNote() {
         pid.setReference(-0.7, ControlType.kDutyCycle);
     }
 
-    public void stopDownBeat() {
+    public void stopUpBeat() {
         pid.setReference(0, ControlType.kDutyCycle);
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("downBeat/presentOutput", downBeatMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/presentOutput", upBeatMotor.getAppliedOutput());
     }
 }

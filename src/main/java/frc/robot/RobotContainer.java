@@ -9,24 +9,26 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.constants.OIConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
+import frc.robot.subsystems.UpBeat;
 
 public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
+    private final DownBeat m_intake = new DownBeat();
+    private final UpBeat m_shooter = new UpBeat();
     private final CommandJoystick one = new CommandJoystick(0);
     private final CommandJoystick two = new CommandJoystick(1);
-    private final LoggedDashboardChooser<Command> autoChooser;
+    private final CommandXboxController xboxController = new CommandXboxController(2);
+    private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("AutoChooser",
+            AutoBuilder.buildAutoChooser());
 
     public RobotContainer() {
         configureBindings();
@@ -41,14 +43,23 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(two.getX(), OIConstants.kDriveDeadband),
                                 true, true),
                         m_robotDrive));
-      autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
         one.trigger().toggleOnTrue(new StartEndCommand(m_robotDrive::setX, () -> {
         }, m_robotDrive));
-
         two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+
+        xboxController.x().onTrue(new InstantCommand(m_intake::intakeNote, m_intake))
+                .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
+        xboxController.y().onTrue(new InstantCommand(m_intake::dischargeNote, m_intake))
+                .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
+
+        xboxController.a().onTrue(new InstantCommand(m_shooter::shootNote, m_shooter))
+                .onFalse(new InstantCommand(m_shooter::stopUpBeat, m_shooter));
+        xboxController.b().onTrue(new InstantCommand(m_shooter::reverseShootNote, m_shooter))
+                .onFalse(new InstantCommand(m_shooter::stopUpBeat, m_shooter));
+
     }
 
     public Command getAutonomousCommand() {

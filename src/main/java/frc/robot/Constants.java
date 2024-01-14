@@ -6,7 +6,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
-public class constants {
+public class Constants {
     public static final class DriveConstants {
         // Driving Parameters - Note that these are not the maximum capable speeds of
         // the robot, rather the allowed maximum speeds
@@ -39,11 +39,11 @@ public class constants {
         public static final int kFrontLeftTurningCanId = 2;
 
         public static final int kFrontRightDrivingCanId = 3;
-        public static final int kFrontRightTurningCanId =4;
+        public static final int kFrontRightTurningCanId = 4;
 
         public static final int kRearLeftDrivingCanId = 5;
         public static final int kRearLeftTurningCanId = 6;
-        
+
         public static final int kRearRightDrivingCanId = 7;
         public static final int kRearRightTurningCanId = 8;
 
