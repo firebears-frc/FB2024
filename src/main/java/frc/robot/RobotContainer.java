@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.constants.OIConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.UpBeat;
