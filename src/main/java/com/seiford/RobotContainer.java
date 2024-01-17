@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.seiford.drive.Drive;
+import com.seiford.subsystems.Downbeat;
 
 import java.util.Map;
 
@@ -29,6 +30,7 @@ public class RobotContainer {
     }
 
     private final Drive drive;
+    private final Downbeat intake;
     private final PowerDistribution pdh;
 
     private final CommandJoystick one;
@@ -38,6 +40,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         drive = new Drive();
+        intake = new Downbeat();
         pdh = new PowerDistribution(Constants.PDH_CAN_ID, ModuleType.kRev);
 
         one = new CommandJoystick(Constants.JOYSTICK_1_PORT);
@@ -73,6 +76,9 @@ public class RobotContainer {
                 true));
 
         two.trigger().onTrue(drive.zeroHeading());
+
+        controller.leftTrigger().onTrue(intake.intake()).onFalse(intake.stop());
+        controller.leftBumper().onTrue(intake.eject()).onFalse(intake.stop());
     }
 
     public Command getAutonomousCommand() {
