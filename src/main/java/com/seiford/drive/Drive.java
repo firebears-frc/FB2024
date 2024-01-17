@@ -1,8 +1,8 @@
 package com.seiford.drive;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -16,8 +16,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drive extends SubsystemBase {
@@ -48,13 +48,7 @@ public class Drive extends SubsystemBase {
                 chassis::getSpeeds,
                 chassis::driveRobotRelative,
                 Constants.CONFIG,
-                () -> {
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent())
-                        return alliance.get() == DriverStation.Alliance.Red;
-
-                    return false;
-                },
+                this::isRedAlliance,
                 this);
 
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -69,6 +63,15 @@ public class Drive extends SubsystemBase {
 
     private void setPose(Pose2d pose) {
         localization.setPose(pose, chassis.getModulePositions());
+    }
+
+    private boolean isRedAlliance() {
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent())
+            return alliance.get() == DriverStation.Alliance.Red;
+
+        DriverStation.reportWarning("Unable to get alliance color", true);
+        return false;
     }
 
     @Override
