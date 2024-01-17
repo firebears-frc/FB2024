@@ -11,8 +11,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 public class Chassis {
-    public static final double ROBOT_WIDTH = Units.inchesToMeters(25);
-    public static final double ROBOT_LENGTH = Units.inchesToMeters(34);
+    public static final double ROBOT_WIDTH = Units.inchesToMeters(22);
+    public static final double ROBOT_LENGTH = Units.inchesToMeters(28);
     public static final double MAX_VELOCITY = 4.8; // meters per second
 
     // Wheels are offset 1.75" into the modules
@@ -24,13 +24,13 @@ public class Chassis {
 
     private static final class Constants {
         public static final SwerveModuleConfiguration MODULES[] = {
-                new SwerveModuleConfiguration(26, 27, Rotation2d.fromDegrees(-90),
+                new SwerveModuleConfiguration(1, 2, Rotation2d.fromDegrees(-90),
                         new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2), "Front Left"),
-                new SwerveModuleConfiguration(21, 20, Rotation2d.fromDegrees(0),
+                new SwerveModuleConfiguration(3, 4, Rotation2d.fromDegrees(0),
                         new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2), "Front Right"),
-                new SwerveModuleConfiguration(24, 25, Rotation2d.fromDegrees(180),
+                new SwerveModuleConfiguration(5, 6, Rotation2d.fromDegrees(180),
                         new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2), "Rear Left"),
-                new SwerveModuleConfiguration(23, 22, Rotation2d.fromDegrees(90),
+                new SwerveModuleConfiguration(7, 8, Rotation2d.fromDegrees(90),
                         new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2), "Rear Right")
         };
     }
