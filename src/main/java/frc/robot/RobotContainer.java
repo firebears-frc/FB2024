@@ -52,15 +52,11 @@ public class RobotContainer {
         }, m_robotDrive));
         two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
-        xboxController.x().onTrue(new InstantCommand(m_intake::intakeNote, m_intake))
-                .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
-        xboxController.y().onTrue(new InstantCommand(m_intake::dischargeNote, m_intake))
-                .onFalse(new InstantCommand(m_intake::stopDownBeat, m_intake));
+        xboxController.x().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
+        xboxController.y().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
 
-        xboxController.a().onTrue(new InstantCommand(m_shooter::shootNote, m_shooter))
-                .onFalse(new InstantCommand(m_shooter::stopUpBeat, m_shooter));
-        xboxController.b().onTrue(new InstantCommand(m_shooter::reverseShootNote, m_shooter))
-                .onFalse(new InstantCommand(m_shooter::stopUpBeat, m_shooter));
+        xboxController.a().onTrue(m_shooter.shootNote()).onFalse(m_shooter.pauseUpBeat());
+        xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
 
         xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
         xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
