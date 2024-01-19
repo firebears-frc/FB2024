@@ -16,7 +16,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController pid;
 
     public UpBeat() {
-        upBeatMotor = new CANSparkMax(10, MotorType.kBrushed);
+        upBeatMotor = new CANSparkMax(10, MotorType.kBrushless);
         upBeatMotor.setSmartCurrentLimit(30, 20);
         upBeatMotor.setSecondaryCurrentLimit(40);
         upBeatMotor.restoreFactoryDefaults();
