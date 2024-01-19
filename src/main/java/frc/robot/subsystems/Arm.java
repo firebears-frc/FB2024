@@ -20,46 +20,14 @@ public class Arm extends SubsystemBase {
     private static int FREE_CURRENT_LIMIT_SHOULDER = 25;
     private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 35;
 
-    private static int STALL_CURRENT_LIMIT_ELBOW = 40;
-    private static int FREE_CURRENT_LIMIT_ELBOW = 35;
-    private static int SECONDARY_CURRENT_LIMIT_ELBOW = 45;
-
-    private CANSparkMax elbowMotor;
     private CANSparkMax shoulderMotorRight;
     private CANSparkMax shoulderMotorLeft;
-    private static SparkAbsoluteEncoder elbowEncoder;
     private static SparkAbsoluteEncoder shoulderEncoder;
-    private static SparkPIDController elbowPID;
     private SparkPIDController shoulderPID;
-    private double elbowSetpoint;
     private double shoulderSetpoint;
     public double ARM_SHOULDER_LENGTH;
-    public double ARM_ELBOW_LENGTH;
 
     public Arm() {
-
-        elbowMotor = new CANSparkMax(7, MotorType.kBrushless);
-
-        elbowMotor.restoreFactoryDefaults();
-        elbowMotor.setInverted(true);
-        elbowMotor.setIdleMode(IdleMode.kBrake);
-        elbowMotor.setSmartCurrentLimit(STALL_CURRENT_LIMIT_ELBOW, FREE_CURRENT_LIMIT_ELBOW);
-        elbowMotor.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_ELBOW);
-
-        elbowPID = elbowMotor.getPIDController();
-        elbowEncoder = elbowMotor.getAbsoluteEncoder(Type.kDutyCycle);
-
-        elbowPID.setP(ArmConstants.elbowP);
-        elbowPID.setI(ArmConstants.elbowI);
-        elbowPID.setD(ArmConstants.elbowD);
-
-        elbowPID.setFeedbackDevice(elbowEncoder);
-        elbowPID.setPositionPIDWrappingEnabled(true);
-        elbowPID.setPositionPIDWrappingMinInput(0.0);
-        elbowPID.setPositionPIDWrappingMaxInput(360);
-        elbowEncoder.setPositionConversionFactor(360);
-        elbowEncoder.setInverted(true);
-        elbowMotor.burnFlash();
 
         shoulderMotorRight = new CANSparkMax(8, MotorType.kBrushless);
 
@@ -100,11 +68,6 @@ public class Arm extends SubsystemBase {
         return angle;
     }
 
-    public double getElbowAngle() {
-        double angle = elbowEncoder.getPosition();
-        return angle;
-    }
-
     public void setShoulderSetpoint(double setpoint) {
         while (setpoint > 360) {
             setpoint -= 360;
@@ -122,7 +85,7 @@ public class Arm extends SubsystemBase {
         } else {
 
         }
-        if (!violatesFramePerimeter(setpoint, getElbowAngle())) {
+        if (!violatesFramePerimeter( getShoulderAngle())) {
             shoulderSetpoint = setpoint;
 
         } else {
@@ -130,59 +93,22 @@ public class Arm extends SubsystemBase {
         }
     }
 
-    public void setElbowSetpoint(double setpoint) {
-        while (setpoint > 360) {
-            setpoint -= 360;
-        }
-        while (setpoint < 0) {
-            setpoint += 360;
-        }
-
-        if (setpoint > 15 && setpoint < 180) {
-
-            setpoint = 14;
-        } else if (setpoint < 200 && setpoint > 180) {
-
-            setpoint = 201;
-
-        }
-        if (!violatesFramePerimeter(getShoulderAngle(), setpoint)) {
-            elbowSetpoint = setpoint;
-
-        } else {
-            System.out.println("hit limit");
-        }
-    }
-
-    public double getElbowSetpoint() {
-        return elbowSetpoint;
-    }
-
     public double getShoulderSetpoint() {
         return shoulderSetpoint;
     }
 
-    public Translation2d getArmPosition(double shoulder_Angle, double elbow_Angle) {
+    public Translation2d getArmPosition(double shoulder_Angle) {
         // 105 is when its 6 inches off
 
         double shoulder_Compliment = 180 - shoulder_Angle;
-        double elbowX = Math.cos(Math.toRadians(shoulder_Compliment));
-        double elbowY = Math.sin(Math.toRadians(shoulder_Compliment));
-        elbowX *= ARM_SHOULDER_LENGTH;
-        elbowY *= ARM_SHOULDER_LENGTH;
 
-        double shluckerX = Math.cos(Math.toRadians(elbow_Angle + shoulder_Compliment));
-        double shluckerY = Math.sin(Math.toRadians(elbow_Angle + shoulder_Compliment));
-        shluckerX *= ARM_ELBOW_LENGTH;
-        shluckerY *= ARM_ELBOW_LENGTH;
-
-        Translation2d output = new Translation2d(elbowX + shluckerX, elbowY + shluckerY);
+        Translation2d output = new Translation2d();
         return output;
     }
 
-    public boolean violatesFramePerimeter(double shoulder_Angle, double elbow_Angle) {
-        double currentExtension = getArmPosition(getShoulderAngle(), getElbowAngle()).getX();
-        double desiredExtension = getArmPosition(shoulder_Angle, elbow_Angle).getX();
+    public boolean violatesFramePerimeter(double shoulder_Angle) {
+        double currentExtension = getArmPosition(getShoulderAngle()).getX();
+        double desiredExtension = getArmPosition(shoulder_Angle).getX();
         return shoulder_Angle > 105 && !(desiredExtension < currentExtension || desiredExtension < 45);
 
     }
@@ -193,13 +119,8 @@ public class Arm extends SubsystemBase {
         Logger.recordOutput("Arm/Shoulder/Setpoint", shoulderSetpoint);
         Logger.recordOutput("Arm/Shoulder/LeftOutput", shoulderMotorRight.getAppliedOutput());
         Logger.recordOutput("Arm/Shoulder/RightOutput", shoulderMotorLeft.getAppliedOutput());
-        Logger.recordOutput("Arm/X", getArmPosition(getShoulderAngle(), getElbowAngle()).getX());
-        Logger.recordOutput("Arm/Y", getArmPosition(getShoulderAngle(), getElbowAngle()).getY());
-        Logger.recordOutput("Arm/Elbow/Angle", getElbowAngle());
-        Logger.recordOutput("Arm/Elbow/Setpoint", elbowSetpoint);
-        Logger.recordOutput("Arm/Elbow/Output", elbowMotor.getAppliedOutput());
+        Logger.recordOutput("Arm/X", getArmPosition(getShoulderAngle()).getX());
 
-        elbowPID.setReference(elbowSetpoint, ControlType.kPosition);
         shoulderPID.setReference(shoulderSetpoint, ControlType.kPosition);
     }
 }
