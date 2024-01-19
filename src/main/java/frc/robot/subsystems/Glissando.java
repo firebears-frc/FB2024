@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Glissando extends SubsystemBase {
@@ -13,8 +12,10 @@ public class Glissando extends SubsystemBase {
     private CANSparkMax climbLeft;
 
     private static int stallLimit = 30;
-    private static int freeLimit = 25;
-    private static int scndLimit = 35;
+    private static int freeLimit = 20;
+    private static int scndLimit = 40;
+
+    private static double climbSpeed = 0.25;
 
     public Glissando() {
         climbRight = new CANSparkMax(14, MotorType.kBrushless);
@@ -33,36 +34,24 @@ public class Glissando extends SubsystemBase {
         climbLeft.setSecondaryCurrentLimit(scndLimit);
     }
 
-    /**
-     * public void climb(){
-     * climbRight.set(0.25);
-     * climbLeft.set(0.25);
-     * }
-     * 
-     * public void unclimb(){
-     * climbRight.set(-0.25);
-     * climbLeft.set(-0.25);
-     * }
-     **/
-
     public Command climb() {
-        return Commands.runOnce(() -> {
-            climbRight.set(0.25);
-            climbLeft.set(0.25);
-        }, this);
+        return runOnce(() -> {
+            climbRight.set(climbSpeed);
+            climbLeft.set(climbSpeed);
+        });
     }
 
     public Command unclimb() {
-        return Commands.runOnce(() -> {
-            climbRight.set(-0.25);
-            climbLeft.set(-0.25);
-        }, this);
+        return runOnce(() -> {
+            climbRight.set(-(climbSpeed));
+            climbLeft.set(-(climbSpeed));
+        });
     }
 
     public Command pauseClimb() {
-        return Commands.runOnce(() -> {
+        return runOnce(() -> {
             climbRight.set(0);
             climbLeft.set(0);
-        }, this);
+        });
     }
 }
