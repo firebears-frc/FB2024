@@ -6,6 +6,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.seiford.drive.Drive;
 import com.seiford.subsystems.Downbeat;
+import com.seiford.subsystems.Glissando;
 import com.seiford.subsystems.Upbeat;
 
 import java.util.Map;
@@ -33,6 +34,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Downbeat intake;
     private final Upbeat shooter;
+    private final Glissando climber;
     private final PowerDistribution pdh;
 
     private final CommandJoystick one;
@@ -44,6 +46,7 @@ public class RobotContainer {
         drive = new Drive();
         intake = new Downbeat();
         shooter = new Upbeat();
+        climber = new Glissando();
         pdh = new PowerDistribution(Constants.PDH_CAN_ID, ModuleType.kRev);
 
         one = new CommandJoystick(Constants.JOYSTICK_1_PORT);
@@ -84,6 +87,8 @@ public class RobotContainer {
         controller.leftBumper().onTrue(intake.eject()).onFalse(intake.stop());
         controller.a().onTrue(shooter.shoot()).onFalse(shooter.stop());
         controller.x().onTrue(shooter.eject()).onFalse(shooter.stop());
+        controller.povUp().onTrue(climber.climb()).onFalse(climber.stop());
+        controller.povDown().onTrue(climber.reverse()).onFalse(climber.stop());
     }
 
     public Command getAutonomousCommand() {
