@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.littletonrobotics.junction.Logger;
@@ -30,16 +31,22 @@ public class DownBeat extends SubsystemBase {
         downBeatMotor.burnFlash();
     }
 
-    public void intakeNote() {
-        pid.setReference(0.7, ControlType.kDutyCycle);
+    public Command intakeNote() {
+        return runOnce(() -> {
+            pid.setReference(0.7, ControlType.kDutyCycle);
+        });
     }
 
-    public void dischargeNote() {
-        pid.setReference(-0.7, ControlType.kDutyCycle);
+    public Command dischargeNote() {
+        return runOnce(() -> {
+            pid.setReference(-0.7, ControlType.kDutyCycle);
+        });
     }
 
-    public void stopDownBeat() {
-        pid.setReference(0, ControlType.kDutyCycle);
+    public Command pauseDownBeat() {
+        return runOnce(() -> {
+            pid.setReference(0, ControlType.kDutyCycle);
+        });
     }
 
     @Override
