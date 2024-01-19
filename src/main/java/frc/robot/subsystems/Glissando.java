@@ -17,8 +17,8 @@ public class Glissando extends SubsystemBase {
     private static int scndLimit = 35;
 
     public Glissando() {
-        climbRight = new CANSparkMax(11, MotorType.kBrushless);
-        climbLeft = new CANSparkMax(12, MotorType.kBrushless);
+        climbRight = new CANSparkMax(14, MotorType.kBrushless);
+        climbLeft = new CANSparkMax(15, MotorType.kBrushless);
 
         climbRight.setInverted(false);
         climbLeft.setInverted(true);
@@ -59,7 +59,7 @@ public class Glissando extends SubsystemBase {
         }, this);
     }
 
-    public Command stopClimb() {
+    public Command pauseClimb() {
         return Commands.runOnce(() -> {
             climbRight.set(0);
             climbLeft.set(0);
