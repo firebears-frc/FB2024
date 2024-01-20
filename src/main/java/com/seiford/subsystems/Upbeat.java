@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Upbeat extends SubsystemBase {
     private static final class Constants {
         public static final int TOP_MOTOR_CAN_ID = 10;
-        public static final int BOTTOM_MOTOR_CAN_ID = 100;
+        public static final int BOTTOM_MOTOR_CAN_ID = 11;
 
         public static final SparkConfiguration TOP_CONFIG = new SparkConfiguration(
                 false,
@@ -48,27 +48,27 @@ public class Upbeat extends SubsystemBase {
         STOP
     }
 
-    private final CANSparkMax top_motor, bottom_motor;
-    private final RelativeEncoder top_encoder, bottom_encoder;
+    private final CANSparkMax motorTop, motorBottom;
+    private final RelativeEncoder encoderTop, encoderBottom;
     private final SparkPIDController pid;
 
     @AutoLogOutput(key = "Upbeat/State")
     private State state = State.STOP;
-    @AutoLogOutput(key = "Upbeat/Speed")
+    @AutoLogOutput(key = "Upbeat/Setpoint")
     private double speed;
 
     public Upbeat() {
-        top_motor = new CANSparkMax(Constants.TOP_MOTOR_CAN_ID, MotorType.kBrushless);
-        bottom_motor = new CANSparkMax(Constants.BOTTOM_MOTOR_CAN_ID, MotorType.kBrushless);
-        top_encoder = top_motor.getEncoder();
-        bottom_encoder = bottom_motor.getEncoder();
-        pid = top_motor.getPIDController();
+        motorTop = new CANSparkMax(Constants.TOP_MOTOR_CAN_ID, MotorType.kBrushless);
+        motorBottom = new CANSparkMax(Constants.BOTTOM_MOTOR_CAN_ID, MotorType.kBrushless);
+        encoderTop = motorTop.getEncoder();
+        encoderBottom = motorBottom.getEncoder();
+        pid = motorTop.getPIDController();
 
-        Constants.TOP_CONFIG.apply(top_motor);
-        Constants.BOTTOM_CONFIG.apply(bottom_motor);
+        Constants.TOP_CONFIG.apply(motorTop);
+        Constants.BOTTOM_CONFIG.apply(motorBottom);
 
-        top_motor.burnFlash();
-        bottom_motor.burnFlash();
+        motorTop.burnFlash();
+        motorBottom.burnFlash();
     }
 
     public Command shoot() {
@@ -93,8 +93,8 @@ public class Upbeat extends SubsystemBase {
         };
 
         // Log actual velocities
-        Logger.recordOutput("Upbeat/TopSpeed", top_encoder.getVelocity());
-        Logger.recordOutput("Upbeat/BottomSpeed", bottom_encoder.getVelocity());
+        Logger.recordOutput("Upbeat/TopSpeed", encoderTop.getVelocity());
+        Logger.recordOutput("Upbeat/BottomSpeed", encoderBottom.getVelocity());
 
         // Update the position controller
         pid.setReference(speed, ControlType.kVelocity);

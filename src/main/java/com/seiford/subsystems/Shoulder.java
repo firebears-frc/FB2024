@@ -24,8 +24,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shoulder extends SubsystemBase {
     private static final class Constants {
-        public static final int RIGHT_CAN_ID = 8;
-        public static final int LEFT_CAN_ID = 9;
+        public static final int RIGHT_CAN_ID = 12;
+        public static final int LEFT_CAN_ID = 13;
 
         public static final SparkConfiguration CONFIG_RIGHT = new SparkConfiguration(
                 true,

@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Glissando extends SubsystemBase {
     private static final class Constants {
-        public static final int RIGHT_MOTOR_CAN_ID = 10;
-        public static final int LEFT_MOTOR_CAN_ID = 100;
+        public static final int RIGHT_MOTOR_CAN_ID = 14;
+        public static final int LEFT_MOTOR_CAN_ID = 15;
 
         public static final SparkConfiguration CONFIG = new SparkConfiguration(
                 false,
@@ -42,7 +42,7 @@ public class Glissando extends SubsystemBase {
         STOP
     }
 
-    private final CANSparkMax left_motor, right_motor;
+    private final CANSparkMax motorLeft, motorRight;
 
     @AutoLogOutput(key = "Glissando/State")
     private State state = State.STOP;
@@ -50,13 +50,13 @@ public class Glissando extends SubsystemBase {
     private double speed;
 
     public Glissando() {
-        left_motor = new CANSparkMax(Constants.LEFT_MOTOR_CAN_ID, MotorType.kBrushless);
-        right_motor = new CANSparkMax(Constants.RIGHT_MOTOR_CAN_ID, MotorType.kBrushless);
+        motorLeft = new CANSparkMax(Constants.LEFT_MOTOR_CAN_ID, MotorType.kBrushless);
+        motorRight = new CANSparkMax(Constants.RIGHT_MOTOR_CAN_ID, MotorType.kBrushless);
 
-        Constants.CONFIG.apply(left_motor, right_motor);
+        Constants.CONFIG.apply(motorLeft, motorRight);
 
-        left_motor.burnFlash();
-        right_motor.burnFlash();
+        motorLeft.burnFlash();
+        motorRight.burnFlash();
     }
 
     public Command climb() {
@@ -81,7 +81,7 @@ public class Glissando extends SubsystemBase {
         };
 
         // Update the position controller
-        left_motor.set(speed);
-        right_motor.set(speed);
+        motorLeft.set(speed);
+        motorRight.set(speed);
     }
 }
