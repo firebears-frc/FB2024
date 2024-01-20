@@ -23,8 +23,7 @@ public class Arm extends SubsystemBase {
     private double shoulderSetpoint;
 
     public Arm() {
-
-        shoulderMotorRight = new CANSparkMax(8, MotorType.kBrushless);
+        shoulderMotorRight = new CANSparkMax(12, MotorType.kBrushless);
 
         shoulderMotorRight.restoreFactoryDefaults();
         shoulderMotorRight.setInverted(true);
@@ -32,7 +31,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
 
-        shoulderMotorLeft = new CANSparkMax(9, MotorType.kBrushless);
+        shoulderMotorLeft = new CANSparkMax(13, MotorType.kBrushless);
 
         shoulderMotorLeft.restoreFactoryDefaults();
         shoulderMotorLeft.setInverted(false);
@@ -55,15 +54,12 @@ public class Arm extends SubsystemBase {
         shoulderPID.setPositionPIDWrappingMaxInput(360);
         shoulderEncoder.setPositionConversionFactor(360);
         shoulderMotorRight.burnFlash();
-
     }
 
     public double getShoulderAngle() {
-        double angle = shoulderEncoder.getPosition();
-        return angle;
+        return shoulderEncoder.getPosition();
     }
 
-    //Angle setpoints will need to be different
     public void setShoulderSetpoint(double setpoint) {
         while (setpoint > 360) {
             setpoint -= 360;
@@ -71,11 +67,12 @@ public class Arm extends SubsystemBase {
         while (setpoint < 0) {
             setpoint += 360;
         }
-        if (setpoint < 0 || setpoint > 280) {
-            setpoint = 0;
-        } else if (setpoint > 130 && setpoint < 280) {
-            setpoint = 130;
-        }
+        // Angle setpoints will need to be different
+        // if (setpoint < 0 || setpoint > 280) {
+        //     setpoint = 0;
+        // } else if (setpoint > 130 && setpoint < 280) {
+        //     setpoint = 130;
+        // }
     }
 
     @Override
