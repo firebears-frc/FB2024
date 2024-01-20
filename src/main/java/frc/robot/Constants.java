@@ -105,6 +105,12 @@ public class Constants {
         public static final int kTurningMotorCurrentLimit = 20; // amps
     }
 
+    public static final class ArmConstants {
+        public static final double shoulderP = 1.0;
+        public static final double shoulderI = 0.0;
+        public static final double shoulderD = 0.0;
+    }
+
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
         public static final double kDriveDeadband = 0.05;
