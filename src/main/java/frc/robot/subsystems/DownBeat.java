@@ -36,7 +36,7 @@ public class DownBeat extends SubsystemBase {
 
         //sensor
         sensor = new DigitalInput(0);
-        extremeSensor = new Trigger(sensor.get());
+        extremeSensor = new Trigger(sensor::get);
     }
 
     public Command intakeNote() {
