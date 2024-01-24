@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -14,6 +16,8 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 public class DownBeat extends SubsystemBase {
     private CANSparkMax downBeatMotor;
     private SparkPIDController pid;
+    private DigitalInput sensor;
+    private Trigger extremeSensor;
 
     public DownBeat() {
         downBeatMotor = new CANSparkMax(9, MotorType.kBrushless);
@@ -29,6 +33,10 @@ public class DownBeat extends SubsystemBase {
         pid.setI(0);
         pid.setD(0);
         downBeatMotor.burnFlash();
+
+        //sensor
+        sensor = new DigitalInput(0);
+        extremeSensor = new Trigger(sensor.get());
     }
 
     public Command intakeNote() {
@@ -52,5 +60,6 @@ public class DownBeat extends SubsystemBase {
     @Override
     public void periodic() {
         Logger.recordOutput("downBeat/presentOutput", downBeatMotor.getAppliedOutput());
+        extremeSensor.onTrue(pauseDownBeat());
     }
 }
