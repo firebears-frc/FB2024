@@ -1,6 +1,7 @@
 package com.seiford.drive;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -100,6 +101,7 @@ public class Chassis {
         for (int i = 0; i < Constants.MODULES.length; i++) {
             modules[i].setDesiredState(states[i]);
         }
+        Logger.recordOutput("Drive/Chassis/TargetModuleStates", states);
     }
 
     public void setX() {
