@@ -6,6 +6,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -93,6 +94,11 @@ public class SwerveModule {
         turningController.setReference(state.angle.getDegrees(), CANSparkMax.ControlType.kPosition);
 
         desiredState = state;
+    }
+
+    public void driveVolts(double volts) {
+        drivingController.setReference(volts, ControlType.kVoltage);
+        turningController.setReference(angleOffset.getDegrees(), CANSparkMax.ControlType.kPosition);
     }
 
     @AutoLogOutput(key = "Drive/Modules/{name}/Position")

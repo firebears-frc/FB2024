@@ -79,6 +79,10 @@ public class Drive extends SubsystemBase {
         localization.periodic(chassis.getModulePositions());
     }
 
+    public void driveVolts(double volts) {
+        chassis.driveVolts(volts);
+    }
+
     public Command zeroHeading() {
         return runOnce(() -> {
             Pose2d pose = localization.getPose();
