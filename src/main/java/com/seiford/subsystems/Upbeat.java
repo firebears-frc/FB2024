@@ -30,7 +30,7 @@ public class Upbeat extends SubsystemBase {
                 CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
                 StatusFrameConfiguration.leader(),
                 ClosedLoopConfiguration.simple(3.0, 0.0, 0.0, 0.0), // TODO!
-                FeedbackConfiguration.builtInEncoder(false, 1));
+                FeedbackConfiguration.builtInEncoder(1));
         public static final SparkConfiguration BOTTOM_CONFIG = new SparkConfiguration(
                 false,
                 IdleMode.kCoast,

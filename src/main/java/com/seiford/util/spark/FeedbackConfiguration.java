@@ -39,13 +39,13 @@ public interface FeedbackConfiguration {
         };
     }
 
-    public static FeedbackConfiguration builtInEncoder(boolean inverted, double conversionFactor) {
-        return builtInEncoder(inverted, conversionFactor, null, null);
+    public static FeedbackConfiguration builtInEncoder(double conversionFactor) {
+        return builtInEncoder(conversionFactor, null, null);
     }
 
-    public static FeedbackConfiguration builtInEncoder(boolean inverted, double conversionFactor, Integer averageDepth,
+    public static FeedbackConfiguration builtInEncoder(double conversionFactor, Integer averageDepth,
             Integer measurementPeriod) {
-        return relativeEncoder(motor -> motor.getEncoder(), inverted, conversionFactor, averageDepth,
+        return relativeEncoder(motor -> motor.getEncoder(), null, conversionFactor, averageDepth,
                 measurementPeriod);
     }
 
@@ -78,12 +78,14 @@ public interface FeedbackConfiguration {
     }
 
     private static FeedbackConfiguration relativeEncoder(Function<CANSparkBase, RelativeEncoder> sensorFunction,
-            boolean inverted, double conversionFactor, Integer averageDepth, Integer measurementPeriod) {
+            Boolean inverted, double conversionFactor, Integer averageDepth, Integer measurementPeriod) {
         return new FeedbackConfiguration() {
             @Override
             public MotorFeedbackSensor apply(CANSparkBase motor) {
                 RelativeEncoder encoder = sensorFunction.apply(motor);
-                Util.configureCheckAndVerify(encoder::setInverted, encoder::getInverted, inverted, "inverted");
+                if (inverted != null) {
+                    Util.configureCheckAndVerify(encoder::setInverted, encoder::getInverted, inverted, "inverted");
+                }
                 Util.configureCheckAndVerify(encoder::setPositionConversionFactor, encoder::getPositionConversionFactor,
                         conversionFactor, "positionFactor");
                 Util.configureCheckAndVerify(encoder::setVelocityConversionFactor, encoder::getVelocityConversionFactor,

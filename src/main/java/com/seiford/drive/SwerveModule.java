@@ -39,7 +39,7 @@ public class SwerveModule {
                     CurrentLimitConfiguration.complex(50, 20, 10, 60.0),
                     StatusFrameConfiguration.normal(),
                     ClosedLoopConfiguration.simple(0.04, 0.0, 0.0, 1.0 / FREE_SPEED),
-                    FeedbackConfiguration.builtInEncoder(false, POSITION_FACTOR));
+                    FeedbackConfiguration.builtInEncoder(POSITION_FACTOR));
         }
 
         private static class Turning {

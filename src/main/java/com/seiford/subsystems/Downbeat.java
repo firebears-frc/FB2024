@@ -27,7 +27,7 @@ public class Downbeat extends SubsystemBase {
                 CurrentLimitConfiguration.complex(20, 10, 10, 25.0),
                 StatusFrameConfiguration.normal(),
                 ClosedLoopConfiguration.simple(3.0, 0.0, 0.0, 0.0),
-                FeedbackConfiguration.builtInEncoder(false, 1));
+                FeedbackConfiguration.builtInEncoder(1));
 
         public static final double INTAKE_SPEED = 0.01; // rotations per cycle
         public static final double EJECT_SPEED = 0.01; // rotations per cycle

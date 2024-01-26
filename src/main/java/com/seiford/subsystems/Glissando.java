@@ -30,7 +30,7 @@ public class Glissando extends SubsystemBase {
                 CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
                 StatusFrameConfiguration.normal(),
                 ClosedLoopConfiguration.simple(1.0, 0.0, 0.0, 0.0), // TODO!
-                FeedbackConfiguration.builtInEncoder(false, 1));
+                FeedbackConfiguration.builtInEncoder(1));
 
         public static final double CLIMB_SPEED = 0.25;
         public static final double REVERSE_SPEED = -0.25;
