@@ -19,7 +19,7 @@ import com.seiford.util.spark.StatusFrameConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Upbeat extends SubsystemBase {
+public class Shooter extends SubsystemBase {
     private static final class Constants {
         public static final int TOP_MOTOR_CAN_ID = 10;
         public static final int BOTTOM_MOTOR_CAN_ID = 11;
@@ -57,7 +57,7 @@ public class Upbeat extends SubsystemBase {
     @AutoLogOutput(key = "Upbeat/Setpoint")
     private double speed;
 
-    public Upbeat() {
+    public Shooter() {
         motorTop = new CANSparkMax(Constants.TOP_MOTOR_CAN_ID, MotorType.kBrushless);
         motorBottom = new CANSparkMax(Constants.BOTTOM_MOTOR_CAN_ID, MotorType.kBrushless);
         encoderTop = motorTop.getEncoder();

@@ -19,7 +19,7 @@ import com.seiford.util.spark.StatusFrameConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Glissando extends SubsystemBase {
+public class Climber extends SubsystemBase {
     private static final class Constants {
         public static final int RIGHT_MOTOR_CAN_ID = 14;
         public static final int LEFT_MOTOR_CAN_ID = 15;
@@ -49,7 +49,7 @@ public class Glissando extends SubsystemBase {
     @AutoLogOutput(key = "Glissando/Speed")
     private double speed;
 
-    public Glissando() {
+    public Climber() {
         motorLeft = new CANSparkMax(Constants.LEFT_MOTOR_CAN_ID, MotorType.kBrushless);
         motorRight = new CANSparkMax(Constants.RIGHT_MOTOR_CAN_ID, MotorType.kBrushless);
 

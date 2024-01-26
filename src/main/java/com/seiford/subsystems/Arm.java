@@ -22,7 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Shoulder extends SubsystemBase {
+public class Arm extends SubsystemBase {
     private static final class Constants {
         public static final int RIGHT_CAN_ID = 12;
         public static final int LEFT_CAN_ID = 13;
@@ -51,7 +51,7 @@ public class Shoulder extends SubsystemBase {
     protected Rotation2d setpoint = new Rotation2d();
     protected Rotation2d position = new Rotation2d();
 
-    public Shoulder() {
+    public Arm() {
         motorRight = new CANSparkMax(Constants.RIGHT_CAN_ID, MotorType.kBrushless);
         motorLeft = new CANSparkMax(Constants.LEFT_CAN_ID, MotorType.kBrushless);
         encoder = motorRight.getAbsoluteEncoder(Type.kDutyCycle);

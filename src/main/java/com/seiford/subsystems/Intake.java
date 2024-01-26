@@ -17,7 +17,7 @@ import com.seiford.util.spark.StatusFrameConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Downbeat extends SubsystemBase {
+public class Intake extends SubsystemBase {
     private static final class Constants {
         public static final int MOTOR_CAN_ID = 9;
 
@@ -52,7 +52,7 @@ public class Downbeat extends SubsystemBase {
     @AutoLogOutput(key = "Downbeat/Target")
     private double target;
 
-    public Downbeat() {
+    public Intake() {
         motor = new CANSparkMax(Constants.MOTOR_CAN_ID, MotorType.kBrushless);
         encoder = motor.getEncoder();
         pid = motor.getPIDController();

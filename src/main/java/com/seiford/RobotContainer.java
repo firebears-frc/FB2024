@@ -5,17 +5,15 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.seiford.drive.Drive;
-import com.seiford.subsystems.Downbeat;
-import com.seiford.subsystems.Glissando;
-import com.seiford.subsystems.Shoulder;
-import com.seiford.subsystems.Upbeat;
+import com.seiford.subsystems.Intake;
+import com.seiford.subsystems.Climber;
+import com.seiford.subsystems.Arm;
+import com.seiford.subsystems.Shooter;
 
 import java.util.Map;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -28,16 +26,13 @@ public class RobotContainer {
         public static final int CONTROLLER_PORT = 2;
 
         public static final double JOYSTICK_DEADBAND = 0.05;
-
-        public static final int PDH_CAN_ID = 1;
     }
 
-    private final Drive drive;
-    private final Downbeat intake;
-    private final Upbeat shooter;
-    private final Glissando climber;
-    private final Shoulder arm;
-    private final PowerDistribution pdh;
+    private final Drive bass;
+    private final Intake downbeat;
+    private final Shooter upbeat;
+    private final Climber glissando;
+    private final Arm arm;
 
     private final CommandJoystick one;
     private final CommandJoystick two;
@@ -45,12 +40,11 @@ public class RobotContainer {
     private final LoggedDashboardChooser<Command> autoChooser;
 
     public RobotContainer() {
-        drive = new Drive();
-        intake = new Downbeat();
-        shooter = new Upbeat();
-        climber = new Glissando();
-        arm = new Shoulder();
-        pdh = new PowerDistribution(Constants.PDH_CAN_ID, ModuleType.kRev);
+        bass = new Drive();
+        downbeat = new Intake();
+        upbeat = new Shooter();
+        glissando = new Climber();
+        arm = new Arm();
 
         one = new CommandJoystick(Constants.JOYSTICK_1_PORT);
         two = new CommandJoystick(Constants.JOYSTICK_2_PORT);
@@ -75,23 +69,19 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        drive.setDefaultCommand(drive.defaultCommand(
-                this::getChassisSpeeds,
-                false));
+        bass.setDefaultCommand(bass.defaultCommand(this::getChassisSpeeds, false));
 
-        one.trigger().toggleOnTrue(drive.turtle());
-        one.button(2).toggleOnTrue(drive.defaultCommand(
-                this::getChassisSpeeds,
-                true));
+        one.trigger().toggleOnTrue(bass.turtle());
+        one.button(2).toggleOnTrue(bass.defaultCommand(this::getChassisSpeeds, true));
 
-        two.trigger().onTrue(drive.zeroHeading());
+        two.trigger().onTrue(bass.zeroHeading());
 
-        controller.leftTrigger().onTrue(intake.intake()).onFalse(intake.stop());
-        controller.leftBumper().onTrue(intake.eject()).onFalse(intake.stop());
-        controller.a().onTrue(shooter.shoot()).onFalse(shooter.stop());
-        controller.x().onTrue(shooter.eject()).onFalse(shooter.stop());
-        controller.povUp().onTrue(climber.climb()).onFalse(climber.stop());
-        controller.povDown().onTrue(climber.reverse()).onFalse(climber.stop());
+        controller.leftTrigger().onTrue(downbeat.intake()).onFalse(downbeat.stop());
+        controller.leftBumper().onTrue(downbeat.eject()).onFalse(downbeat.stop());
+        controller.a().onTrue(upbeat.shoot()).onFalse(upbeat.stop());
+        controller.x().onTrue(upbeat.eject()).onFalse(upbeat.stop());
+        controller.povUp().onTrue(glissando.climb()).onFalse(glissando.stop());
+        controller.povDown().onTrue(glissando.reverse()).onFalse(glissando.stop());
         arm.setDefaultCommand(arm.defaultCommand(controller::getLeftY));
     }
 
