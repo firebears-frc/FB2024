@@ -36,6 +36,15 @@ public class Vision {
     private final PhotonPoseEstimator poseEstimator;
     private final BiConsumer<Pose2d, Double> consumer;
 
+    private enum Status {
+        NOT_CONNECTED,
+        NO_TARGETS,
+        NO_POSE_ESTIMATOR,
+        NO_POSE_RESULT,
+        NO_CONSUMER,
+        POSE_FOUND
+    }
+
     @AutoLogOutput(key = "Drive/Localization/Vision/Status")
     private Status status;
 
@@ -66,44 +75,31 @@ public class Vision {
         poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
-    private enum Status {
-        NOT_CONNECTED,
-        NO_TARGETS,
-        NO_POSE_ESTIMATOR,
-        NO_POSE_RESULT,
-        NO_CONSUMER,
-        POSE_FOUND
-    }
-
     private Status getPhotonUpdate() {
         boolean connected = visionSystem.isConnected();
-        if (!connected) {
+        if (!connected)
             return Status.NOT_CONNECTED;
-        }
 
         PhotonPipelineResult pipelineResult = visionSystem.getLatestResult();
-        if (!pipelineResult.hasTargets()) {
+        if (!pipelineResult.hasTargets())
             return Status.NO_TARGETS;
-        }
 
-        if (poseEstimator == null) {
+        if (poseEstimator == null)
             return Status.NO_POSE_ESTIMATOR;
-        }
 
-        Optional<EstimatedRobotPose> poseResult = poseEstimator.update();
-        if (!poseResult.isPresent()) {
+        Optional<EstimatedRobotPose> poseResult = poseEstimator.update(pipelineResult);
+        if (!poseResult.isPresent())
             return Status.NO_POSE_RESULT;
-        }
+
+        if (consumer == null)
+            return Status.NO_CONSUMER;
 
         EstimatedRobotPose result = poseResult.get();
-        if (consumer == null) {
-            return Status.NO_CONSUMER;
-        }
-
         consumer.accept(result.estimatedPose.toPose2d(), result.timestampSeconds);
         Logger.recordOutput("Drive/Localization/Vision/Pose", result.estimatedPose);
         Logger.recordOutput("Drive/Localization/Vision/Timestamp", result.timestampSeconds);
         Logger.recordOutput("Drive/Localization/Vision/Strategy", result.strategy);
+        Logger.recordOutput("Drive/Localization/Vision/Tags", result.targetsUsed.size());
         return Status.POSE_FOUND;
     }
 
