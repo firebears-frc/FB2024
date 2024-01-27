@@ -10,12 +10,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
@@ -57,8 +57,8 @@ public class Bass extends SubsystemBase {
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
-    // Odometry class for tracking robot pose
-    SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
+    // Pose estimation class for tracking robot pose
+    SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             getHeading(),
             new SwerveModulePosition[] {
@@ -66,7 +66,8 @@ public class Bass extends SubsystemBase {
                     m_frontRight.getPosition(),
                     m_rearLeft.getPosition(),
                     m_rearRight.getPosition()
-            });
+            }, 
+            new Pose2d());
 
     /** Creates a new DriveSubsystem. */
     public Bass() {
@@ -102,7 +103,7 @@ public class Bass extends SubsystemBase {
     @Override
     public void periodic() {
         // Update the odometry in the periodic block
-        m_odometry.update(
+        m_poseEstimator.update(
                 getHeading(),
                 new SwerveModulePosition[] {
                         m_frontLeft.getPosition(),
@@ -126,7 +127,7 @@ public class Bass extends SubsystemBase {
      * @return The pose.
      */
     public Pose2d getPose() {
-        return m_odometry.getPoseMeters();
+        return m_poseEstimator.getEstimatedPosition();
     }
 
     /**
@@ -135,7 +136,7 @@ public class Bass extends SubsystemBase {
      * @param pose The pose to which to set the odometry.
      */
     public void resetOdometry(Pose2d pose) {
-        m_odometry.resetPosition(
+        m_poseEstimator.resetPosition(
                 getHeading(),
                 new SwerveModulePosition[] {
                         m_frontLeft.getPosition(),
@@ -146,6 +147,9 @@ public class Bass extends SubsystemBase {
                 pose);
     }
 
+    public void visionPose(Pose2d pose, double timestamp){
+        m_poseEstimator.addVisionMeasurement(pose, timestamp);
+    }
     /**
      * Method to drive the robot using joystick info.
      *

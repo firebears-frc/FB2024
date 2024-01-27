@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.sql.DriverPropertyInfo;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -20,12 +24,14 @@ import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.Glissando;
 import frc.robot.subsystems.UpBeat;
+import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
     //private final DownBeat m_intake = new DownBeat();
     //private final UpBeat m_shooter = new UpBeat();
     //private final Glissando m_climb = new Glissando();
+    private Vision vision;
     private final CommandJoystick one = new CommandJoystick(0);
     private final CommandJoystick two = new CommandJoystick(1);
     private final CommandXboxController xboxController = new CommandXboxController(2);
@@ -33,6 +39,12 @@ public class RobotContainer {
             AutoBuilder.buildAutoChooser());
 
     public RobotContainer() {
+        try {
+            vision = new Vision(m_robotDrive::visionPose);
+        }
+        catch(IOException e){
+            DriverStation.reportWarning("Unable to initialize vision", e.getStackTrace());
+        }
         configureBindings();
 
         m_robotDrive.setDefaultCommand(
