@@ -24,7 +24,6 @@ public class UpBeat extends SubsystemBase {
         upBeatMotor.setIdleMode(IdleMode.kBrake);
         pid = upBeatMotor.getPIDController();
 
-        // set p value of pid to 1
         pid.setP(6.0e-5);
         pid.setI(1.0e-6);
         pid.setD(0.0);
