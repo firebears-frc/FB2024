@@ -25,7 +25,7 @@ public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
     private final DownBeat m_intake = new DownBeat();
     private final UpBeat m_shooter = new UpBeat();
-    //private final Glissando m_climb = new Glissando();
+    private final Glissando m_climb = new Glissando();
     private final CommandJoystick one = new CommandJoystick(0);
     private final CommandJoystick two = new CommandJoystick(1);
     private final CommandXboxController xboxController = new CommandXboxController(2);
