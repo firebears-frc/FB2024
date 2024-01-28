@@ -28,8 +28,8 @@ import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
-    //private final DownBeat m_intake = new DownBeat();
-    //private final UpBeat m_shooter = new UpBeat();
+    private final DownBeat m_intake = new DownBeat();
+    private final UpBeat m_shooter = new UpBeat();
     //private final Glissando m_climb = new Glissando();
     private Vision vision;
     private final CommandJoystick one = new CommandJoystick(0);
@@ -64,11 +64,11 @@ public class RobotContainer {
         }, m_robotDrive));
         two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
-        //xboxController.x().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
-        //xboxController.y().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
+        xboxController.x().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
+        xboxController.y().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
 
-        //xboxController.a().onTrue(m_shooter.shootNote()).onFalse(m_shooter.pauseUpBeat());
-        //xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
+        xboxController.a().onTrue(m_shooter.shootNote()).onFalse(m_shooter.pauseUpBeat());
+        xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
 
         //xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
         //xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
