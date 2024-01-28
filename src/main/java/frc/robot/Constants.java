@@ -1,7 +1,12 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -133,5 +138,19 @@ public class Constants {
 
     public static final class NeoMotorConstants {
         public static final double kFreeSpeedRpm = 5676;
+    }
+    // visionconstants
+     public static final class VisionConstants {
+        public static final String kCameraName = "Arducam_OV2311_USB_Camera";
+        public static final Transform3d kCameraOffset = new Transform3d(
+            new Translation3d(
+                Units.inchesToMeters(16.0),
+                Units.inchesToMeters(-1.5),
+                Units.inchesToMeters(16.0)),
+            new Rotation3d(
+                0.0,
+                Rotation2d.fromDegrees(-15.0).getRadians(),
+                0.0
+            ));
     }
 }
