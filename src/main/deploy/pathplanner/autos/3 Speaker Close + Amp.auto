@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.35,
+      "y": 4.95
+    },
+    "rotation": -30.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Close 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Close 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Close 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Close Amp 1"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

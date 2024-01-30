@@ -3,36 +3,36 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.25063845741014,
-        "y": 5.55
+        "x": 2.8,
+        "y": 2.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.75063845741014,
-        "y": 5.55
+        "x": 3.233012701892219,
+        "y": 2.55
       },
       "isLocked": true,
-      "linkedName": "mid-2-0deg"
+      "linkedName": "Wing-Shooter_Bottom"
     },
     {
       "anchor": {
-        "x": 1.4,
-        "y": 5.55
+        "x": 7.659818868253777,
+        "y": 0.7883281628876964
       },
       "prevControl": {
-        "x": 1.8999999999999995,
-        "y": 5.55
+        "x": 6.659818868253777,
+        "y": 0.7883281628876964
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "speaker-center"
+      "linkedName": "Center-Note-5_0deg"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.5,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -43,9 +43,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "3 Speaker Far",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -45.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

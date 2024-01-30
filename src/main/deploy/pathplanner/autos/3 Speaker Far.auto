@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.45,
+      "y": 3.45
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
