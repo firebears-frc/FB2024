@@ -40,6 +40,24 @@
           "data": {
             "pathName": "Top 5"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top 6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top 7"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armHigh"
+          }
         }
       ]
     }

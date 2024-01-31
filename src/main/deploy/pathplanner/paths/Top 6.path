@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.659818868253777,
-        "y": 0.7883281628876964
+        "x": 2.8,
+        "y": 6.35
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.176855955109243,
-        "y": 0.9177376854389568
+        "x": 3.3,
+        "y": 6.35
       },
       "isLocked": true,
-      "linkedName": "Center-Note-5_0deg"
+      "linkedName": "Wing-Shooter_Top"
     },
     {
       "anchor": {
-        "x": 2.8,
-        "y": 2.8
+        "x": 7.659818868253777,
+        "y": 5.971178784089293
       },
       "prevControl": {
-        "x": 3.233012701892219,
-        "y": 2.55
+        "x": 6.693893041964709,
+        "y": 6.229997829191814
       },
       "nextControl": null,
       "isLocked": true,
-      "linkedName": "Wing-Shooter_Bottom"
+      "linkedName": "Center-Note-2_-15deg"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.0,
+    "rotation": -15.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "3 Speaker Far",
+  "folder": "6 Speaker Top",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 30.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
