@@ -4,12 +4,16 @@
 
 package frc.robot;
 
+import java.util.Map;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -31,6 +35,14 @@ public class RobotContainer {
     private final CommandXboxController xboxController = new CommandXboxController(2);
     private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("AutoChooser",
             AutoBuilder.buildAutoChooser());
+
+    private void configureAutoCommands(){
+        NamedCommands.registerCommands(Map.of(
+            "armHigh", Commands.print("armHigh"),
+            "armLow", Commands.print("armLow"),
+            "shoot", m_shooter.shootNote(),
+            "pickUp", m_intake.intakeNote()));
+    }
 
     public RobotContainer() {
         configureBindings();
