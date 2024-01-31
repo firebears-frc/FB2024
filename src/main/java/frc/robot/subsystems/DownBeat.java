@@ -17,7 +17,7 @@ public class DownBeat extends SubsystemBase {
     private CANSparkMax downBeatMotor;
     private SparkPIDController pid;
     private DigitalInput sensor;
-    private Trigger extremeSensor;
+    private Trigger extremeSensor;  // idk this is what Ariel said to name it
 
     public DownBeat() {
         downBeatMotor = new CANSparkMax(9, MotorType.kBrushless);
@@ -37,6 +37,7 @@ public class DownBeat extends SubsystemBase {
         //sensor
         sensor = new DigitalInput(0);
         extremeSensor = new Trigger(sensor::get);
+        extremeSensor.onTrue(pauseDownBeat());
     }
 
     public Command intakeNote() {
@@ -60,6 +61,5 @@ public class DownBeat extends SubsystemBase {
     @Override
     public void periodic() {
         Logger.recordOutput("downBeat/presentOutput", downBeatMotor.getAppliedOutput());
-        extremeSensor.onTrue(pauseDownBeat());
     }
 }
