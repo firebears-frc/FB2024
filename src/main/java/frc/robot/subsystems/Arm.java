@@ -84,7 +84,7 @@ public class Arm extends SubsystemBase {
     }
     
     public Command pickUp(){
-        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(-2.0)));
+        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(-3.0)));
     }
     public Command speakerShoot(){
         return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(45)));
