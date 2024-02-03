@@ -37,17 +37,17 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
 
-        topPid.setP(6.0e-5);
-        topPid.setI(1.0e-6);
+        topPid.setP(0);
+        topPid.setI(0);
         topPid.setD(0.0);
-        topPid.setFF(0.000015);
+        topPid.setFF(0.0001875);
         topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
-        bottomPid.setP(6.0e-5);
-        bottomPid.setI(1.0e-6);
+        bottomPid.setP(0);
+        bottomPid.setI(0);
         bottomPid.setD(0.0);
-        bottomPid.setFF(0.000015);
+        bottomPid.setFF(0.0001875);
         bottomPid.setOutputRange(0.0, 1.0);
         bottomMotor.burnFlash();
     }
@@ -88,6 +88,9 @@ public class UpBeat extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("upBeat/presentOutput", topMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/topOutPut", topMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/ottomOutpt", bottomMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
+        Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
     }
 }
