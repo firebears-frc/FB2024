@@ -63,6 +63,7 @@ public class Arm extends SubsystemBase {
     public double getShoulderAngle() {
         return shoulderEncoder.getPosition();
     }
+3
 
     public void setShoulderSetpoint(double setpoint) {
         while (setpoint > 360) {
@@ -84,5 +85,10 @@ public class Arm extends SubsystemBase {
             shoulderSetpoint += shoulderChange.get();
         });
     }
+
+    @Override public void periodic(){
+        shoulderPID.setReference(shoulderSetpoint, ControlType.kPosition);
+    }
+    
 }
 
