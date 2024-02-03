@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
@@ -27,7 +29,7 @@ public class Arm extends SubsystemBase {
     private double shoulderSetpoint;
 
     public Arm() {
-        shoulderMotorRight = new CANSparkMax(12, MotorType.kBrushless);
+        shoulderMotorRight = new CANSparkMax(13, MotorType.kBrushless);
 
         shoulderMotorRight.restoreFactoryDefaults();
         shoulderMotorRight.setInverted(true);
@@ -35,7 +37,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
 
-        shoulderMotorLeft = new CANSparkMax(13, MotorType.kBrushless);
+        shoulderMotorLeft = new CANSparkMax(12, MotorType.kBrushless);
 
         shoulderMotorLeft.restoreFactoryDefaults();
         shoulderMotorLeft.setInverted(false);
@@ -85,8 +87,13 @@ public class Arm extends SubsystemBase {
             shoulderSetpoint += shoulderChange.get();
         });
     }
-
-    @Override public void periodic(){
+    
+    @Override
+    public void periodic() {
+        Logger.recordOutput("armSetpoint/presentOutput", shoulderSetpoint);
+        Logger.recordOutput("armMotorLeft/presentOutput", shoulderMotorLeft.getAppliedOutput());
+        Logger.recordOutput("armMotorRight/presentOutput", shoulderMotorRight.getAppliedOutput());    
+            
         shoulderPID.setReference(shoulderSetpoint, ControlType.kPosition);
     }
     
