@@ -75,7 +75,14 @@ public class RobotContainer {
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
         
 
-        m_arm.setDefaultCommand(m_arm.defaultCommand(xboxController::getLeftY));
+        m_arm.setDefaultCommand(
+            m_arm.defaultCommand(
+                    () -> MathUtil.applyDeadband(
+                            xboxController.getLeftY(),
+                            0.2
+                    )
+            )
+        );
         
         //xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
         //xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
