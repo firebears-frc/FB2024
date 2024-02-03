@@ -91,11 +91,11 @@ public class Arm extends SubsystemBase {
     }
 
     public Command ampShooter(){
-        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(80)));
+        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(85)));
     }
 
     public Command stow(){
-        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(30)));
+        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(25)));
     }
 
     @Override

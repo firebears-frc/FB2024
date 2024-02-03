@@ -71,9 +71,19 @@ public class RobotContainer {
         xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
         xboxController.b().onTrue(m_arm.pickUp());
-        xboxController.leftBumper().onTrue(m_arm.ampShooter());
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
         
+        xboxController.leftBumper().onTrue(Commands.sequence(
+            m_arm.ampShooter(),
+            Commands.waitSeconds(1.4),
+            m_shooter.ampSpeed(),
+            Commands.waitSeconds(.2),
+            m_intake.intakeNote(),
+            Commands.waitSeconds(1),
+            m_shooter.pauseUpBeat(),
+            m_intake.pauseDownBeat(),
+            m_arm.pickUp()
+        ));
 
         m_arm.setDefaultCommand(
             m_arm.defaultCommand(

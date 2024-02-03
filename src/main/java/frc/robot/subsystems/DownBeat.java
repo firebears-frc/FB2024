@@ -40,13 +40,13 @@ public class DownBeat extends SubsystemBase {
 
     public Command intakeNote() {
         return runOnce(() -> {
-            pid.setReference(0.7, ControlType.kDutyCycle);
+            pid.setReference(-0.7, ControlType.kDutyCycle);
         });
     }
 
     public Command dischargeNote() {
         return runOnce(() -> {
-            pid.setReference(-0.7, ControlType.kDutyCycle);
+            pid.setReference(0.7, ControlType.kDutyCycle);
         });
     }
 
