@@ -39,14 +39,14 @@ public class UpBeat extends SubsystemBase {
         topPid.setI(1.0e-6);
         topPid.setD(0.0);
         topPid.setFF(0.000015);
-        //topPid.setOutputRange(0.0, 1.0);
+        topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
         bottomPid.setP(6.0e-5);
         bottomPid.setI(1.0e-6);
         bottomPid.setD(0.0);
         bottomPid.setFF(0.000015);
-        //bottomPid.setOutputRange(0.0, 1.0);
+        bottomPid.setOutputRange(0.0, 1.0);
         bottomMotor.burnFlash();
     }
 
