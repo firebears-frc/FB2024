@@ -33,20 +33,20 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.restoreFactoryDefaults();
         bottomMotor.setInverted(false);
         bottomMotor.setIdleMode(IdleMode.kCoast);
-        topPid = bottomMotor.getPIDController();
+        bottomPid = bottomMotor.getPIDController();
 
         topPid.setP(6.0e-5);
         topPid.setI(1.0e-6);
         topPid.setD(0.0);
         topPid.setFF(0.000015);
-        topPid.setOutputRange(0.0, 1.0);
+        //topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
         bottomPid.setP(6.0e-5);
         bottomPid.setI(1.0e-6);
         bottomPid.setD(0.0);
         bottomPid.setFF(0.000015);
-        bottomPid.setOutputRange(0.0, 1.0);
+        //bottomPid.setOutputRange(0.0, 1.0);
         bottomMotor.burnFlash();
     }
 

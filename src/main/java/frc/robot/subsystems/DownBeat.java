@@ -19,7 +19,7 @@ public class DownBeat extends SubsystemBase {
     private DigitalInput sensor;
 
     public DownBeat() {
-        downBeatMotor = new CANSparkMax(9, MotorType.kBrushless);
+        downBeatMotor = new CANSparkMax(9, MotorType.kBrushed);
         downBeatMotor.setSmartCurrentLimit(10, 10);
         downBeatMotor.setSecondaryCurrentLimit(20);
         downBeatMotor.restoreFactoryDefaults();
