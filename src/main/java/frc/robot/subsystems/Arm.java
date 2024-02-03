@@ -29,7 +29,7 @@ public class Arm extends SubsystemBase {
     private double shoulderSetpoint;
 
     public Arm() {
-        shoulderMotorRight = new CANSparkMax(12, MotorType.kBrushless);
+        shoulderMotorRight = new CANSparkMax(13, MotorType.kBrushless);
 
         shoulderMotorRight.restoreFactoryDefaults();
         shoulderMotorRight.setInverted(true);
@@ -37,7 +37,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
 
-        shoulderMotorLeft = new CANSparkMax(13, MotorType.kBrushless);
+        shoulderMotorLeft = new CANSparkMax(12, MotorType.kBrushless);
 
         shoulderMotorLeft.restoreFactoryDefaults();
         shoulderMotorLeft.setInverted(false);
