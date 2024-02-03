@@ -26,7 +26,7 @@ public class Arm extends SubsystemBase {
     private CANSparkMax shoulderMotorLeft;
     private static SparkAbsoluteEncoder shoulderEncoder;
     private SparkPIDController shoulderPID;
-    private double shoulderSetpoint;
+    private Rotation2d shoulderSetpoint = new Rotation2d();
 
     public Arm() {
         shoulderMotorRight = new CANSparkMax(13, MotorType.kBrushless);
@@ -62,29 +62,24 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.burnFlash();
     }
 
-    public double getShoulderAngle() {
-        return shoulderEncoder.getPosition();
+    public Rotation2d getShoulderAngle() {
+        return Rotation2d.fromDegrees(shoulderEncoder.getPosition());
     }
-3
 
-    public void setShoulderSetpoint(double setpoint) {
-        while (setpoint > 360) {
-            setpoint -= 360;
+    public void setShoulderSetpoint(Rotation2d setpoint) {
+
+        
+        if (setpoint.getDegrees() < -5) {
+             setpoint = Rotation2d.fromDegrees(-5);
+        } else if (setpoint.getDegrees() > 130) {
+             setpoint = Rotation2d.fromDegrees(130);
         }
-        while (setpoint < 0) {
-            setpoint += 360;
-        }
-        // Angle setpoints will need to be different
-        // if (setpoint < 0 || setpoint > 280) {
-        //     setpoint = 0;
-        // } else if (setpoint > 130 && setpoint < 280) {
-        //     setpoint = 130;
-        // }
+        shoulderSetpoint = setpoint;
     }
 
     public Command defaultCommand(Supplier<Double> shoulderChange) {
         return run(() -> {
-            shoulderSetpoint += shoulderChange.get();
+           setShoulderSetpoint(shoulderSetpoint.minus(Rotation2d.fromDegrees(shoulderChange.get())));
         });
     }
     
@@ -93,8 +88,8 @@ public class Arm extends SubsystemBase {
         Logger.recordOutput("armSetpoint/presentOutput", shoulderSetpoint);
         Logger.recordOutput("armMotorLeft/presentOutput", shoulderMotorLeft.getAppliedOutput());
         Logger.recordOutput("armMotorRight/presentOutput", shoulderMotorRight.getAppliedOutput());    
-            
-        shoulderPID.setReference(shoulderSetpoint, ControlType.kPosition);
+
+        shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
     }
     
 }
