@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -67,7 +68,7 @@ public class RobotContainer {
         xboxController.x().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.y().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
 
-        xboxController.a().onTrue(m_shooter.shootNote()).onFalse(m_shooter.pauseUpBeat());
+        xboxController.a().toggleOnTrue(Commands.startEnd(m_shooter::shootNote, m_shooter::pauseUpBeat,m_shooter));
         xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
 
         //xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
