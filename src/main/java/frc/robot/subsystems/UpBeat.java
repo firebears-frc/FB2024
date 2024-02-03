@@ -79,6 +79,13 @@ public class UpBeat extends SubsystemBase {
         });
     }
 
+    public Command ampSpeed() {
+        return runOnce(() -> {
+            topPid.setReference(1000, ControlType.kVelocity);
+            bottomPid.setReference(1200, ControlType.kVelocity);
+        });
+    }
+
     @Override
     public void periodic() {
         Logger.recordOutput("upBeat/presentOutput", topMotor.getAppliedOutput());
