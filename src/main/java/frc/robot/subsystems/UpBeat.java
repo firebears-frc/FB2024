@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.util.ResourceBundle.Control;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -51,10 +53,16 @@ public class UpBeat extends SubsystemBase {
     }
 
     public Command shootNote() {
-        return runOnce(() -> {
-            topPid.setReference(4800, ControlType.kVelocity);
-            bottomPid.setReference(4000, ControlType.kVelocity);
-        });
+        return startEnd(
+            () -> {
+                topPid.setReference(4800, ControlType.kVelocity);
+                bottomPid.setReference(4000, ControlType.kVelocity);
+            },
+            () -> {
+                topPid.setReference(0, ControlType.kVelocity);
+                bottomPid.setReference(0, ControlType.kVelocity);
+            }
+            );
     }
 
     public Command reverseShootNote() {

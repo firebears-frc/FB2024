@@ -83,11 +83,26 @@ public class Arm extends SubsystemBase {
         });
     }
     
+    public Command pickUp(){
+        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(-2.0)));
+    }
+    public Command speakerShoot(){
+        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(45)));
+    }
+
+    public Command ampShooter(){
+        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(80)));
+    }
+
+    public Command stow(){
+        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(30)));
+    }
+
     @Override
     public void periodic() {
-        Logger.recordOutput("armSetpoint/presentOutput", shoulderSetpoint);
-        Logger.recordOutput("armMotorLeft/presentOutput", shoulderMotorLeft.getAppliedOutput());
-        Logger.recordOutput("armMotorRight/presentOutput", shoulderMotorRight.getAppliedOutput());    
+        Logger.recordOutput("arm/Setpoint", shoulderSetpoint.getDegrees());
+        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
+        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());    
 
         shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
     }
