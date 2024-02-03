@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
@@ -83,6 +85,13 @@ public class Arm extends SubsystemBase {
         return run(() -> {
             shoulderSetpoint += shoulderChange.get();
         });
+    }
+    
+    @Override
+    public void periodic() {
+        Logger.recordOutput("armSetpoint/presentOutput", shoulderSetpoint);
+        Logger.recordOutput("armMotorLeft/presentOutput", shoulderMotorLeft.getAppliedOutput());
+        Logger.recordOutput("armMotorRight/presentOutput", shoulderMotorRight.getAppliedOutput());        
     }
 }
 
