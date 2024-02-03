@@ -1,6 +1,10 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -75,8 +79,10 @@ public class Arm extends SubsystemBase {
         // }
     }
 
-    @Override
-    public void periodic() {
-        shoulderPID.setReference(shoulderSetpoint, ControlType.kPosition);
+    public Command defaultCommand(Supplier<Double> shoulderChange) {
+        return run(() -> {
+            shoulderSetpoint += shoulderChange.get();
+        });
     }
 }
+

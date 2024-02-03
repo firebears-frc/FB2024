@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.Glissando;
@@ -30,6 +31,7 @@ public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
     private final DownBeat m_intake = new DownBeat();
     private final UpBeat m_shooter = new UpBeat();
+    private final Arm m_arm = new Arm();
     //private final Glissando m_climb = new Glissando();
     private Vision vision;
     private final CommandJoystick one = new CommandJoystick(0);
@@ -70,6 +72,8 @@ public class RobotContainer {
         xboxController.a().onTrue(m_shooter.shootNote()).onFalse(m_shooter.pauseUpBeat());
         xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
 
+        m_arm.setDefaultCommand(m_arm.defaultCommand(xboxController::getLeftY));
+        
         //xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
         //xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
 
