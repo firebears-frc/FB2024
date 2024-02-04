@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.io.IOException;
+
 import java.util.Map;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -12,6 +14,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -24,17 +27,18 @@ import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.Glissando;
 import frc.robot.subsystems.UpBeat;
+import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
     private final DownBeat m_intake = new DownBeat();
     private final UpBeat m_shooter = new UpBeat();
     //private final Glissando m_climb = new Glissando();
+    private Vision vision;
     private final CommandJoystick one = new CommandJoystick(0);
     private final CommandJoystick two = new CommandJoystick(1);
     private final CommandXboxController xboxController = new CommandXboxController(2);
-    private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("AutoChooser",
-            AutoBuilder.buildAutoChooser());
+    private final LoggedDashboardChooser<Command> autoChooser;
 
     private void configureAutoCommands(){
         NamedCommands.registerCommands(Map.of(
@@ -45,6 +49,12 @@ public class RobotContainer {
     }
 
     public RobotContainer() {
+        try {
+            vision = new Vision(m_robotDrive::visionPose);
+        }
+        catch(IOException e){
+            DriverStation.reportWarning("Unable to initialize vision", e.getStackTrace());
+        }
         configureBindings();
 
         m_robotDrive.setDefaultCommand(
@@ -57,6 +67,9 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(two.getX(), OIConstants.kDriveDeadband),
                                 true, true),
                         m_robotDrive));
+
+        configureAutoCommands();
+        autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
