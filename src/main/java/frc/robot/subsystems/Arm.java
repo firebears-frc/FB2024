@@ -67,9 +67,9 @@ public class Arm extends SubsystemBase {
         private static final Rotation2d MANUAL_SPEED = Rotation2d.fromDegrees(1.0);
 
         private static final Rotation2d pickUp = Rotation2d.fromDegrees(-3.0);
-        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(45);
+        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(30);
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
-        private static final Rotation2d stow = Rotation2d.fromDegrees(25);
+        private static final Rotation2d stow = Rotation2d.fromDegrees(20);
     }
 
     public Rotation2d getShoulderAngle() {
