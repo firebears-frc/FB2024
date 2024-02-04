@@ -19,7 +19,7 @@ public class DownBeat extends SubsystemBase {
     private DigitalInput sensor;
 
     public DownBeat() {
-        downBeatMotor = new CANSparkMax(9, MotorType.kBrushless);
+        downBeatMotor = new CANSparkMax(9, MotorType.kBrushed);
         downBeatMotor.setSmartCurrentLimit(10, 10);
         downBeatMotor.setSecondaryCurrentLimit(20);
         downBeatMotor.restoreFactoryDefaults();
@@ -40,13 +40,13 @@ public class DownBeat extends SubsystemBase {
 
     public Command intakeNote() {
         return runOnce(() -> {
-            pid.setReference(0.7, ControlType.kDutyCycle);
+            pid.setReference(-0.7, ControlType.kDutyCycle);
         });
     }
 
     public Command dischargeNote() {
         return runOnce(() -> {
-            pid.setReference(-0.7, ControlType.kDutyCycle);
+            pid.setReference(0.7, ControlType.kDutyCycle);
         });
     }
 

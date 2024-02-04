@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.Glissando;
@@ -33,6 +34,7 @@ public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
     private final DownBeat m_intake = new DownBeat();
     private final UpBeat m_shooter = new UpBeat();
+    private final Arm m_arm = new Arm();
     //private final Glissando m_climb = new Glissando();
     private Vision vision;
     private final CommandJoystick one = new CommandJoystick(0);
@@ -77,14 +79,36 @@ public class RobotContainer {
         }, m_robotDrive));
         two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
 
-        xboxController.x().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
-        xboxController.y().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
+        xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
+        xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
+        xboxController.y().toggleOnTrue(m_shooter.shootNote());
+        xboxController.b().onTrue(m_arm.pickUp());
+        xboxController.rightBumper().onTrue(m_arm.speakerShoot());
+        xboxController.povUp().onTrue(m_arm.stow());
+        xboxController.leftBumper().onTrue(Commands.sequence(
+            m_arm.ampShoot(),
+            Commands.waitSeconds(1.4),
+            m_shooter.ampSpeed(),
+            Commands.waitSeconds(.2),
+            m_intake.intakeNote(),
+            Commands.waitSeconds(1),
+            m_shooter.pauseUpBeat(),
+            m_intake.pauseDownBeat(),
+            m_arm.pickUp()
+        ));
 
-        xboxController.a().onTrue(m_shooter.shootNote()).onFalse(m_shooter.pauseUpBeat());
-        xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
-
+        m_arm.setDefaultCommand(
+            m_arm.defaultCommand(
+                    () -> MathUtil.applyDeadband(
+                            xboxController.getLeftY(),
+                            0.2
+                    )
+            )
+        );
+        
         //xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
         //xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
+        //xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
 
     }
 
