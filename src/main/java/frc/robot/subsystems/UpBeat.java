@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import java.util.ResourceBundle.Control;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -33,28 +35,36 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.restoreFactoryDefaults();
         bottomMotor.setInverted(false);
         bottomMotor.setIdleMode(IdleMode.kCoast);
-        topPid = bottomMotor.getPIDController();
+        bottomPid = bottomMotor.getPIDController();
 
-        topPid.setP(6.0e-5);
-        topPid.setI(1.0e-6);
+        topPid.setP(0.0003);
+        topPid.setI(0.0000001);
         topPid.setD(0.0);
-        topPid.setFF(0.000015);
+        topPid.setFF(0.0001875);
+        topPid.setIZone(100);
         topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
-        bottomPid.setP(6.0e-5);
-        bottomPid.setI(1.0e-6);
+        bottomPid.setP(0.0003);
+        bottomPid.setI(0.0000001);
         bottomPid.setD(0.0);
-        bottomPid.setFF(0.000015);
+        bottomPid.setFF(0.0001875);
+        bottomPid.setIZone(100);
         bottomPid.setOutputRange(0.0, 1.0);
         bottomMotor.burnFlash();
     }
 
     public Command shootNote() {
-        return runOnce(() -> {
-            topPid.setReference(4800, ControlType.kVelocity);
-            bottomPid.setReference(4000, ControlType.kVelocity);
-        });
+        return startEnd(
+            () -> {
+                topPid.setReference(4800, ControlType.kVelocity);
+                bottomPid.setReference(4000, ControlType.kVelocity);
+            },
+            () -> {
+                topPid.setReference(0, ControlType.kVelocity);
+                bottomPid.setReference(0, ControlType.kVelocity);
+            }
+            );
     }
 
     public Command reverseShootNote() {
@@ -71,8 +81,18 @@ public class UpBeat extends SubsystemBase {
         });
     }
 
+    public Command ampSpeed() {
+        return runOnce(() -> {
+            topPid.setReference(1000, ControlType.kVelocity);
+            bottomPid.setReference(1200, ControlType.kVelocity);
+        });
+    }
+
     @Override
     public void periodic() {
-        Logger.recordOutput("upBeat/presentOutput", topMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/topOutPut", topMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/ottomOutpt", bottomMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
+        Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
     }
 }
