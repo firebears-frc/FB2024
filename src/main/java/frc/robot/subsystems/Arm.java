@@ -60,21 +60,36 @@ public class Arm extends SubsystemBase {
         shoulderPID.setPositionPIDWrappingMaxInput(360);
         shoulderEncoder.setPositionConversionFactor(360);
         shoulderMotorRight.burnFlash();
+
+    }
+
+    private final static class Constants{     // arm setpoints
+        private static final Rotation2d MANUAL_SPEED = Rotation2d.fromDegrees(1.0);
+
+        private static final Rotation2d pickUp = Rotation2d.fromDegrees(-3.0);
+        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(30);
+        private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
+        private static final Rotation2d stow = Rotation2d.fromDegrees(20);
     }
 
     public Rotation2d getShoulderAngle() {
         return Rotation2d.fromDegrees(shoulderEncoder.getPosition());
     }
 
-    public void setShoulderSetpoint(Rotation2d setpoint) {
-
-        
+    public void setShoulderSetpoint(Rotation2d setpoint) {        
         if (setpoint.getDegrees() < -5) {
              setpoint = Rotation2d.fromDegrees(-5);
         } else if (setpoint.getDegrees() > 130) {
              setpoint = Rotation2d.fromDegrees(130);
         }
         shoulderSetpoint = setpoint;
+    }
+
+    private boolean onTarget(){
+        if((getShoulderAngle().getDegrees()<shoulderSetpoint.getDegrees()-5)&&(getShoulderAngle().getDegrees()>shoulderSetpoint.getDegrees()+5)){
+            return true;
+        }
+        return false;
     }
 
     public Command defaultCommand(Supplier<Double> shoulderChange) {
@@ -84,18 +99,22 @@ public class Arm extends SubsystemBase {
     }
     
     public Command pickUp(){
-        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(-3.0)));
+        return positionCommand(Constants.pickUp);
     }
     public Command speakerShoot(){
-        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(30)));
+        return positionCommand(Constants.speakerShoot);
     }
 
-    public Command ampShooter(){
-        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(85)));
+    public Command ampShoot(){
+        return positionCommand(Constants.ampShoot);
     }
 
     public Command stow(){
-        return runOnce(() -> setShoulderSetpoint(Rotation2d.fromDegrees(20)));
+        return positionCommand(Constants.stow);
+    }
+
+    private Command positionCommand(Rotation2d position){
+        return run(()-> setShoulderSetpoint(position)).until(this::onTarget);
     }
 
     @Override

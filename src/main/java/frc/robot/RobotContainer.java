@@ -74,7 +74,7 @@ public class RobotContainer {
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
         xboxController.povUp().onTrue(m_arm.stow());
         xboxController.leftBumper().onTrue(Commands.sequence(
-            m_arm.ampShooter(),
+            m_arm.ampShoot(),
             Commands.waitSeconds(1.4),
             m_shooter.ampSpeed(),
             Commands.waitSeconds(.2),
