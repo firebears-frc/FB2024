@@ -23,18 +23,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
+    // Constants
     private static final class Constants {
         public static final int RIGHT_CAN_ID = 12;
         public static final int LEFT_CAN_ID = 13;
 
-        public static final SparkConfiguration CONFIG_RIGHT = new SparkConfiguration(
+        public static final SparkConfiguration RIGHT_CONFIG = new SparkConfiguration(
                 true,
                 IdleMode.kBrake,
                 CurrentLimitConfiguration.complex(30, 20, 10, 35.0),
                 StatusFrameConfiguration.absoluteEncoderLeader(),
                 ClosedLoopConfiguration.wrapping(0.0175, 0.0, 0.005, 0.0, 0, 360),
                 FeedbackConfiguration.absoluteEncoder(true, 360));
-        public static final SparkConfiguration CONFIG_LEFT = new SparkConfiguration(
+        public static final SparkConfiguration LEFT_CONFIG = new SparkConfiguration(
                 false,
                 IdleMode.kBrake,
                 CurrentLimitConfiguration.complex(30, 20, 10, 35.0),
@@ -42,56 +43,83 @@ public class Arm extends SubsystemBase {
                 FollowingConfiguration.spark(RIGHT_CAN_ID, true));
 
         public static final Rotation2d MANUAL_SPEED = Rotation2d.fromDegrees(1.0); // per loop
+
+        public static final Rotation2d PICKUP = Rotation2d.fromDegrees(-3.0);
+        public static final Rotation2d STOW = Rotation2d.fromDegrees(20.0);
+        public static final Rotation2d AMP = Rotation2d.fromDegrees(85.0);
+        public static final Rotation2d SPEAKER = Rotation2d.fromDegrees(35.0);
+
+        public static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2.0);
     }
 
-    private final CANSparkMax motorRight, motorLeft;
+    // Objects
+    private final CANSparkMax rightMotor, leftMotor;
     private final SparkAbsoluteEncoder encoder;
     private final SparkPIDController pid;
 
-    protected Rotation2d setpoint = new Rotation2d();
-    protected Rotation2d position = new Rotation2d();
+    private Rotation2d setpoint;
 
+    // Constructor
     public Arm() {
-        motorRight = new CANSparkMax(Constants.RIGHT_CAN_ID, MotorType.kBrushless);
-        motorLeft = new CANSparkMax(Constants.LEFT_CAN_ID, MotorType.kBrushless);
-        encoder = motorRight.getAbsoluteEncoder(Type.kDutyCycle);
-        pid = motorRight.getPIDController();
+        rightMotor = new CANSparkMax(Constants.RIGHT_CAN_ID, MotorType.kBrushless);
+        leftMotor = new CANSparkMax(Constants.LEFT_CAN_ID, MotorType.kBrushless);
+        encoder = rightMotor.getAbsoluteEncoder(Type.kDutyCycle);
+        pid = rightMotor.getPIDController();
 
-        Constants.CONFIG_RIGHT.apply(motorRight);
-        Constants.CONFIG_LEFT.apply(motorLeft);
+        Constants.RIGHT_CONFIG.apply(rightMotor);
+        Constants.LEFT_CONFIG.apply(leftMotor);
+
+        setpoint = getAngle();
     }
 
-    public void setAngle(Rotation2d angle) {
-        setpoint = angle;
-    }
-
-    @AutoLogOutput(key = "Shoulder/Setpoint")
-    public Rotation2d getTargetAngle() {
+    // Interface functions
+    @AutoLogOutput(key = "Arm/Target")
+    private Rotation2d getTargetAngle() {
         return setpoint;
     }
 
-    @AutoLogOutput(key = "Shoulder/Position")
-    public Rotation2d getAngle() {
-        return position;
+    @AutoLogOutput(key = "Arm/Actual")
+    private Rotation2d getAngle() {
+        return Rotation2d.fromDegrees(encoder.getPosition());
     }
 
-    @AutoLogOutput(key = "Shoulder/Error")
-    public Rotation2d getError() {
+    @AutoLogOutput(key = "Arm/Error")
+    private Rotation2d getError() {
         return getAngle().minus(getTargetAngle());
+    }
+
+    @AutoLogOutput(key = "Arm/OnTarget")
+    private boolean onTarget() {
+        return Math.abs(getError().getDegrees()) < Constants.TOLERANCE.getDegrees();
     }
 
     @Override
     public void periodic() {
-        position = Rotation2d.fromDegrees(encoder.getPosition());
-
         pid.setReference(setpoint.getDegrees(), ControlType.kPosition);
     }
 
-    public Command defaultCommand(Supplier<Double> change) {
-        return run(() -> {
-            setpoint = setpoint.plus(Constants.MANUAL_SPEED.times(change.get()));
+    // Command factories
+    private Command positionCommand(Rotation2d angle) {
+        return run(() -> setpoint = angle).until(this::onTarget);
+    }
 
-            setAngle(setpoint);
-        });
+    public Command pickupStow() {
+        return startEnd(() -> setpoint = Constants.PICKUP, () -> setpoint = Constants.STOW);
+    }
+
+    public Command stow() {
+        return positionCommand(Constants.STOW);
+    }
+
+    public Command amp() {
+        return positionCommand(Constants.AMP);
+    }
+
+    public Command speaker() {
+        return positionCommand(Constants.SPEAKER);
+    }
+
+    public Command defaultCommand(Supplier<Double> change) {
+        return run(() -> setpoint = setpoint.plus(Constants.MANUAL_SPEED.times(change.get())));
     }
 }

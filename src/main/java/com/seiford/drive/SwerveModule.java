@@ -96,11 +96,6 @@ public class SwerveModule {
         desiredState = state;
     }
 
-    public void driveVolts(double volts) {
-        drivingController.setReference(volts, ControlType.kVoltage);
-        turningController.setReference(angleOffset.getDegrees(), CANSparkMax.ControlType.kPosition);
-    }
-
     @AutoLogOutput(key = "Drive/Modules/{name}/Position")
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(

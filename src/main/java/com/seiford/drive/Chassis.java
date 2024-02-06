@@ -111,10 +111,4 @@ public class Chassis {
         }
         swerveDrive(states);
     }
-
-    public void driveVolts(double volts) {
-        for (int i = 0; i < Constants.MODULES.length; i++) {
-            modules[i].driveVolts(volts);
-        }
-    }
 }

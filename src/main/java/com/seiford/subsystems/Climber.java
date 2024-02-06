@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.seiford.util.spark.ClosedLoopConfiguration;
 import com.seiford.util.spark.CurrentLimitConfiguration;
 import com.seiford.util.spark.FeedbackConfiguration;
+import com.seiford.util.spark.FollowingConfiguration;
 import com.seiford.util.spark.SparkConfiguration;
 import com.seiford.util.spark.StatusFrameConfiguration;
 
@@ -14,68 +15,67 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
+    // Constants
     private static final class Constants {
-        public static final int RIGHT_MOTOR_CAN_ID = 14;
-        public static final int LEFT_MOTOR_CAN_ID = 15;
+        public static final int RIGHT_CAN_ID = 14;
+        public static final int LEFT_CAN_ID = 15;
 
-        public static final SparkConfiguration CONFIG = new SparkConfiguration(
+        public static final SparkConfiguration RIGHT_CONFIG = new SparkConfiguration(
                 false,
-                IdleMode.kCoast,
+                IdleMode.kBrake,
+                CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
+                StatusFrameConfiguration.leader(),
+                ClosedLoopConfiguration.simple(1.0, 0.0, 0.0, 0.0),
+                FeedbackConfiguration.builtInEncoder(1));
+        public static final SparkConfiguration LEFT_CONFIG = new SparkConfiguration(
+                false,
+                IdleMode.kBrake,
                 CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
                 StatusFrameConfiguration.normal(),
-                ClosedLoopConfiguration.simple(1.0, 0.0, 0.0, 0.0), // TODO!
-                FeedbackConfiguration.builtInEncoder(1));
+                FollowingConfiguration.spark(RIGHT_CAN_ID, true));
 
         public static final double CLIMB_SPEED = 0.25;
         public static final double REVERSE_SPEED = -0.25;
     }
 
-    private enum State {
-        CLIMB,
-        REVERSE,
-        STOP
-    }
+    // Objects
+    private final CANSparkMax rightMotor, leftMotor;
 
-    private final CANSparkMax motorLeft, motorRight;
+    private double setpoint;
 
-    @AutoLogOutput(key = "Glissando/State")
-    private State state = State.STOP;
-    @AutoLogOutput(key = "Glissando/Speed")
-    private double speed;
-
+    // Constructor
     public Climber() {
-        motorLeft = new CANSparkMax(Constants.LEFT_MOTOR_CAN_ID, MotorType.kBrushless);
-        motorRight = new CANSparkMax(Constants.RIGHT_MOTOR_CAN_ID, MotorType.kBrushless);
+        rightMotor = new CANSparkMax(Constants.RIGHT_CAN_ID, MotorType.kBrushless);
+        leftMotor = new CANSparkMax(Constants.LEFT_CAN_ID, MotorType.kBrushless);
 
-        Constants.CONFIG.apply(motorLeft, motorRight);
+        Constants.RIGHT_CONFIG.apply(rightMotor);
+        Constants.LEFT_CONFIG.apply(leftMotor);
 
-        motorLeft.burnFlash();
-        motorRight.burnFlash();
+        rightMotor.burnFlash();
+        leftMotor.burnFlash();
     }
 
-    public Command climb() {
-        return runOnce(() -> state = State.CLIMB);
-    }
-
-    public Command reverse() {
-        return runOnce(() -> state = State.REVERSE);
-    }
-
-    public Command stop() {
-        return runOnce(() -> state = State.STOP);
+    // Interface functions
+    @AutoLogOutput(key = "Climber/Speed")
+    private double getTargetSpeed() {
+        return setpoint;
     }
 
     @Override
     public void periodic() {
-        // Figure out what speed we should be running
-        speed = switch (state) {
-            case CLIMB -> Constants.CLIMB_SPEED;
-            case REVERSE -> Constants.REVERSE_SPEED;
-            case STOP -> 0;
-        };
+        leftMotor.set(setpoint);
+    }
 
-        // Update the position controller
-        motorLeft.set(speed);
-        motorRight.set(speed);
+    // Command factories
+    public Command climb() {
+        return runOnce(() -> setpoint = Constants.CLIMB_SPEED);
+    }
+
+    public Command reverse() {
+        return runOnce(() -> setpoint = Constants.REVERSE_SPEED);
+    }
+
+    public Command stop() {
+        return runOnce(() -> setpoint = 0.0);
     }
 }

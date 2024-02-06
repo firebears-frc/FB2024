@@ -1,6 +1,5 @@
 package com.seiford;
 
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -19,17 +18,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class RobotContainer {
+    // Constants
     private static final class Constants {
         public static final int JOYSTICK_1_PORT = 0;
         public static final int JOYSTICK_2_PORT = 1;
         public static final int CONTROLLER_PORT = 2;
 
         public static final double JOYSTICK_DEADBAND = 0.05;
+        public static final double GAMEPAD_DEADBAND = 0.2;
     }
 
+    // Objects
     private final Drive bass;
     private final Intake downbeat;
     private final Shooter upbeat;
@@ -41,26 +42,52 @@ public class RobotContainer {
     private final CommandXboxController controller;
     private final LoggedDashboardChooser<Command> autoChooser;
 
+    // Constructor
     public RobotContainer() {
+        // Create subsystems
         bass = new Drive();
         downbeat = new Intake();
         upbeat = new Shooter();
         glissando = new Climber();
         arm = new Arm();
 
+        // Create control interfaces
         one = new CommandJoystick(Constants.JOYSTICK_1_PORT);
         two = new CommandJoystick(Constants.JOYSTICK_2_PORT);
         controller = new CommandXboxController(Constants.CONTROLLER_PORT);
 
-        configureAutoCommands();
-        autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
-
-        configureBindings();
-    }
-
-    private void configureAutoCommands() {
+        // Set up for autos
         NamedCommands.registerCommands(Map.of(
                 "TODO", Commands.none()));
+        autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
+
+        // Set up default commands
+        bass.setDefaultCommand(bass.defaultCommand(this::getChassisSpeeds, false));
+        arm.setDefaultCommand(
+                arm.defaultCommand(() -> MathUtil.applyDeadband(controller.getLeftY(), Constants.GAMEPAD_DEADBAND)));
+
+        // Set up joystick one bindings
+        one.trigger().toggleOnTrue(bass.turtle());
+        one.button(2).toggleOnTrue(bass.defaultCommand(this::getChassisSpeeds, true));
+
+        // Set up joystick two bindings
+        two.trigger().onTrue(bass.zeroHeading());
+
+        // Set up controller bindings
+        controller.rightTrigger().onTrue(
+                Commands.sequence(
+                        arm.speaker(),
+                        upbeat.speaker()))
+                .onFalse(shootStopAndStow());
+        controller.rightBumper().toggleOnTrue(Commands.parallel(arm.pickupStow(), downbeat.intakeStop()));
+        controller.leftTrigger().onTrue(
+                Commands.sequence(
+                        arm.amp(),
+                        upbeat.amp()))
+                .onFalse(shootStopAndStow());
+        controller.leftBumper().onTrue(downbeat.eject()).onFalse(downbeat.stop());
+        controller.povUp().onTrue(glissando.climb()).onFalse(glissando.stop());
+        controller.povDown().onTrue(glissando.reverse()).onFalse(glissando.stop());
     }
 
     private ChassisSpeeds getChassisSpeeds() {
@@ -70,39 +97,17 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(two.getX(), Constants.JOYSTICK_DEADBAND));
     }
 
-    private void configureBindings() {
-        bass.setDefaultCommand(bass.defaultCommand(this::getChassisSpeeds, false));
-
-        one.trigger().toggleOnTrue(bass.turtle());
-        one.button(2).toggleOnTrue(bass.defaultCommand(this::getChassisSpeeds, true));
-
-        two.trigger().onTrue(bass.zeroHeading());
-
-        controller.leftTrigger().onTrue(downbeat.intake()).onFalse(downbeat.stop());
-        controller.leftBumper().onTrue(downbeat.eject()).onFalse(downbeat.stop());
-        controller.a().onTrue(upbeat.shoot()).onFalse(upbeat.stop());
-        controller.x().onTrue(upbeat.eject()).onFalse(upbeat.stop());
-        controller.povUp().onTrue(glissando.climb()).onFalse(glissando.stop());
-        controller.povDown().onTrue(glissando.reverse()).onFalse(glissando.stop());
-        arm.setDefaultCommand(arm.defaultCommand(controller::getLeftY));
-
-        var routine = new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null, null, null,
-                (state) -> Logger.recordOutput("SysIdTestState", state.toString())
-            ),
-            new SysIdRoutine.Mechanism(
-                (voltage) -> bass.driveVolts(voltage.baseUnitMagnitude()),
-                null,
-                bass));
-
-        one.button(4).onTrue(routine.quasistatic(SysIdRoutine.Direction.kForward));
-        one.button(9).onTrue(routine.quasistatic(SysIdRoutine.Direction.kReverse));
-        one.button(5).onTrue(routine.dynamic(SysIdRoutine.Direction.kForward));
-        one.button(8).onTrue(routine.dynamic(SysIdRoutine.Direction.kReverse));
-    }
-
+    // Command factories
     public Command getAutonomousCommand() {
         return autoChooser.get();
+    }
+
+    public Command shootStopAndStow() {
+        return Commands.sequence(
+                downbeat.intake(),
+                Commands.waitSeconds(0.5),
+                upbeat.stop(),
+                downbeat.stop(),
+                arm.stow());
     }
 }

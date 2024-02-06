@@ -1,8 +1,6 @@
 package com.seiford.subsystems;
 
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -20,83 +18,107 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
+    // Constants
     private static final class Constants {
-        public static final int TOP_MOTOR_CAN_ID = 10;
-        public static final int BOTTOM_MOTOR_CAN_ID = 11;
+        public static final int TOP_CAN_ID = 10;
+        public static final int BOTTOM_CAN_ID = 11;
 
         public static final SparkConfiguration TOP_CONFIG = new SparkConfiguration(
                 false,
                 IdleMode.kCoast,
                 CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
                 StatusFrameConfiguration.leader(),
-                ClosedLoopConfiguration.simple(3.0, 0.0, 0.0, 0.0), // TODO!
+                ClosedLoopConfiguration.outputConstraints(0.0003, 0.0000001, 0.0, 0.0001875, 0.0, 1.0),
                 FeedbackConfiguration.builtInEncoder(1));
         public static final SparkConfiguration BOTTOM_CONFIG = new SparkConfiguration(
                 false,
                 IdleMode.kCoast,
                 CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
                 StatusFrameConfiguration.normal(),
-                FollowingConfiguration.spark(TOP_MOTOR_CAN_ID, false));
+                FollowingConfiguration.spark(TOP_CAN_ID, false));
 
-        public static final double SHOOT_SPEED = 5000 * 60; // rotations per second
-        public static final double EJECT_SPEED = -2500 * 60; // rotations per second
+        public static final double SPEAKER_SPEED = 5000; // rotations per minute
+        public static final double AMP_SPEED = 1000; // rotations per minute
+        public static final double EJECT_SPEED = -1000; // rotations per minute
+
+        public static final double TOLERANCE = 100; // rotations per minute
     }
 
-    private enum State {
-        SHOOT,
-        EJECT,
-        STOP
-    }
-
-    private final CANSparkMax motorTop, motorBottom;
-    private final RelativeEncoder encoderTop, encoderBottom;
+    // Objects
+    private final CANSparkMax topMotor, bottomMotor;
+    private final RelativeEncoder topEncoder, bottomEncoder;
     private final SparkPIDController pid;
 
-    @AutoLogOutput(key = "Upbeat/State")
-    private State state = State.STOP;
-    @AutoLogOutput(key = "Upbeat/Setpoint")
-    private double speed;
+    private double setpoint;
 
+    // Constructor
     public Shooter() {
-        motorTop = new CANSparkMax(Constants.TOP_MOTOR_CAN_ID, MotorType.kBrushless);
-        motorBottom = new CANSparkMax(Constants.BOTTOM_MOTOR_CAN_ID, MotorType.kBrushless);
-        encoderTop = motorTop.getEncoder();
-        encoderBottom = motorBottom.getEncoder();
-        pid = motorTop.getPIDController();
+        topMotor = new CANSparkMax(Constants.TOP_CAN_ID, MotorType.kBrushless);
+        bottomMotor = new CANSparkMax(Constants.BOTTOM_CAN_ID, MotorType.kBrushless);
+        topEncoder = topMotor.getEncoder();
+        bottomEncoder = bottomMotor.getEncoder();
+        pid = topMotor.getPIDController();
 
-        Constants.TOP_CONFIG.apply(motorTop);
-        Constants.BOTTOM_CONFIG.apply(motorBottom);
+        Constants.TOP_CONFIG.apply(topMotor);
+        Constants.BOTTOM_CONFIG.apply(bottomMotor);
 
-        motorTop.burnFlash();
-        motorBottom.burnFlash();
+        topMotor.burnFlash();
+        bottomMotor.burnFlash();
     }
 
-    public Command shoot() {
-        return runOnce(() -> state = State.SHOOT);
+    // Interface functions
+    @AutoLogOutput(key = "Shooter/Setpoint")
+    private double getTargetVelocity() {
+        return setpoint;
     }
 
-    public Command eject() {
-        return runOnce(() -> state = State.EJECT);
+    @AutoLogOutput(key = "Shooter/TopVelocity")
+    private double getTopVelocity() {
+        return topEncoder.getVelocity();
     }
 
-    public Command stop() {
-        return runOnce(() -> state = State.STOP);
+    @AutoLogOutput(key = "Shooter/BottomVelocity")
+    private double getBottomVelocity() {
+        return bottomEncoder.getVelocity();
+    }
+
+    @AutoLogOutput(key = "Shooter/Velocity")
+    private double getVelocity() {
+        return (getTopVelocity() + getBottomVelocity()) / 2;
+    }
+
+    @AutoLogOutput(key = "Shooter/Error")
+    private double getError() {
+        return getVelocity() - getTargetVelocity();
+    }
+
+    @AutoLogOutput(key = "Shooter/OnTarget")
+    private boolean onTarget() {
+        return Math.abs(getError()) < Constants.TOLERANCE;
     }
 
     @Override
     public void periodic() {
-        // Figure out what speed we should be running
-        speed = switch (state) {
-            case SHOOT -> Constants.SHOOT_SPEED;
-            case EJECT -> Constants.EJECT_SPEED;
-            case STOP -> 0;
-        };
+        pid.setReference(setpoint, ControlType.kVelocity);
+    }
 
-        // Log actual velocities
-        Logger.recordOutput("Upbeat/TopSpeed", encoderTop.getVelocity());
-        Logger.recordOutput("Upbeat/BottomSpeed", encoderBottom.getVelocity());
+    private Command speedCommand(double speed) {
+        return run(() -> setpoint = speed).until(this::onTarget);
+    }
 
-        // Update the position controller
-        pid.setReference(speed, ControlType.kVelocity);
+    public Command speaker() {
+        return speedCommand(Constants.SPEAKER_SPEED);
+    }
+
+    public Command amp() {
+        return speedCommand(Constants.AMP_SPEED);
+    }
+
+    public Command eject() {
+        return speedCommand(Constants.EJECT_SPEED);
+    }
+
+    public Command stop() {
+        return runOnce(() -> setpoint = 0.0);
     }
 }
