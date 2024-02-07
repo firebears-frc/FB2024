@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 1.35,
-      "y": 4.95
+      "y": 5.05
     },
-    "rotation": -30.0
+    "rotation": -2.260692178626428e-30
   },
   "command": {
     "type": "sequential",
@@ -33,5 +33,5 @@
     }
   },
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

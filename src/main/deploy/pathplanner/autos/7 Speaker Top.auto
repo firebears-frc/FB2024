@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 1.35,
-      "y": 4.95
+      "y": 5.05
     },
-    "rotation": -30.0
+    "rotation": -2.260692178626428e-30
   },
   "command": {
     "type": "sequential",
@@ -54,14 +54,20 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "armHigh"
+            "pathName": "Top 8"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top 9"
           }
         }
       ]
     }
   },
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

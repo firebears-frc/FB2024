@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.45,
-      "y": 3.45
+      "x": 1.5000000000000002,
+      "y": 3.4
     },
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -14,36 +14,48 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Far 1"
+            "pathName": "Bottom 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Far 2"
+            "pathName": "Bottom 2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Far 3"
+            "pathName": "Bottom 3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Far 4"
+            "pathName": "Bottom 4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Far 5"
+            "pathName": "Bottom 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom 6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom 7"
           }
         }
       ]
     }
   },
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }
