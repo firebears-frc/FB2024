@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.ResourceBundle.Control;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -18,7 +19,8 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController topPid;
     private CANSparkMax bottomMotor;
     private SparkPIDController bottomPid;
-    private double setPoint;
+    @AutoLogOutput(key = "upBeat/setPoint")
+    private double setPoint = 0;
 
 
     public UpBeat() {
@@ -53,8 +55,6 @@ public class UpBeat extends SubsystemBase {
         bottomPid.setIZone(100);
         bottomPid.setOutputRange(0.0, 1.0);
         bottomMotor.burnFlash();
-
-        setPoint = 0;
     }
 
     private final static class Constants{
@@ -64,10 +64,12 @@ public class UpBeat extends SubsystemBase {
         private static final double amp = 1000.00;
     }
 
+    @AutoLogOutput(key = "upBeat/speed")
     private double getSpeed() {
         return bottomMotor.getEncoder().getVelocity();
     }
 
+    @AutoLogOutput(key = "upBeat/error")
     private double getError(){
         return setPoint-getSpeed();
     }
@@ -118,7 +120,5 @@ public class UpBeat extends SubsystemBase {
         Logger.recordOutput("upBeat/ottomOutpt", bottomMotor.getAppliedOutput());
         Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
         Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
-        Logger.recordOutput("upBeat/setpoint", setPoint);
-        Logger.recordOutput("upBeat/error", getError());
     }
 }
