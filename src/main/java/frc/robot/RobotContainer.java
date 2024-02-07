@@ -70,14 +70,15 @@ public class RobotContainer {
         xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
-        xboxController.b().onTrue(m_arm.pickUp());
+        xboxController.b().onTrue(m_arm.pickUp()); 
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
         xboxController.povUp().onTrue(m_arm.stow());
-        xboxController.leftBumper().onTrue(Commands.sequence(
+        xboxController.povDown().onTrue(m_arm.ampShoot());
+        
+        xboxController.leftTrigger().onTrue(Commands.sequence(
             m_arm.ampShoot(),
-            Commands.waitSeconds(1.4),
-            m_shooter.ampSpeed(),
-            Commands.waitSeconds(.2),
+            m_shooter.ampSpeed()//no run
+        )).onFalse(Commands.sequence(  
             m_intake.intakeNote(),
             Commands.waitSeconds(1),
             m_shooter.pauseUpBeat(),
@@ -85,6 +86,7 @@ public class RobotContainer {
             m_arm.pickUp()
         ));
 
+    
         m_arm.setDefaultCommand(
             m_arm.defaultCommand(
                     () -> MathUtil.applyDeadband(
