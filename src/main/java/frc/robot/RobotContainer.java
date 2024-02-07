@@ -44,10 +44,15 @@ public class RobotContainer {
 
     private void configureAutoCommands(){
         NamedCommands.registerCommands(Map.of(
-            "armHigh", Commands.print("armHigh"),
-            "armLow", Commands.print("armLow"),
-            "shoot", m_shooter.shootNote(),
-            "pickUp", m_intake.intakeNote()));
+            "armHigh", m_arm.speakerShoot(),
+            "armLow", m_arm.pickUp(),
+            "pickUp", m_intake.intakeNote(),
+            "shoot", Commands.sequence(
+                m_shooter.shootNote(),
+                Commands.waitSeconds(1.4),
+                m_intake.intakeNote()
+            )
+            ));
     }
 
     public RobotContainer() {
