@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase.ControlType;
@@ -26,6 +27,7 @@ public class Arm extends SubsystemBase {
     private CANSparkMax shoulderMotorLeft;
     private static SparkAbsoluteEncoder shoulderEncoder;
     private SparkPIDController shoulderPID;
+    @AutoLogOutput(key = "arm/setPoint")
     private Rotation2d shoulderSetpoint = new Rotation2d();
 
     public Arm() {
@@ -71,11 +73,11 @@ public class Arm extends SubsystemBase {
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
     }
-
+    @AutoLogOutput(key = "arm/Angle")
     public Rotation2d getShoulderAngle() {
         return Rotation2d.fromDegrees(shoulderEncoder.getPosition());
     }
-
+    
     public void setShoulderSetpoint(Rotation2d setpoint) {        
         if (setpoint.getDegrees() < -5) {
              setpoint = Rotation2d.fromDegrees(-5);
@@ -84,12 +86,15 @@ public class Arm extends SubsystemBase {
         }
         shoulderSetpoint = setpoint;
     }
+    @AutoLogOutput(key = "arm/error")
+    private Rotation2d getError(){
+        return getShoulderAngle().minus(shoulderSetpoint);
+    }
 
+    @AutoLogOutput(key = "arm/onTarget")
     private boolean onTarget(){
-        if((getShoulderAngle().getDegrees()<shoulderSetpoint.getDegrees()-5)&&(getShoulderAngle().getDegrees()>shoulderSetpoint.getDegrees()+5)){
-            return true;
-        }
-        return false;
+      return Math.abs(getError().getDegrees()) < 2;
+
     }
 
     public Command defaultCommand(Supplier<Double> shoulderChange) {
@@ -119,7 +124,6 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("arm/Setpoint", shoulderSetpoint.getDegrees());
         Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
         Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());    
 

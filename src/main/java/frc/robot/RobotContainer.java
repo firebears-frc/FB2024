@@ -77,7 +77,7 @@ public class RobotContainer {
         
         xboxController.leftTrigger().onTrue(Commands.sequence(
             m_arm.ampShoot(),
-            m_shooter.ampSpeed()
+            m_shooter.ampSpeed()//no run
         )).onFalse(Commands.sequence(  
             m_intake.intakeNote(),
             Commands.waitSeconds(1),
