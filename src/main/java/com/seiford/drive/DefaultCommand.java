@@ -17,7 +17,6 @@ public class DefaultCommand extends Command {
     private final Supplier<ChassisSpeeds> commandSupplier;
     private final Consumer<ChassisSpeeds> commandConsumer;
     private final boolean slowMode;
-    private final RateLimiter rateLimiter = new RateLimiter();
 
     public DefaultCommand(Supplier<ChassisSpeeds> commandSupplier, Consumer<ChassisSpeeds> commandConsumer,
             boolean slowMode, Subsystem requirement) {
@@ -31,7 +30,6 @@ public class DefaultCommand extends Command {
     @Override
     public void execute() {
         ChassisSpeeds command = commandSupplier.get();
-        command = rateLimiter.calculate(command);
 
         if (slowMode) {
             command.vxMetersPerSecond *= Constants.SLOW_TELE_VELOCITY;

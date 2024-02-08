@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drive extends SubsystemBase {
     private static final class Constants {
-        public static final double MAX_AUTO_VELOCITY = 4.5; // meters per second
+        public static final double MAX_AUTO_VELOCITY = 7.5; // meters per second
 
         public static final double XY_CONTROLLER_P = 5.0;
         public static final double R_CONTROLLER_P = 5.0;

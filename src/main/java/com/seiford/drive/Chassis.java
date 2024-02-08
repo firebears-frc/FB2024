@@ -14,7 +14,7 @@ import edu.wpi.first.math.util.Units;
 public class Chassis {
     public static final double ROBOT_WIDTH = Units.inchesToMeters(22);
     public static final double ROBOT_LENGTH = Units.inchesToMeters(28);
-    public static final double MAX_VELOCITY = 4.8; // meters per second
+    public static final double MAX_VELOCITY = 8.0; // meters per second
 
     // Wheels are offset 1.75" into the modules
     private static final double WHEEL_OFFSET = Units.inchesToMeters(1.75);

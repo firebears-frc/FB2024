@@ -6,7 +6,6 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -22,22 +21,25 @@ import com.seiford.util.spark.StatusFrameConfiguration;
 
 public class SwerveModule {
     private static final class Constants {
-        public static final double NEO_FREE_SPEED = 5676.0 / 60; // rotations per second
+        public static final double NEO_VORTEX_FREE_SPEED = 6784.0 / 60; // rotations per second
 
         private static class Driving {
             private static final double WHEEL_DIAMETER = 0.0762; // meters
             private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI; // meters
-            // 12T, 13T, or 14T gearing
-            private static final int PINION_TEETH = 14;
-            private static final double GEAR_RATIO = 45 * 22 / (PINION_TEETH * 15);
-            private static final double FREE_SPEED = NEO_FREE_SPEED * WHEEL_CIRCUMFERENCE / GEAR_RATIO; // meters per
-                                                                                                        // second
+            // 12T, 13T, 14T, 15T, or 16T gearing
+            private static final int PINION_TEETH = 16;
+            // 22T, 21T, 20T, or 19T gearing
+            private static final int SPUR_TEETH = 19;
+            private static final double GEAR_RATIO = 45 * SPUR_TEETH / (PINION_TEETH * 15);
+            private static final double FREE_SPEED = NEO_VORTEX_FREE_SPEED * WHEEL_CIRCUMFERENCE / GEAR_RATIO; // meters
+                                                                                                               // per
+                                                                                                               // second
             public static final double POSITION_FACTOR = WHEEL_CIRCUMFERENCE / GEAR_RATIO; // meters
 
             public static final SparkConfiguration CONFIG = new SparkConfiguration(
                     false,
                     IdleMode.kBrake,
-                    CurrentLimitConfiguration.complex(50, 20, 10, 60.0),
+                    CurrentLimitConfiguration.complex(80, 20, 10, 85.0),
                     StatusFrameConfiguration.normal(),
                     ClosedLoopConfiguration.simple(0.04, 0.0, 0.0, 1.0 / FREE_SPEED),
                     FeedbackConfiguration.builtInEncoder(POSITION_FACTOR));
