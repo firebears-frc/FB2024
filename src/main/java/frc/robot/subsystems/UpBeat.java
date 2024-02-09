@@ -24,7 +24,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.011072, 0.011947, 0.0017238);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.0094122, 0.00226330450273642352463680255237, 0.0020114);
 
 
     public UpBeat() {
@@ -44,18 +44,18 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
 
-        topPid.setP(0.8598E-07);
+        topPid.setP(1.4395E-06);
         topPid.setI(0.0);
         topPid.setD(0.0);
-        topPid.setFF(0.0001875);
+        topPid.setFF(0.0);
         topPid.setIZone(100);
         topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
-        bottomPid.setP(0.8598E-07);
+        bottomPid.setP(1.4395E-06);
         bottomPid.setI(0.0);
         bottomPid.setD(0.0);
-        bottomPid.setFF(0.0001875);
+        bottomPid.setFF(0.0);
         bottomPid.setIZone(100);
         bottomPid.setOutputRange(0.0, 1.0);
         bottomMotor.burnFlash();
@@ -107,7 +107,7 @@ public class UpBeat extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double feedforwardVolts = feedforward.calculate(getSpeed(), setPoint, LoggedRobot.defaultPeriodSecs);
+        double feedforwardVolts = feedforward.calculate(setPoint);
         topPid.setReference(setPoint, ControlType.kVelocity, 0, feedforwardVolts);
         bottomPid.setReference(setPoint, ControlType.kVelocity, 0, feedforwardVolts);
 
