@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -7,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.ResourceBundle.Control;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -22,6 +24,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.25044, 0.00039235);
 
 
     public UpBeat() {
@@ -109,11 +112,13 @@ public class UpBeat extends SubsystemBase {
 
     @Override
     public void periodic() {
-        topPid.setReference(setPoint, ControlType.kVelocity);
-        bottomPid.setReference(setPoint, ControlType.kVelocity);
+        double feedforwardVolts = feedforward.calculate(getSpeed(), setPoint, LoggedRobot.defaultPeriodSecs);
+        topPid.setReference(setPoint, ControlType.kVelocity, 0, feedforwardVolts);
+        bottomPid.setReference(setPoint, ControlType.kVelocity, 0, feedforwardVolts);
 
-        Logger.recordOutput("upBeat/topOutPut", topMotor.getAppliedOutput());
-        Logger.recordOutput("upBeat/ottomOutpt", bottomMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/feedForward", feedforwardVolts);
+        Logger.recordOutput("upBeat/topOutput", topMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/bottomOutput", bottomMotor.getAppliedOutput());
         Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
         Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
     }
