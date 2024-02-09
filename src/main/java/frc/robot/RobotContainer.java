@@ -65,26 +65,6 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-
-                // Create the SysId routine
-var sysIdRoutine = new SysIdRoutine(
-  new SysIdRoutine.Config(
-    null, null, null, // Use default config
-    (state) -> Logger.recordOutput("SysIdTestState", state.toString())
-  ),
-  new SysIdRoutine.Mechanism(
-    (voltage) -> m_shooter.runVolts(voltage.baseUnitMagnitude()),
-    null, // No log consumer, since data is recorded by AdvantageKit
-    m_shooter
-  )
-);
-
-two.button(5).onTrue(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward));
-two.button(10).onTrue(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse));
-two.button(6).onTrue(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward));
-two.button(9).onTrue(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
-
-
         one.trigger().toggleOnTrue(new StartEndCommand(m_robotDrive::setX, () -> {
         }, m_robotDrive));
         two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));

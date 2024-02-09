@@ -117,9 +117,4 @@ public class UpBeat extends SubsystemBase {
         Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
         Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
     }
-
-    public void runVolts(double baseUnitMagnitude) {
-        topMotor.setVoltage(baseUnitMagnitude);
-        bottomMotor.setVoltage(baseUnitMagnitude);
-    }
 }
