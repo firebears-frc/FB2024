@@ -24,7 +24,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.25044, 0.0022092, 0.00039235);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.011072, 0.011947, 0.0017238);
 
 
     public UpBeat() {
@@ -44,7 +44,7 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
 
-        topPid.setP(3.0156E-07);
+        topPid.setP(0.8598E-07);
         topPid.setI(0.0);
         topPid.setD(0.0);
         topPid.setFF(0.0001875);
@@ -52,7 +52,7 @@ public class UpBeat extends SubsystemBase {
         topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
-        bottomPid.setP(3.0156E-07);
+        bottomPid.setP(0.8598E-07);
         bottomPid.setI(0.0);
         bottomPid.setD(0.0);
         bottomPid.setFF(0.0001875);
@@ -89,13 +89,8 @@ public class UpBeat extends SubsystemBase {
 
     public Command shootNote() {
         return startEnd(
-            () -> {
-                speedCommand(Constants.shoot);
-            },
-            () -> {
-                speedCommand(Constants.stop);
-            }
-            );
+            () -> setPoint = Constants.shoot,
+            () -> setPoint = Constants.stop);
     }
 
     public Command reverseShootNote() {
