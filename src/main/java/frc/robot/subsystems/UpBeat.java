@@ -82,7 +82,7 @@ public class UpBeat extends SubsystemBase {
     }
 
     private void setSpeed(){
-        topPid.setReference((setPoint*1.2), ControlType.kVelocity);
+        topPid.setReference(setPoint, ControlType.kVelocity);
         bottomPid.setReference(setPoint, ControlType.kVelocity);
     }
 
