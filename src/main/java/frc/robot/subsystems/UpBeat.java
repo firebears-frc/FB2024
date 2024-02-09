@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.ResourceBundle.Control;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -18,6 +19,8 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController topPid;
     private CANSparkMax bottomMotor;
     private SparkPIDController bottomPid;
+    @AutoLogOutput(key = "upBeat/setPoint")
+    private double setPoint = 0;
 
 
     public UpBeat() {
@@ -54,38 +57,61 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.burnFlash();
     }
 
+    private final static class Constants{
+        private static final double stop = 0.00;
+        private static final double reverse = -1000.00;
+        private static final double shoot = 4000.00;
+        private static final double amp = 1000.00;
+    }
+
+    @AutoLogOutput(key = "upBeat/speed")
+    private double getSpeed() {
+        return bottomMotor.getEncoder().getVelocity();
+    }
+
+    @AutoLogOutput(key = "upBeat/error")
+    private double getError(){
+        return setPoint-getSpeed();
+    }
+
+    private boolean atSpeed(){
+        if(getError()<-100 && getError()>100){
+        return true;
+        }
+        return false;
+    }
+
+    private void setSpeed(){
+        topPid.setReference((setPoint*1.2), ControlType.kVelocity);
+        bottomPid.setReference(setPoint, ControlType.kVelocity);
+    }
+
+    private Command speedCommand(double speed){
+        setPoint = speed;
+        return run (()-> setSpeed()).until(this::atSpeed); 
+    }
+
     public Command shootNote() {
         return startEnd(
             () -> {
-                topPid.setReference(4800, ControlType.kVelocity);
-                bottomPid.setReference(4000, ControlType.kVelocity);
+                speedCommand(Constants.shoot);
             },
             () -> {
-                topPid.setReference(0, ControlType.kVelocity);
-                bottomPid.setReference(0, ControlType.kVelocity);
+                speedCommand(Constants.stop);
             }
             );
     }
 
     public Command reverseShootNote() {
-        return runOnce(() -> {
-            topPid.setReference(-1000, ControlType.kVelocity);
-            bottomPid.setReference(-1200, ControlType.kVelocity);
-        });
+        return speedCommand(Constants.reverse);
     }
 
     public Command pauseUpBeat() {
-        return runOnce(() -> {
-            topPid.setReference(0, ControlType.kVelocity);
-            bottomPid.setReference(0, ControlType.kVelocity);
-        });
+        return speedCommand(Constants.stop);
     }
 
     public Command ampSpeed() {
-        return runOnce(() -> {
-            topPid.setReference(1000, ControlType.kVelocity);
-            bottomPid.setReference(1200, ControlType.kVelocity);
-        });
+        return speedCommand(Constants.amp);
     }
 
     @Override
