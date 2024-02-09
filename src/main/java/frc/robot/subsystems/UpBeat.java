@@ -24,7 +24,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.25044, 0.00039235);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.25044, 0.0022092, 0.00039235);
 
 
     public UpBeat() {
