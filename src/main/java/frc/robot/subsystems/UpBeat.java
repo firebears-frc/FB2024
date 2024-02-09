@@ -80,7 +80,6 @@ public class UpBeat extends SubsystemBase {
     }
 
     private Command speedCommand(double speed){
-        setPoint = speed;
         return run (()-> setPoint = speed).until(this::atSpeed); 
     }
 
