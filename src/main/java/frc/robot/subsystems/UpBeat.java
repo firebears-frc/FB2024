@@ -74,21 +74,14 @@ public class UpBeat extends SubsystemBase {
         return setPoint-getSpeed();
     }
 
+    @AutoLogOutput(key = "upBeat/at speed")
     private boolean atSpeed(){
-        if(getError()<-100 && getError()>100){
-        return true;
-        }
-        return false;
-    }
-
-    private void setSpeed(){
-        topPid.setReference(setPoint, ControlType.kVelocity);
-        bottomPid.setReference(setPoint, ControlType.kVelocity);
+        return Math.abs(getError()) < 100;
     }
 
     private Command speedCommand(double speed){
         setPoint = speed;
-        return run (()-> setSpeed()).until(this::atSpeed); 
+        return run (()-> setPoint = speed).until(this::atSpeed); 
     }
 
     public Command shootNote() {
@@ -116,6 +109,9 @@ public class UpBeat extends SubsystemBase {
 
     @Override
     public void periodic() {
+        topPid.setReference(setPoint, ControlType.kVelocity);
+        bottomPid.setReference(setPoint, ControlType.kVelocity);
+
         Logger.recordOutput("upBeat/topOutPut", topMotor.getAppliedOutput());
         Logger.recordOutput("upBeat/ottomOutpt", bottomMotor.getAppliedOutput());
         Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
