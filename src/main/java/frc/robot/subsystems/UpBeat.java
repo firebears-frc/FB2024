@@ -41,16 +41,16 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
 
-        topPid.setP(0.0003);
-        topPid.setI(0.0000001);
+        topPid.setP(3.0156E-07);
+        topPid.setI(0.0);
         topPid.setD(0.0);
         topPid.setFF(0.0001875);
         topPid.setIZone(100);
         topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
-        bottomPid.setP(0.0003);
-        bottomPid.setI(0.0000001);
+        bottomPid.setP(3.0156E-07);
+        bottomPid.setI(0.0);
         bottomPid.setD(0.0);
         bottomPid.setFF(0.0001875);
         bottomPid.setIZone(100);
@@ -120,5 +120,6 @@ public class UpBeat extends SubsystemBase {
 
     public void runVolts(double baseUnitMagnitude) {
         topMotor.setVoltage(baseUnitMagnitude);
+        bottomMotor.setVoltage(baseUnitMagnitude);
     }
 }

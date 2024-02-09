@@ -79,10 +79,10 @@ var sysIdRoutine = new SysIdRoutine(
   )
 );
 
-one.button(5).onTrue(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward));
-one.button(10).onTrue(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse));
-one.button(6).onTrue(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward));
-one.button(9).onTrue(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
+two.button(5).onTrue(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward));
+two.button(10).onTrue(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse));
+two.button(6).onTrue(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward));
+two.button(9).onTrue(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
 
 
         one.trigger().toggleOnTrue(new StartEndCommand(m_robotDrive::setX, () -> {
