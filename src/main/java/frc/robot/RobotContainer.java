@@ -7,6 +7,7 @@ package frc.robot;
 import java.io.IOException;
 import java.sql.DriverPropertyInfo;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Bass;
@@ -63,6 +65,26 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+
+                // Create the SysId routine
+var sysIdRoutine = new SysIdRoutine(
+  new SysIdRoutine.Config(
+    null, null, null, // Use default config
+    (state) -> Logger.recordOutput("SysIdTestState", state.toString())
+  ),
+  new SysIdRoutine.Mechanism(
+    (voltage) -> m_shooter.runVolts(voltage.baseUnitMagnitude()),
+    null, // No log consumer, since data is recorded by AdvantageKit
+    m_shooter
+  )
+);
+
+one.button(5).onTrue(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward));
+one.button(10).onTrue(sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse));
+one.button(6).onTrue(sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward));
+one.button(9).onTrue(sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse));
+
+
         one.trigger().toggleOnTrue(new StartEndCommand(m_robotDrive::setX, () -> {
         }, m_robotDrive));
         two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
