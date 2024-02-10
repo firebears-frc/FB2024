@@ -230,6 +230,7 @@ public class Bass extends SubsystemBase {
         var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         setModuleStates(swerveModuleStates);
+        ChassisSpeeds.discretize(speeds, 0.02);
     }
 
     private ChassisSpeeds getRobotRelativeSpeeds() {
