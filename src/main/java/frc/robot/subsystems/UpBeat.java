@@ -60,7 +60,7 @@ public class UpBeat extends SubsystemBase {
     private final static class Constants{
         private static final double stop = 0.00;
         private static final double reverse = -1000.00;
-        private static final double shoot = 4000.00;
+        private static final double shoot = 5250.00;
         private static final double amp = 1000.00;
     }
 
