@@ -3,12 +3,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
-import java.util.ResourceBundle.Control;
 
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -24,7 +20,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.0094122, 0.00226330450273642352463680255237, 0.0020114);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.25011, 0.13256, 0.023543);
 
 
     public UpBeat() {
@@ -44,7 +40,7 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
 
-        topPid.setP(1.4395E-06);
+        topPid.setP(1.8097E-05);
         topPid.setI(0.0);
         topPid.setD(0.0);
         topPid.setFF(0.0);
@@ -52,7 +48,7 @@ public class UpBeat extends SubsystemBase {
         topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
-        bottomPid.setP(1.4395E-06);
+        bottomPid.setP(1.8097E-05);
         bottomPid.setI(0.0);
         bottomPid.setD(0.0);
         bottomPid.setFF(0.0);
