@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -227,6 +228,7 @@ public class Bass extends SubsystemBase {
     private void drive(ChassisSpeeds speeds, boolean fieldRelative) {
         if (fieldRelative)
             speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getPose().getRotation());
+        speeds = ChassisSpeeds.discretize(speeds, LoggedRobot.defaultPeriodSecs);
         var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         setModuleStates(swerveModuleStates);
