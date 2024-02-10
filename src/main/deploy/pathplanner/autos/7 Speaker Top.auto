@@ -5,7 +5,7 @@
       "x": 1.35,
       "y": 5.05
     },
-    "rotation": -2.260692178626428e-30
+    "rotation": 4.647664782861696e-30
   },
   "command": {
     "type": "sequential",
@@ -14,55 +14,55 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Close 1"
+            "pathName": "Close.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Close 2"
+            "pathName": "Close.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Close 3"
+            "pathName": "Close.3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top 4"
+            "pathName": "Center 1.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top 5"
+            "pathName": "Center 1.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top 6"
+            "pathName": "Center 2.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top 7"
+            "pathName": "Center 2.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top 8"
+            "pathName": "Center 3 (Top).1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Top 9"
+            "pathName": "Center 3 (Top).2"
           }
         }
       ]

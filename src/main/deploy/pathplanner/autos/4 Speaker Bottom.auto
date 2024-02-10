@@ -20,37 +20,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom 2"
+            "pathName": "Center 5.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom 3"
+            "pathName": "Center 5.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom 4"
+            "pathName": "Center 4.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom 5"
+            "pathName": "Center 4.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom 6"
+            "pathName": "Center 3 (Bottom).1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom 7"
+            "pathName": "Center 3 (Bottom).2"
           }
         }
       ]
