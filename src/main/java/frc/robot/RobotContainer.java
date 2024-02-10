@@ -44,13 +44,20 @@ public class RobotContainer {
 
     private void configureAutoCommands(){
         NamedCommands.registerCommands(Map.of(
-            "armHigh", m_arm.speakerShoot(),
-            "armLow", m_arm.pickUp(),
-            "pickUp", m_intake.intakeNote(),
-            "shoot", Commands.sequence(
-                m_shooter.shootNote(),
-                Commands.waitSeconds(1.4),
-                m_intake.intakeNote()
+            "armLow", Commands.sequence(
+                m_arm.pickUp(),
+                Commands.waitSeconds(.125)
+            ),
+            "stopPickUp", m_intake.pauseDownBeat(),
+            "shootSequence", Commands.sequence(
+                Commands.print("did the thing1"),
+                m_arm.speakerShoot(),
+                m_shooter.autoShoot(),
+                Commands.waitSeconds(.125),
+                m_intake.intakeNote(),
+                Commands.waitSeconds(.125),
+                m_shooter.pauseUpBeat(),
+                Commands.print("did the thing2")
             )
             ));
     }
@@ -94,7 +101,7 @@ public class RobotContainer {
         
         xboxController.leftTrigger().onTrue(Commands.sequence(
             m_arm.ampShoot(),
-            m_shooter.ampSpeed()//no run
+            m_shooter.ampSpeed()
         )).onFalse(Commands.sequence(  
             m_intake.intakeNote(),
             Commands.waitSeconds(1),

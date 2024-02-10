@@ -100,6 +100,10 @@ public class UpBeat extends SubsystemBase {
         return speedCommand(Constants.amp);
     }
 
+    public Command autoShoot() {
+        return speedCommand(Constants.shoot);
+    }
+
     @Override
     public void periodic() {
         topPid.setReference(setPoint, ControlType.kVelocity);
