@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -16,20 +17,22 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController topPid;
     private CANSparkMax bottomMotor;
     private SparkPIDController bottomPid;
+    @AutoLogOutput(key = "upBeat/setPoint")
+    private double setPoint = 0;
 
 
     public UpBeat() {
         topMotor = new CANSparkMax(10, MotorType.kBrushless);
-        topMotor.setSmartCurrentLimit(30, 20);
-        topMotor.setSecondaryCurrentLimit(40);
+        topMotor.setSmartCurrentLimit(50, 50);
+        topMotor.setSecondaryCurrentLimit(60);
         topMotor.restoreFactoryDefaults();
         topMotor.setInverted(false);
         topMotor.setIdleMode(IdleMode.kCoast);
         topPid = topMotor.getPIDController();
 
         bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
-        bottomMotor.setSmartCurrentLimit(30, 20);
-        bottomMotor.setSecondaryCurrentLimit(40);
+        bottomMotor.setSmartCurrentLimit(50, 50);
+        bottomMotor.setSecondaryCurrentLimit(60);
         bottomMotor.restoreFactoryDefaults();
         bottomMotor.setInverted(false);
         bottomMotor.setIdleMode(IdleMode.kCoast);
@@ -52,44 +55,58 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.burnFlash();
     }
 
+    private final static class Constants{
+        private static final double stop = 0.00;
+        private static final double reverse = -1000.00;
+        private static final double shoot = 5000.00;
+        private static final double amp = 1000.00;
+    }
+
+    @AutoLogOutput(key = "upBeat/speed")
+    private double getSpeed() {
+        return bottomMotor.getEncoder().getVelocity();
+    }
+
+    @AutoLogOutput(key = "upBeat/error")
+    private double getError(){
+        return setPoint-getSpeed();
+    }
+
+    @AutoLogOutput(key = "upBeat/at speed")
+    private boolean atSpeed(){
+        return Math.abs(getError()) < 100;
+    }
+
+    private Command speedCommand(double speed){
+        return run (()-> setPoint = speed).until(this::atSpeed); 
+    }
+
     public Command shootNote() {
         return startEnd(
-            () -> {
-                topPid.setReference(4800, ControlType.kVelocity);
-                bottomPid.setReference(4000, ControlType.kVelocity);
-            },
-            () -> {
-                topPid.setReference(0, ControlType.kVelocity);
-                bottomPid.setReference(0, ControlType.kVelocity);
-            }
+            () -> setPoint = Constants.shoot,
+            () -> setPoint = Constants.stop
             );
     }
 
     public Command reverseShootNote() {
-        return runOnce(() -> {
-            topPid.setReference(-1000, ControlType.kVelocity);
-            bottomPid.setReference(-1200, ControlType.kVelocity);
-        });
+        return speedCommand(Constants.reverse);
     }
 
     public Command pauseUpBeat() {
-        return runOnce(() -> {
-            topPid.setReference(0, ControlType.kVelocity);
-            bottomPid.setReference(0, ControlType.kVelocity);
-        });
+        return speedCommand(Constants.stop);
     }
 
     public Command ampSpeed() {
-        return runOnce(() -> {
-            topPid.setReference(1000, ControlType.kVelocity);
-            bottomPid.setReference(1200, ControlType.kVelocity);
-        });
+        return speedCommand(Constants.amp);
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("upBeat/topOutPut", topMotor.getAppliedOutput());
-        Logger.recordOutput("upBeat/ottomOutpt", bottomMotor.getAppliedOutput());
+        topPid.setReference(setPoint, ControlType.kVelocity);
+        bottomPid.setReference(setPoint, ControlType.kVelocity);
+
+        Logger.recordOutput("upBeat/topOutput", topMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/bottomOutput", bottomMotor.getAppliedOutput());
         Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
         Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
     }
