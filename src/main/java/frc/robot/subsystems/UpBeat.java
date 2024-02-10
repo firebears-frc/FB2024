@@ -20,7 +20,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
-    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.25011, 0.13256, 0.023543);
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.25001, 0.1326, 0.02354);
 
 
     public UpBeat() {
@@ -40,7 +40,7 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
 
-        topPid.setP(1.8097E-05);
+        topPid.setP(1.2557E-08);
         topPid.setI(0.0);
         topPid.setD(0.0);
         topPid.setFF(0.0);
@@ -48,7 +48,7 @@ public class UpBeat extends SubsystemBase {
         topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
-        bottomPid.setP(1.8097E-05);
+        bottomPid.setP(1.2557E-08);
         bottomPid.setI(0.0);
         bottomPid.setD(0.0);
         bottomPid.setFF(0.0);
