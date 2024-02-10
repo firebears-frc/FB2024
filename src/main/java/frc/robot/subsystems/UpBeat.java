@@ -23,16 +23,16 @@ public class UpBeat extends SubsystemBase {
 
     public UpBeat() {
         topMotor = new CANSparkMax(10, MotorType.kBrushless);
-        topMotor.setSmartCurrentLimit(40, 40);
-        topMotor.setSecondaryCurrentLimit(50);
+        topMotor.setSmartCurrentLimit(50, 50);
+        topMotor.setSecondaryCurrentLimit(60);
         topMotor.restoreFactoryDefaults();
         topMotor.setInverted(false);
         topMotor.setIdleMode(IdleMode.kCoast);
         topPid = topMotor.getPIDController();
 
         bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
-        bottomMotor.setSmartCurrentLimit(40, 40);
-        bottomMotor.setSecondaryCurrentLimit(50);
+        bottomMotor.setSmartCurrentLimit(50, 50);
+        bottomMotor.setSecondaryCurrentLimit(60);
         bottomMotor.restoreFactoryDefaults();
         bottomMotor.setInverted(false);
         bottomMotor.setIdleMode(IdleMode.kCoast);
@@ -105,8 +105,8 @@ public class UpBeat extends SubsystemBase {
         topPid.setReference(setPoint, ControlType.kVelocity);
         bottomPid.setReference(setPoint, ControlType.kVelocity);
 
-        Logger.recordOutput("upBeat/topOutPut", topMotor.getAppliedOutput());
-        Logger.recordOutput("upBeat/ottomOutpt", bottomMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/topOutput", topMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/bottomOutput", bottomMotor.getAppliedOutput());
         Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
         Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
     }
