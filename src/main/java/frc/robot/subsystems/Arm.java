@@ -66,8 +66,6 @@ public class Arm extends SubsystemBase {
     }
 
     private final static class Constants{     // arm setpoints
-        private static final Rotation2d MANUAL_SPEED = Rotation2d.fromDegrees(1.0);
-
         private static final Rotation2d pickUp = Rotation2d.fromDegrees(-3.0);
         private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(4.5);
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
@@ -126,7 +124,7 @@ public class Arm extends SubsystemBase {
     public void periodic() {
         Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
         Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());    
-
+        Logger.recordOutput("arm/setPoint", shoulderSetpoint.getDegrees());
         shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
     }
     
