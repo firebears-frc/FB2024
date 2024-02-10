@@ -85,12 +85,8 @@ public class UpBeat extends SubsystemBase {
 
     public Command shootNote() {
         return startEnd(
-            () -> {
-                speedCommand(Constants.shoot);
-            },
-            () -> {
-                speedCommand(Constants.stop);
-            }
+            () -> setPoint = Constants.shoot,
+            () -> setPoint = Constants.stop
             );
     }
 
