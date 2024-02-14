@@ -25,16 +25,16 @@ public class UpBeat extends SubsystemBase {
 
     public UpBeat() {
         topMotor = new CANSparkMax(10, MotorType.kBrushless);
-        topMotor.setSmartCurrentLimit(30, 20);
-        topMotor.setSecondaryCurrentLimit(40);
+        topMotor.setSmartCurrentLimit(50, 50);
+        topMotor.setSecondaryCurrentLimit(60);
         topMotor.restoreFactoryDefaults();
         topMotor.setInverted(false);
         topMotor.setIdleMode(IdleMode.kCoast);
         topPid = topMotor.getPIDController();
 
         bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
-        bottomMotor.setSmartCurrentLimit(30, 20);
-        bottomMotor.setSecondaryCurrentLimit(40);
+        bottomMotor.setSmartCurrentLimit(50, 50);
+        bottomMotor.setSecondaryCurrentLimit(60);
         bottomMotor.restoreFactoryDefaults();
         bottomMotor.setInverted(false);
         bottomMotor.setIdleMode(IdleMode.kCoast);
@@ -60,7 +60,7 @@ public class UpBeat extends SubsystemBase {
     private final static class Constants{
         private static final double stop = 0.00;
         private static final double reverse = -1000.00;
-        private static final double shoot = 5250.00;
+        private static final double shoot = 5000.00;
         private static final double amp = 1000.00;
     }
 
