@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -16,6 +18,8 @@ public class Glissando extends SubsystemBase {
     private static int scndLimit = 40;
 
     private static double climbSpeed = 0.25;
+
+    private double setPoint = 0;
 
     public Glissando() {
         climbRight = new CANSparkMax(14, MotorType.kBrushless);
@@ -36,22 +40,27 @@ public class Glissando extends SubsystemBase {
 
     public Command climb() {
         return runOnce(() -> {
-            climbRight.set(climbSpeed);
-            climbLeft.set(climbSpeed);
+            setPoint = climbSpeed;
         });
     }
 
     public Command unclimb() {
         return runOnce(() -> {
-            climbRight.set(-(climbSpeed));
-            climbLeft.set(-(climbSpeed));
+            setPoint = -(climbSpeed);
         });
     }
 
     public Command pauseClimb() {
         return runOnce(() -> {
-            climbRight.set(0);
-            climbLeft.set(0);
+            setPoint = 0;
         });
+    }
+
+    @Override
+    public void periodic(){
+        climbLeft.set(setPoint);
+        climbRight.set(setPoint);
+
+        Logger.recordOutput("Glissando/setPoint", setPoint);
     }
 }
