@@ -25,7 +25,7 @@ public class Vision extends SubsystemBase {
         photonCamera = new PhotonCamera(Constants.VisionConstants.kCameraName);
         poseEstimator = new PhotonPoseEstimator(
             AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile),
-            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_RIO,
+            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             Constants.VisionConstants.kCameraOffset);
         this.consumer = consumer;
     }
