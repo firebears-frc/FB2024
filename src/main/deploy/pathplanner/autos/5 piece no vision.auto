@@ -1,0 +1,145 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3962770782684422,
+      "y": 5.541202510976451
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5PNV1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopPickUp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5PNV2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5PNV3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopPickUp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5PNV4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5PNV5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopPickUp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5PNV6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5PNV7"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopPickUp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5PNV8"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopPickUp"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
