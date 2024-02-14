@@ -1,20 +1,22 @@
 package com.seiford.drive;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.MultiTargetPNPResult;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -31,31 +33,13 @@ public class Vision {
                 new Rotation3d());
     }
 
-    private final UsbCamera driverCamera;
     private final PhotonCamera visionSystem;
     private final PhotonPoseEstimator poseEstimator;
     private final BiConsumer<Pose2d, Double> consumer;
 
-    private enum Status {
-        NOT_CONNECTED,
-        NO_TARGETS,
-        NO_POSE_ESTIMATOR,
-        NO_POSE_RESULT,
-        NO_CONSUMER,
-        POSE_FOUND
-    }
-
-    @AutoLogOutput(key = "Drive/Localization/Vision/Status")
-    private Status status;
-
     public Vision(BiConsumer<Pose2d, Double> consumer) {
-        driverCamera = CameraServer.startAutomaticCapture();
-        driverCamera.setResolution(320, 240);
-
         visionSystem = new PhotonCamera(Constants.NAME);
         this.consumer = consumer;
-
-        status = Status.NOT_CONNECTED;
 
         AprilTagFieldLayout fieldLayout = null;
         try {
@@ -75,35 +59,57 @@ public class Vision {
         poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
-    private Status getPhotonUpdate() {
-        boolean connected = visionSystem.isConnected();
-        if (!connected)
-            return Status.NOT_CONNECTED;
+    public void periodic() {
+        Logger.recordOutput("Drive/Localization/Vision/IsConnected", visionSystem.isConnected());
+        if (!visionSystem.isConnected())
+            return;
 
         PhotonPipelineResult pipelineResult = visionSystem.getLatestResult();
+        Logger.recordOutput("Drive/Localization/Vision/HasTargets", pipelineResult.hasTargets());
         if (!pipelineResult.hasTargets())
-            return Status.NO_TARGETS;
+            return;
+
+        MultiTargetPNPResult multiResult = pipelineResult.getMultiTagResult();
+        Logger.recordOutput("Drive/Localization/Vision/MultiTargetPresent", multiResult.estimatedPose.isPresent);
+        Logger.recordOutput("Drive/Localization/Vision/MultiTargetCount", multiResult.fiducialIDsUsed.size());
+        Logger.recordOutput("Drive/Localization/Vision/MultiTargets",
+                multiResult.fiducialIDsUsed.stream().mapToInt(target -> target).toArray());
+
+        Logger.recordOutput("Drive/Localization/Vision/TargetCount", pipelineResult.targets.size());
+        Logger.recordOutput("Drive/Localization/Vision/Targets",
+                pipelineResult.targets.stream().mapToInt(target -> target.getFiducialId()).toArray());
+
+        List<PhotonTrackedTarget> badTargets = new ArrayList<>();
+        for (PhotonTrackedTarget target : pipelineResult.targets) {
+            if (target.getPoseAmbiguity() > 0.2)
+                badTargets.add(target);
+        }
+        pipelineResult.targets.removeAll(badTargets);
+        Logger.recordOutput("Drive/Localization/Vision/BadTargetCount", badTargets.size());
+        Logger.recordOutput("Drive/Localization/Vision/BadTargets",
+                badTargets.stream().mapToInt(target -> target.getFiducialId()).toArray());
+
+        Logger.recordOutput("Drive/Localization/Vision/GoodTargetCount", pipelineResult.targets.size());
+        Logger.recordOutput("Drive/Localization/Vision/GoodTargets",
+                pipelineResult.targets.stream().mapToInt(target -> target.getFiducialId()).toArray());
 
         if (poseEstimator == null)
-            return Status.NO_POSE_ESTIMATOR;
+            return;
 
         Optional<EstimatedRobotPose> poseResult = poseEstimator.update(pipelineResult);
+        Logger.recordOutput("Drive/Localization/Vision/PosePresent", poseResult.isPresent());
         if (!poseResult.isPresent())
-            return Status.NO_POSE_RESULT;
-
-        if (consumer == null)
-            return Status.NO_CONSUMER;
+            return;
 
         EstimatedRobotPose result = poseResult.get();
-        consumer.accept(result.estimatedPose.toPose2d(), result.timestampSeconds);
         Logger.recordOutput("Drive/Localization/Vision/Pose", result.estimatedPose);
         Logger.recordOutput("Drive/Localization/Vision/Timestamp", result.timestampSeconds);
         Logger.recordOutput("Drive/Localization/Vision/Strategy", result.strategy);
-        Logger.recordOutput("Drive/Localization/Vision/Tags", result.targetsUsed.size());
-        return Status.POSE_FOUND;
-    }
+        Logger.recordOutput("Drive/Localization/Vision/TargetCount", result.targetsUsed.size());
+        Logger.recordOutput("Drive/Localization/Vision/Targets",
+                result.targetsUsed.stream().mapToInt(target -> target.getFiducialId()).toArray());
 
-    public void periodic() {
-        status = getPhotonUpdate();
+        if (consumer != null)
+            consumer.accept(result.estimatedPose.toPose2d(), result.timestampSeconds);
     }
 }
