@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -12,45 +13,101 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 public class UpBeat extends SubsystemBase {
-    private CANSparkMax upBeatMotor;
-    private SparkPIDController pid;
+    private CANSparkMax topMotor;
+    private SparkPIDController topPid;
+    private CANSparkMax bottomMotor;
+    private SparkPIDController bottomPid;
+    @AutoLogOutput(key = "upBeat/setPoint")
+    private double setPoint = 0;
+
 
     public UpBeat() {
-        upBeatMotor = new CANSparkMax(10, MotorType.kBrushless);
-        upBeatMotor.setSmartCurrentLimit(30, 20);
-        upBeatMotor.setSecondaryCurrentLimit(40);
-        upBeatMotor.restoreFactoryDefaults();
-        upBeatMotor.setInverted(false);
-        upBeatMotor.setIdleMode(IdleMode.kBrake);
-        pid = upBeatMotor.getPIDController();
+        topMotor = new CANSparkMax(10, MotorType.kBrushless);
+        topMotor.setSmartCurrentLimit(50, 50);
+        topMotor.setSecondaryCurrentLimit(60);
+        topMotor.restoreFactoryDefaults();
+        topMotor.setInverted(false);
+        topMotor.setIdleMode(IdleMode.kCoast);
+        topPid = topMotor.getPIDController();
 
-        // set p value of pid to 1
-        pid.setP(1.0);
-        pid.setI(0);
-        pid.setD(0);
-        upBeatMotor.burnFlash();
+        bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
+        bottomMotor.setSmartCurrentLimit(50, 50);
+        bottomMotor.setSecondaryCurrentLimit(60);
+        bottomMotor.restoreFactoryDefaults();
+        bottomMotor.setInverted(false);
+        bottomMotor.setIdleMode(IdleMode.kCoast);
+        bottomPid = bottomMotor.getPIDController();
+
+        topPid.setP(0.0003);
+        topPid.setI(0.0000001);
+        topPid.setD(0.0);
+        topPid.setFF(0.0001875);
+        topPid.setIZone(100);
+        topPid.setOutputRange(0.0, 1.0);
+        topMotor.burnFlash();
+
+        bottomPid.setP(0.0003);
+        bottomPid.setI(0.0000001);
+        bottomPid.setD(0.0);
+        bottomPid.setFF(0.0001875);
+        bottomPid.setIZone(100);
+        bottomPid.setOutputRange(0.0, 1.0);
+        bottomMotor.burnFlash();
+    }
+
+    private final static class Constants{
+        private static final double stop = 0.00;
+        private static final double reverse = -1000.00;
+        private static final double shoot = 5000.00;
+        private static final double amp = 1000.00;
+    }
+
+    @AutoLogOutput(key = "upBeat/speed")
+    private double getSpeed() {
+        return bottomMotor.getEncoder().getVelocity();
+    }
+
+    @AutoLogOutput(key = "upBeat/error")
+    private double getError(){
+        return setPoint-getSpeed();
+    }
+
+    @AutoLogOutput(key = "upBeat/at speed")
+    private boolean atSpeed(){
+        return Math.abs(getError()) < 100;
+    }
+
+    private Command speedCommand(double speed){
+        return run (()-> setPoint = speed).until(this::atSpeed); 
     }
 
     public Command shootNote() {
-        return runOnce(() -> {
-            pid.setReference(0.7, ControlType.kDutyCycle);
-        });
+        return startEnd(
+            () -> setPoint = Constants.shoot,
+            () -> setPoint = Constants.stop
+            );
     }
 
     public Command reverseShootNote() {
-        return runOnce(() -> {
-            pid.setReference(-0.7, ControlType.kDutyCycle);
-        });
+        return speedCommand(Constants.reverse);
     }
 
     public Command pauseUpBeat() {
-        return runOnce(() -> {
-            pid.setReference(0, ControlType.kDutyCycle);
-        });
+        return speedCommand(Constants.stop);
+    }
+
+    public Command ampSpeed() {
+        return speedCommand(Constants.amp);
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("upBeat/presentOutput", upBeatMotor.getAppliedOutput());
+        topPid.setReference(setPoint, ControlType.kVelocity);
+        bottomPid.setReference(setPoint, ControlType.kVelocity);
+
+        Logger.recordOutput("upBeat/topOutput", topMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/bottomOutput", bottomMotor.getAppliedOutput());
+        Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
+        Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
     }
 }

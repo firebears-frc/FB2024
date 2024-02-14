@@ -1,6 +1,13 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -18,65 +25,135 @@ public class Arm extends SubsystemBase {
     private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 35;
     private CANSparkMax shoulderMotorRight;
     private CANSparkMax shoulderMotorLeft;
-    private static SparkAbsoluteEncoder shoulderEncoder;
-    private SparkPIDController shoulderPID;
-    private double shoulderSetpoint;
+    private static SparkAbsoluteEncoder shoulderEncoderRight;
+    private static SparkAbsoluteEncoder shoulderEncoderLeft;
+    private SparkPIDController shoulderRightPID;
+    private SparkPIDController shoulderLeftPID;
+    @AutoLogOutput(key = "arm/setPoint")
+    private Rotation2d shoulderSetpoint = new Rotation2d();
 
     public Arm() {
-        shoulderMotorRight = new CANSparkMax(12, MotorType.kBrushless);
+        shoulderMotorRight = new CANSparkMax(13, MotorType.kBrushless);
 
         shoulderMotorRight.restoreFactoryDefaults();
         shoulderMotorRight.setInverted(true);
         shoulderMotorRight.setIdleMode(IdleMode.kBrake);
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
+        shoulderMotorRight.burnFlash();
 
-        shoulderMotorLeft = new CANSparkMax(13, MotorType.kBrushless);
+        shoulderMotorLeft = new CANSparkMax(12, MotorType.kBrushless);
 
         shoulderMotorLeft.restoreFactoryDefaults();
         shoulderMotorLeft.setInverted(false);
         shoulderMotorLeft.setIdleMode(IdleMode.kBrake);
         shoulderMotorLeft.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorLeft.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
-        shoulderMotorLeft.follow(shoulderMotorRight, true);
         shoulderMotorLeft.burnFlash();
 
-        shoulderPID = shoulderMotorRight.getPIDController();
-        shoulderEncoder = shoulderMotorRight.getAbsoluteEncoder(Type.kDutyCycle);
-        shoulderEncoder.setInverted(true);
-        shoulderPID.setP(ArmConstants.shoulderP);
-        shoulderPID.setI(ArmConstants.shoulderI);
-        shoulderPID.setD(ArmConstants.shoulderD);
+        shoulderRightPID = shoulderMotorRight.getPIDController();
+        shoulderEncoderRight = shoulderMotorRight.getAbsoluteEncoder(Type.kDutyCycle);
+        shoulderEncoderRight.setInverted(true);
+        shoulderRightPID.setP(ArmConstants.shoulderP);
+        shoulderRightPID.setI(ArmConstants.shoulderI);
+        shoulderRightPID.setD(ArmConstants.shoulderD);
 
-        shoulderPID.setFeedbackDevice(shoulderEncoder);
-        shoulderPID.setPositionPIDWrappingEnabled(true);
-        shoulderPID.setPositionPIDWrappingMinInput(0.0);
-        shoulderPID.setPositionPIDWrappingMaxInput(360);
-        shoulderEncoder.setPositionConversionFactor(360);
+        shoulderRightPID.setFeedbackDevice(shoulderEncoderRight);
+        shoulderRightPID.setPositionPIDWrappingEnabled(true);
+        shoulderRightPID.setPositionPIDWrappingMinInput(0.0);
+        shoulderRightPID.setPositionPIDWrappingMaxInput(360);
+        shoulderEncoderRight.setPositionConversionFactor(360);
         shoulderMotorRight.burnFlash();
+
+        shoulderLeftPID = shoulderMotorLeft.getPIDController();
+        shoulderEncoderLeft = shoulderMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);
+        shoulderEncoderLeft.setInverted(true);
+        shoulderLeftPID.setP(ArmConstants.shoulderP);
+        shoulderLeftPID.setI(ArmConstants.shoulderI);
+        shoulderLeftPID.setD(ArmConstants.shoulderD);
+
+        shoulderLeftPID.setFeedbackDevice(shoulderEncoderLeft);
+        shoulderLeftPID.setPositionPIDWrappingEnabled(true);
+        shoulderLeftPID.setPositionPIDWrappingMinInput(0.0);
+        shoulderLeftPID.setPositionPIDWrappingMaxInput(360);
+        shoulderEncoderLeft.setPositionConversionFactor(360);
+        shoulderMotorLeft.burnFlash();
+
     }
 
-    public double getShoulderAngle() {
-        return shoulderEncoder.getPosition();
+    private final static class Constants{     // arm setpoints
+        private static final Rotation2d pickUp = Rotation2d.fromDegrees(-3.0);
+        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(4.5);
+        private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
+        private static final Rotation2d stow = Rotation2d.fromDegrees(20);
+    }
+    @AutoLogOutput(key = "armLeft/Angle")
+    public Rotation2d getLeftShoulderAngle() {
+        return Rotation2d.fromDegrees(shoulderEncoderLeft.getPosition());
     }
 
-    public void setShoulderSetpoint(double setpoint) {
-        while (setpoint > 360) {
-            setpoint -= 360;
+    @AutoLogOutput(key = "armRight/Angle")
+    public Rotation2d getRightShoulderAngle() {
+        return Rotation2d.fromDegrees(shoulderEncoderRight.getPosition());
+    }
+    
+    public void setShoulderSetpoint(Rotation2d setpoint) {        
+        if (setpoint.getDegrees() < -5) {
+             setpoint = Rotation2d.fromDegrees(-5);
+        } else if (setpoint.getDegrees() > 130) {
+             setpoint = Rotation2d.fromDegrees(130);
         }
-        while (setpoint < 0) {
-            setpoint += 360;
-        }
-        // Angle setpoints will need to be different
-        // if (setpoint < 0 || setpoint > 280) {
-        //     setpoint = 0;
-        // } else if (setpoint > 130 && setpoint < 280) {
-        //     setpoint = 130;
-        // }
+        shoulderSetpoint = setpoint;
+    }
+    @AutoLogOutput(key = "armLeft/error")
+    private Rotation2d getLeftError(){
+        return getLeftShoulderAngle().minus(shoulderSetpoint);
+    }
+
+    @AutoLogOutput(key = "armRight/error")
+    private Rotation2d getRightError(){
+        return getRightShoulderAngle().minus(shoulderSetpoint);
+    }
+
+    @AutoLogOutput(key = "arm/onTarget")
+    private boolean onTarget(){
+      return Math.abs(getLeftError().getDegrees()) < 2 && Math.abs(getRightError().getDegrees()) < 2;
+
+    }
+
+    public Command defaultCommand(Supplier<Double> shoulderChange) {
+        return run(() -> {
+           setShoulderSetpoint(shoulderSetpoint.minus(Rotation2d.fromDegrees(shoulderChange.get())));
+        });
+    }
+    
+    public Command pickUp(){
+        return positionCommand(Constants.pickUp);
+    }
+    public Command speakerShoot(){
+        return positionCommand(Constants.speakerShoot);
+    }
+
+    public Command ampShoot(){
+        return positionCommand(Constants.ampShoot);
+    }
+
+    public Command stow(){
+        return positionCommand(Constants.stow);
+    }
+
+    private Command positionCommand(Rotation2d position){
+        return run(()-> setShoulderSetpoint(position)).until(this::onTarget);
     }
 
     @Override
     public void periodic() {
-        shoulderPID.setReference(shoulderSetpoint, ControlType.kPosition);
+        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
+        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());    
+        Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
+        shoulderRightPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
+        shoulderLeftPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
     }
+    
 }
+
