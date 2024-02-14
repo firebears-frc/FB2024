@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
@@ -9,6 +11,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -25,7 +28,7 @@ public class Vision extends SubsystemBase {
         photonCamera = new PhotonCamera(Constants.VisionConstants.kCameraName);
         poseEstimator = new PhotonPoseEstimator(
             AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile),
-            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_RIO,
+            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             Constants.VisionConstants.kCameraOffset);
         this.consumer = consumer;
     }
@@ -43,6 +46,16 @@ public class Vision extends SubsystemBase {
         if (!hasTargets)
             return;
 
+        List<PhotonTrackedTarget> badTargets = new ArrayList<>();
+        for(PhotonTrackedTarget target : pipelineResult.targets){
+            if(target.getPoseAmbiguity()>0.2){
+                badTargets.add(target);
+            }
+        }
+
+        pipelineResult.targets.removeAll(badTargets);
+        Logger.recordOutput("Vision/badTargets", badTargets.size());
+        
         Optional<EstimatedRobotPose> poseResult = poseEstimator.update(pipelineResult);
         boolean posePresent = poseResult.isPresent();
         Logger.recordOutput("Vision/HasPose", posePresent);
