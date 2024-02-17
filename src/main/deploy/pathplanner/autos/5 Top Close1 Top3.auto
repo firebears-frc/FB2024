@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 0.45,
-      "y": 4.15
+      "y": 6.95
     },
-    "rotation": -2.460059059064781e-31
+    "rotation": 2.2757640897480886e-29
   },
   "command": {
     "type": "sequential",
@@ -14,43 +14,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Glue.3"
+            "pathName": "Top - Close.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.1"
+            "pathName": "Glue.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.2"
+            "pathName": "Top - Center.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.3"
+            "pathName": "Top - Center.3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.4"
+            "pathName": "Top - Center.4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.5"
+            "pathName": "Top - Center.5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.6"
+            "pathName": "Top - Center.6"
           }
         }
       ]

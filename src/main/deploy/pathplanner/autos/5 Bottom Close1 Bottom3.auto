@@ -1,0 +1,61 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.45,
+      "y": 4.15000000000001
+    },
+    "rotation": -5.737149420656062e-32
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom - Close.1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Glue.3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom - Center.2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom - Center.3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom - Center.4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom - Center.5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom - Center.6"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}
