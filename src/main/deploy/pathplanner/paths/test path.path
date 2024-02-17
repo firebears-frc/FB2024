@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3962770782684422,
-        "y": 5.541202510976451
+        "x": 1.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.094415617402664,
-        "y": 6.152073732718894
+        "x": 2.0,
+        "y": 7.0
       },
       "isLocked": false,
-      "linkedName": "5PNV1 start"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.374489112614589,
-        "y": 6.5207934052231735
+        "x": 3.93,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 2.052271325321872,
-        "y": 6.272417194185037
+        "x": 2.93,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "5PNV5 end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 43.898293884793645,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
