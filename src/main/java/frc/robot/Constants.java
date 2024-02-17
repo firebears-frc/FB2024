@@ -112,9 +112,9 @@ public class Constants {
     }
 
     public static final class ArmConstants {
-        public static final double shoulderP = 0.03;//was .0175
+        public static final double shoulderP = 0.026;
         public static final double shoulderI = 0.0;
-        public static final double shoulderD = 0.05;
+        public static final double shoulderD = 0.0;
     }
 
     public static final class OIConstants {

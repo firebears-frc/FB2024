@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import frc.robot.Constants.*;
@@ -38,6 +39,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.setIdleMode(IdleMode.kBrake);
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
+        shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
         shoulderMotorLeft = new CANSparkMax(12, MotorType.kBrushless);
 
@@ -47,6 +49,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorLeft.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorLeft.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
         shoulderMotorLeft.follow(shoulderMotorRight, true);
+        shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
         shoulderMotorLeft.burnFlash();
 
         shoulderPID = shoulderMotorRight.getPIDController();

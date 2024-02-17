@@ -17,20 +17,22 @@ public class DownBeat extends SubsystemBase {
     private CANSparkMax downBeatMotor;
     private SparkPIDController pid;
     private DigitalInput sensor;
+    private double setPoint = 0;
 
     public DownBeat() {
         downBeatMotor = new CANSparkMax(9, MotorType.kBrushless);
         downBeatMotor.setSmartCurrentLimit(10, 10);
         downBeatMotor.setSecondaryCurrentLimit(20);
         downBeatMotor.restoreFactoryDefaults();
-        downBeatMotor.setInverted(false);
+        downBeatMotor.setInverted(true);
         downBeatMotor.setIdleMode(IdleMode.kBrake);
         pid = downBeatMotor.getPIDController();
 
-        // set p value of pid to 1
-        pid.setP(1.0);
-        pid.setI(0);
-        pid.setD(0);
+        pid.setP(0.00001);
+        pid.setI(0.0);
+        pid.setD(0.0);
+        pid.setFF(0.000115);
+        pid.setIZone(100);
         downBeatMotor.burnFlash();
 
         //sensor
@@ -40,24 +42,34 @@ public class DownBeat extends SubsystemBase {
 
     public Command intakeNote() {
         return runOnce(() -> {
-            pid.setReference(-0.7, ControlType.kDutyCycle);
+            setPoint = 7000;
+        });
+    }
+
+    public Command shootNote(){
+        return runOnce(() -> {
+            setPoint = 8000;
         });
     }
 
     public Command dischargeNote() {
         return runOnce(() -> {
-            pid.setReference(0.7, ControlType.kDutyCycle);
+            setPoint = -7000;
         });
     }
 
     public Command pauseDownBeat() {
         return runOnce(() -> {
-            pid.setReference(0, ControlType.kDutyCycle);
+            setPoint = 0;
         });
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("downBeat/presentOutput", downBeatMotor.getAppliedOutput());
+        pid.setReference(setPoint, ControlType.kVelocity);
+        
+        Logger.recordOutput("downBeat/Output", downBeatMotor.getAppliedOutput());
+        Logger.recordOutput("downBeat/speed", downBeatMotor.getEncoder().getVelocity());
+        Logger.recordOutput("downBeat/setPoint", setPoint);
     }
 }
