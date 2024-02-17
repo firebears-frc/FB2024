@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -63,12 +64,7 @@ public class Bass extends SubsystemBase {
     SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             getHeading(),
-            new SwerveModulePosition[] {
-                    m_frontLeft.getPosition(),
-                    m_frontRight.getPosition(),
-                    m_rearLeft.getPosition(),
-                    m_rearRight.getPosition()
-            }, 
+            getModulePositions(),
             new Pose2d());
 
     /** Creates a new DriveSubsystem. */
@@ -107,19 +103,8 @@ public class Bass extends SubsystemBase {
         // Update the odometry in the periodic block
         m_poseEstimator.update(
                 getHeading(),
-                new SwerveModulePosition[] {
-                        m_frontLeft.getPosition(),
-                        m_frontRight.getPosition(),
-                        m_rearLeft.getPosition(),
-                        m_rearRight.getPosition()
-                });
-
-        Logger.recordOutput("Chassis/Actual", new SwerveModuleState[] {
-                m_frontLeft.getState(),
-                m_frontRight.getState(),
-                m_rearLeft.getState(),
-                m_rearRight.getState()
-        });
+                getModulePositions()
+                );
         Logger.recordOutput("Chassis/Pose", getPose());
     }
 
@@ -140,12 +125,7 @@ public class Bass extends SubsystemBase {
     public void resetOdometry(Pose2d pose) {
         m_poseEstimator.resetPosition(
                 getHeading(),
-                new SwerveModulePosition[] {
-                        m_frontLeft.getPosition(),
-                        m_frontRight.getPosition(),
-                        m_rearLeft.getPosition(),
-                        m_rearRight.getPosition()
-                },
+                getModulePositions(),    
                 pose);
     }
 
@@ -238,12 +218,23 @@ public class Bass extends SubsystemBase {
         return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
     }
 
+    @AutoLogOutput(key = "Chassis/ActualStates")
     private SwerveModuleState[] getModuleStates() {
         return new SwerveModuleState[] {
                 m_frontLeft.getState(),
                 m_frontRight.getState(),
                 m_rearLeft.getState(),
                 m_rearRight.getState()
+        };
+    }
+
+    @AutoLogOutput(key = "Chassis/ModulePositions")
+    private SwerveModulePosition[] getModulePositions(){
+        return new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
         };
     }
 
@@ -271,7 +262,7 @@ public class Bass extends SubsystemBase {
         m_frontRight.setDesiredState(desiredStates[1]);
         m_rearLeft.setDesiredState(desiredStates[2]);
         m_rearRight.setDesiredState(desiredStates[3]);
-        Logger.recordOutput("Chassis/Target", desiredStates);
+        Logger.recordOutput("Chassis/TargetStates", desiredStates);
     }
 
     /** Zeroes the heading of the robot. */
@@ -284,6 +275,7 @@ public class Bass extends SubsystemBase {
      *
      * @return the robot's heading
      */
+    @AutoLogOutput(key = "Chassis/Heading")
     private Rotation2d getHeading() {
         return Rotation2d.fromDegrees(m_gyro.getAngle() * (DriveConstants.kGyroReversed ? -1.0 : 1.0));
     }

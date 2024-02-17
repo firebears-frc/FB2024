@@ -7,6 +7,7 @@ import frc.robot.Constants.ModuleConstants;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.AbsoluteEncoder;
@@ -97,6 +98,10 @@ public class MAXSwerveModule {
         m_turningSparkMax.setIdleMode(ModuleConstants.kTurningMotorIdleMode);
         m_drivingSparkMax.setSmartCurrentLimit(ModuleConstants.kDrivingMotorCurrentLimit);
         m_turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit);
+
+        m_drivingEncoder.setAverageDepth(2);
+        m_drivingEncoder.setMeasurementPeriod(16);
+        m_turningSparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
 
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.
