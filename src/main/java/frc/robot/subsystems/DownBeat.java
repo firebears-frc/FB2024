@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
@@ -37,7 +38,25 @@ public class DownBeat extends SubsystemBase {
 
         //sensor
         sensor = new DigitalInput(0);
-        new Trigger(sensor::get).onTrue(pauseDownBeat());
+        new Trigger(this :: beamBreak).onTrue(pauseDownBeat());
+    }
+
+    @AutoLogOutput(key = "downBeat/beamBreak")
+    private boolean beamBreak(){
+        return sensor.get();
+    }
+
+    @AutoLogOutput(key = "downBeat/error")
+    private double getError(){
+        return setPoint-downBeatMotor.getEncoder().getVelocity();
+    }
+
+    @AutoLogOutput(key = "downBeat/atSpeed")
+    private boolean atSpeed(){
+        if((getError()<100)&&(getError()>-100)){
+            return true;
+        }
+        return false;
     }
 
     public Command intakeNote() {
