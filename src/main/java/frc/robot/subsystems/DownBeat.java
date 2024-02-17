@@ -31,7 +31,7 @@ public class DownBeat extends SubsystemBase {
         pid.setP(0.0);
         pid.setI(0.0);
         pid.setD(0.0);
-        pid.setFF(0.1);
+        pid.setFF(0.00013);
         pid.setIZone(100);
         downBeatMotor.burnFlash();
 
@@ -48,7 +48,7 @@ public class DownBeat extends SubsystemBase {
 
     public Command shootNote(){
         return runOnce(() -> {
-            setPoint = 10000;
+            setPoint = 8000;
         });
     }
 
