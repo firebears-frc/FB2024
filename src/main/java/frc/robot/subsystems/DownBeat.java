@@ -38,7 +38,12 @@ public class DownBeat extends SubsystemBase {
 
         //sensor
         sensor = new DigitalInput(0);
-        new Trigger(sensor::get).onTrue(pauseDownBeat());
+        new Trigger(this :: beamBreak).onTrue(pauseDownBeat());
+    }
+
+    @AutoLogOutput(key = "downBeat/beamBreak")
+    private boolean beamBreak(){
+        return sensor.get();
     }
 
     @AutoLogOutput(key = "downBeat/error")
