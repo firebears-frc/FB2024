@@ -66,6 +66,7 @@ public class Arm extends SubsystemBase {
         shoulderEncoder.setPositionConversionFactor(360);
         shoulderMotorRight.burnFlash();
 
+        setShoulderSetpoint(getShoulderAngle());
     }
 
     private final static class Constants{     // arm setpoints
