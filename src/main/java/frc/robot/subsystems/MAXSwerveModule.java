@@ -101,7 +101,7 @@ public class MAXSwerveModule {
 
         m_drivingEncoder.setAverageDepth(2);
         m_drivingEncoder.setMeasurementPeriod(16);
-        m_turningSparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+        m_turningSparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 8);
 
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
         // operation, it will maintain the above configurations.
