@@ -17,7 +17,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController topPid;
     private CANSparkMax bottomMotor;
     private SparkPIDController bottomPid;
-    @AutoLogOutput(key = "upBeat/setPoint")
+    @AutoLogOutput(key = "Upbeat/Setpoint")
     private double setPoint = 0;
 
 
@@ -62,17 +62,17 @@ public class UpBeat extends SubsystemBase {
         private static final double amp = 1000.00;
     }
 
-    @AutoLogOutput(key = "upBeat/speed")
+    @AutoLogOutput(key = "Upbeat/ActualSpeed")
     private double getSpeed() {
         return bottomMotor.getEncoder().getVelocity();
     }
 
-    @AutoLogOutput(key = "upBeat/error")
+    @AutoLogOutput(key = "Upbeat/Error")
     private double getError(){
         return setPoint-getSpeed();
     }
 
-    @AutoLogOutput(key = "upBeat/at speed")
+    @AutoLogOutput(key = "Upbeat/AtSpeed")
     private boolean atSpeed(){
         return Math.abs(getError()) < 100;
     }
@@ -105,9 +105,9 @@ public class UpBeat extends SubsystemBase {
         topPid.setReference(setPoint, ControlType.kVelocity);
         bottomPid.setReference(setPoint, ControlType.kVelocity);
 
-        Logger.recordOutput("upBeat/topOutput", topMotor.getAppliedOutput());
-        Logger.recordOutput("upBeat/bottomOutput", bottomMotor.getAppliedOutput());
-        Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
-        Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
+        Logger.recordOutput("Upbeat/TopOutput", topMotor.getAppliedOutput());
+        Logger.recordOutput("Upbeat/BottomOutput", bottomMotor.getAppliedOutput());
+        Logger.recordOutput("Upbeat/TopSpeed", topMotor.getEncoder().getVelocity());
+        Logger.recordOutput("Upbeat/BottomSpeed", bottomMotor.getEncoder().getVelocity());
     }
 }

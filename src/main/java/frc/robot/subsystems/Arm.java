@@ -25,9 +25,11 @@ public class Arm extends SubsystemBase {
     private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 35;
     private CANSparkMax shoulderMotorRight;
     private CANSparkMax shoulderMotorLeft;
-    private static SparkAbsoluteEncoder shoulderEncoder;
-    private SparkPIDController shoulderPID;
-    @AutoLogOutput(key = "arm/setPoint")
+    private static SparkAbsoluteEncoder shoulderEncoderRight;
+    private static SparkAbsoluteEncoder shoulderEncoderLeft;
+    private SparkPIDController shoulderRightPID;
+    private SparkPIDController shoulderLeftPID;
+    @AutoLogOutput(key = "Arm/Setpoint")
     private Rotation2d shoulderSetpoint = new Rotation2d();
 
     public Arm() {
@@ -38,6 +40,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.setIdleMode(IdleMode.kBrake);
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
+        shoulderMotorRight.burnFlash();
 
         shoulderMotorLeft = new CANSparkMax(12, MotorType.kBrushless);
 
@@ -46,22 +49,35 @@ public class Arm extends SubsystemBase {
         shoulderMotorLeft.setIdleMode(IdleMode.kBrake);
         shoulderMotorLeft.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorLeft.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
-        shoulderMotorLeft.follow(shoulderMotorRight, true);
         shoulderMotorLeft.burnFlash();
 
-        shoulderPID = shoulderMotorRight.getPIDController();
-        shoulderEncoder = shoulderMotorRight.getAbsoluteEncoder(Type.kDutyCycle);
-        shoulderEncoder.setInverted(true);
-        shoulderPID.setP(ArmConstants.shoulderP);
-        shoulderPID.setI(ArmConstants.shoulderI);
-        shoulderPID.setD(ArmConstants.shoulderD);
+        shoulderRightPID = shoulderMotorRight.getPIDController();
+        shoulderEncoderRight = shoulderMotorRight.getAbsoluteEncoder(Type.kDutyCycle);
+        shoulderEncoderRight.setInverted(true);
+        shoulderRightPID.setP(ArmConstants.shoulderP);
+        shoulderRightPID.setI(ArmConstants.shoulderI);
+        shoulderRightPID.setD(ArmConstants.shoulderD);
 
-        shoulderPID.setFeedbackDevice(shoulderEncoder);
-        shoulderPID.setPositionPIDWrappingEnabled(true);
-        shoulderPID.setPositionPIDWrappingMinInput(0.0);
-        shoulderPID.setPositionPIDWrappingMaxInput(360);
-        shoulderEncoder.setPositionConversionFactor(360);
+        shoulderRightPID.setFeedbackDevice(shoulderEncoderRight);
+        shoulderRightPID.setPositionPIDWrappingEnabled(true);
+        shoulderRightPID.setPositionPIDWrappingMinInput(0.0);
+        shoulderRightPID.setPositionPIDWrappingMaxInput(360);
+        shoulderEncoderRight.setPositionConversionFactor(360);
         shoulderMotorRight.burnFlash();
+
+        shoulderLeftPID = shoulderMotorLeft.getPIDController();
+        shoulderEncoderLeft = shoulderMotorLeft.getAbsoluteEncoder(Type.kDutyCycle);
+        shoulderEncoderLeft.setInverted(true);
+        shoulderLeftPID.setP(ArmConstants.shoulderP);
+        shoulderLeftPID.setI(ArmConstants.shoulderI);
+        shoulderLeftPID.setD(ArmConstants.shoulderD);
+
+        shoulderLeftPID.setFeedbackDevice(shoulderEncoderLeft);
+        shoulderLeftPID.setPositionPIDWrappingEnabled(true);
+        shoulderLeftPID.setPositionPIDWrappingMinInput(0.0);
+        shoulderLeftPID.setPositionPIDWrappingMaxInput(360);
+        shoulderEncoderLeft.setPositionConversionFactor(360);
+        shoulderMotorLeft.burnFlash();
 
     }
 
@@ -71,9 +87,14 @@ public class Arm extends SubsystemBase {
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
     }
-    @AutoLogOutput(key = "arm/Angle")
-    public Rotation2d getShoulderAngle() {
-        return Rotation2d.fromDegrees(shoulderEncoder.getPosition());
+    @AutoLogOutput(key = "Arm/Left/Actual")
+    public Rotation2d getLeftShoulderAngle() {
+        return Rotation2d.fromDegrees(shoulderEncoderLeft.getPosition());
+    }
+
+    @AutoLogOutput(key = "Arm/Right/Actual")
+    public Rotation2d getRightShoulderAngle() {
+        return Rotation2d.fromDegrees(shoulderEncoderRight.getPosition());
     }
     
     public void setShoulderSetpoint(Rotation2d setpoint) {        
@@ -84,14 +105,19 @@ public class Arm extends SubsystemBase {
         }
         shoulderSetpoint = setpoint;
     }
-    @AutoLogOutput(key = "arm/error")
-    private Rotation2d getError(){
-        return getShoulderAngle().minus(shoulderSetpoint);
+    @AutoLogOutput(key = "Arm/Left/Error")
+    private Rotation2d getLeftError(){
+        return getLeftShoulderAngle().minus(shoulderSetpoint);
     }
 
-    @AutoLogOutput(key = "arm/onTarget")
+    @AutoLogOutput(key = "Arm/Right/Error")
+    private Rotation2d getRightError(){
+        return getRightShoulderAngle().minus(shoulderSetpoint);
+    }
+
+    @AutoLogOutput(key = "Arm/OnTarget")
     private boolean onTarget(){
-      return Math.abs(getError().getDegrees()) < 2;
+      return Math.abs(getLeftError().getDegrees()) < 2 && Math.abs(getRightError().getDegrees()) < 2;
 
     }
 
@@ -122,11 +148,12 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
-        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());    
-        Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
-        shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
+        Logger.recordOutput("Arm/Left/Output", shoulderMotorLeft.getAppliedOutput());
+        Logger.recordOutput("Arm/Right/Output", shoulderMotorRight.getAppliedOutput());    
+        Logger.recordOutput("Arm/SetpointDegrees", shoulderSetpoint.getDegrees());
+
+        shoulderRightPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
+        shoulderLeftPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
     }
     
 }
-

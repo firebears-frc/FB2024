@@ -58,6 +58,6 @@ public class DownBeat extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("downBeat/presentOutput", downBeatMotor.getAppliedOutput());
+        Logger.recordOutput("Downbeat/Output", downBeatMotor.getAppliedOutput());
     }
 }
