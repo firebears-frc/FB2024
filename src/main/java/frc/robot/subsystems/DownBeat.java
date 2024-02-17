@@ -42,6 +42,12 @@ public class DownBeat extends SubsystemBase {
 
     public Command intakeNote() {
         return runOnce(() -> {
+            setPoint = 7000;
+        });
+    }
+
+    public Command shootNote(){
+        return runOnce(() -> {
             setPoint = 10000;
         });
     }
