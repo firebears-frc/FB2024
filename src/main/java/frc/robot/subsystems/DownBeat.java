@@ -28,10 +28,10 @@ public class DownBeat extends SubsystemBase {
         downBeatMotor.setIdleMode(IdleMode.kBrake);
         pid = downBeatMotor.getPIDController();
 
-        pid.setP(0.0);
+        pid.setP(0.00001);
         pid.setI(0.0);
         pid.setD(0.0);
-        pid.setFF(0.00013);
+        pid.setFF(0.000115);
         pid.setIZone(100);
         downBeatMotor.burnFlash();
 
