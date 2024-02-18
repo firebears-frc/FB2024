@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.22221415871403233,
-      "y": 4.0606698356253865
+      "x": 1.0,
+      "y": 7.0
     },
     "rotation": 0
   },
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Path Challange"
+            "pathName": "test path"
           }
         }
       ]

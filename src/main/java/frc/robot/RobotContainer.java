@@ -5,11 +5,13 @@
 package frc.robot;
 
 import java.io.IOException;
-import java.sql.DriverPropertyInfo;
+
+import java.util.Map;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -38,8 +40,27 @@ public class RobotContainer {
     private final CommandJoystick one = new CommandJoystick(0);
     private final CommandJoystick two = new CommandJoystick(1);
     private final CommandXboxController xboxController = new CommandXboxController(2);
-    private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("AutoChooser",
-            AutoBuilder.buildAutoChooser());
+    private final LoggedDashboardChooser<Command> autoChooser;
+
+    private void configureAutoCommands(){
+        NamedCommands.registerCommands(Map.of(
+            "armLow", Commands.sequence(
+                m_arm.pickUp(),
+                Commands.waitSeconds(.125)
+            ),
+            "stopPickUp", Commands.sequence(
+                m_intake.pauseDownBeat()
+            ),
+            "shootSequence", Commands.sequence(
+                m_arm.speakerShoot(),
+                m_shooter.autoShoot(),
+                Commands.waitSeconds(.125),
+                m_intake.intakeNote(),
+                Commands.waitSeconds(.256),
+                m_shooter.pauseUpBeat()
+            )
+            ));
+    }
 
     public RobotContainer() {
         try {
@@ -60,6 +81,9 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(two.getX(), OIConstants.kDriveDeadband),
                                 true, true),
                         m_robotDrive));
+
+        configureAutoCommands();
+        autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
     }
 
     private void configureBindings() {
@@ -69,6 +93,7 @@ public class RobotContainer {
 
         xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
+        xboxController.povLeft().onTrue(m_intake.shootNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
         xboxController.b().onTrue(m_arm.pickUp()); 
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
