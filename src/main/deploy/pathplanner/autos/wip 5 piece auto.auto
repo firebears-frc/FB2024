@@ -1,0 +1,150 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.338998314360265,
+      "y": 5.503960098829289
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSequence"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armLow"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Path 1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "stopPickUp"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "path 1.5"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSequence"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armLow"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Path 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "stopPickUp"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSequence"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armLow"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Path 3"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "stopPickUp"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Path 4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shootSequence"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armLow"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import frc.robot.Constants.*;
@@ -40,6 +41,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.setIdleMode(IdleMode.kBrake);
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
+        shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
         shoulderMotorRight.burnFlash();
 
         shoulderMotorLeft = new CANSparkMax(12, MotorType.kBrushless);
@@ -49,6 +51,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorLeft.setIdleMode(IdleMode.kBrake);
         shoulderMotorLeft.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorLeft.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
+        shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
         shoulderMotorLeft.burnFlash();
 
         shoulderRightPID = shoulderMotorRight.getPIDController();
@@ -79,11 +82,13 @@ public class Arm extends SubsystemBase {
         shoulderEncoderLeft.setPositionConversionFactor(360);
         shoulderMotorLeft.burnFlash();
 
+        setShoulderSetpoint(Rotation2d.fromDegrees(
+            (getLeftShoulderAngle().getDegrees() + getRightShoulderAngle().getDegrees()) / 2));
     }
 
     private final static class Constants{     // arm setpoints
-        private static final Rotation2d pickUp = Rotation2d.fromDegrees(-3);
-        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(6.5);
+        private static final Rotation2d pickUp = Rotation2d.fromDegrees(-1);
+        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(9.5);
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
     }
