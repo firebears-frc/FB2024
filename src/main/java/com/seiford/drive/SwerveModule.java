@@ -24,13 +24,13 @@ public class SwerveModule {
         public static final double NEO_VORTEX_FREE_SPEED = 6784.0 / 60; // rotations per second
 
         private static class Driving {
-            private static final double WHEEL_DIAMETER = 0.0762; // meters
+            private static final double WHEEL_DIAMETER = 0.07331075; // meters
             private static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI; // meters
             // 12T, 13T, 14T, 15T, or 16T gearing
             private static final int PINION_TEETH = 16;
             // 22T, 21T, 20T, or 19T gearing
-            private static final int SPUR_TEETH = 19;
-            private static final double GEAR_RATIO = 45 * SPUR_TEETH / (PINION_TEETH * 15);
+            private static final int SPUR_TEETH = 20;
+            private static final double GEAR_RATIO = 45.0 * SPUR_TEETH / (PINION_TEETH * 15);
             private static final double FREE_SPEED = NEO_VORTEX_FREE_SPEED * WHEEL_CIRCUMFERENCE / GEAR_RATIO; // meters
                                                                                                                // per
                                                                                                                // second
@@ -39,9 +39,9 @@ public class SwerveModule {
             public static final SparkConfiguration CONFIG = new SparkConfiguration(
                     false,
                     IdleMode.kBrake,
-                    CurrentLimitConfiguration.complex(80, 20, 10, 85.0),
+                    CurrentLimitConfiguration.complex(50, 20, 10, 60.0),
                     StatusFrameConfiguration.normal(),
-                    ClosedLoopConfiguration.simple(0.04, 0.0, 0.0, 1.0 / FREE_SPEED),
+                    ClosedLoopConfiguration.simple(0.25, 0.0, 0.0, 1.0 / FREE_SPEED),
                     FeedbackConfiguration.builtInEncoder(POSITION_FACTOR));
         }
 
@@ -51,7 +51,7 @@ public class SwerveModule {
                     IdleMode.kBrake,
                     CurrentLimitConfiguration.complex(20, 10, 10, 30.0),
                     StatusFrameConfiguration.absoluteEncoder(),
-                    ClosedLoopConfiguration.wrapping(2.5, 0.0, 0.0, 0.0, 0, 360),
+                    ClosedLoopConfiguration.wrapping(3.5, 0.0, 0.0, 0.0, 0, 360),
                     FeedbackConfiguration.absoluteEncoder(true, 360));
         }
     }
@@ -86,6 +86,9 @@ public class SwerveModule {
         angleOffset = configuration.angleOffset;
         name = configuration.name;
         desiredState = new SwerveModuleState(0.0, new Rotation2d(turningEncoder.getPosition()));
+
+        drivingMotor.burnFlash();
+        turningMotor.burnFlash();
     }
 
     public void setDesiredState(SwerveModuleState state) {

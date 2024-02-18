@@ -25,7 +25,7 @@ import edu.wpi.first.math.util.Units;
 
 public class Vision {
     private static final class Constants {
-        public static final String NAME = "MainC";
+        public static final String NAME = "Arducam_OV2311_USB_Camera";
         public static final Transform3d CAMERA_TRANSFORM = new Transform3d(new Translation3d(
                 Units.inchesToMeters(0),
                 Units.inchesToMeters(0),

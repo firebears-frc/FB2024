@@ -2,10 +2,15 @@ package com.seiford.subsystems;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
+import com.seiford.util.spark.ClosedLoopConfiguration;
 import com.seiford.util.spark.CurrentLimitConfiguration;
+import com.seiford.util.spark.FeedbackConfiguration;
 import com.seiford.util.spark.SparkConfiguration;
 import com.seiford.util.spark.StatusFrameConfiguration;
 
@@ -24,37 +29,58 @@ public class Intake extends SubsystemBase {
                 false,
                 IdleMode.kBrake,
                 CurrentLimitConfiguration.complex(20, 10, 10, 25.0),
-                StatusFrameConfiguration.normal());
+                StatusFrameConfiguration.normal(),
+                ClosedLoopConfiguration.simple(0.00001, 0.0, 0.0, 0.0),
+                FeedbackConfiguration.builtInEncoder(1.0));
 
-        public static final double INTAKE_SPEED = 0.7; // percent
-        public static final double EJECT_SPEED = -0.7; // percent
+        public static final double INTAKE_SPEED = 4000; // rotations per minute
+        public static final double SHOOT_SPEED = 8000; // rotations per minute
+        public static final double EJECT_SPEED = -1000; // rotations per minute
+
+        public static final double TOLERANCE = 100; // rotations per minute
     }
 
     // Objects
     private final CANSparkMax motor;
+    private final RelativeEncoder encoder;
+    private final SparkPIDController pid;
     private final DigitalInput sensor;
-    private final Trigger trigger;
 
     private double setpoint;
 
     // Constructor
     public Intake() {
-        motor = new CANSparkMax(Constants.MOTOR_CAN_ID, MotorType.kBrushed);
+        motor = new CANSparkMax(Constants.MOTOR_CAN_ID, MotorType.kBrushless);
+        encoder = motor.getEncoder();
+        pid = motor.getPIDController();
 
         Constants.CONFIG.apply(motor);
 
         motor.burnFlash();
 
         sensor = new DigitalInput(Constants.SENSOR_DIO_PORT);
-        trigger = new Trigger(this::getSensor);
-
-        trigger.onTrue(stop());
+        new Trigger(this::getSensor).onTrue(stop());
     }
 
     // Interface functions
-    @AutoLogOutput(key = "Intake/Speed")
-    private double getTargetSpeed() {
+    @AutoLogOutput(key = "Intake/Setpoint")
+    private double getTargetVelocity() {
         return setpoint;
+    }
+
+    @AutoLogOutput(key = "Intake/Velocity")
+    private double getVelocity() {
+        return encoder.getVelocity();
+    }
+
+    @AutoLogOutput(key = "Intake/Error")
+    private double getError() {
+        return getVelocity() - getTargetVelocity();
+    }
+
+    @AutoLogOutput(key = "Intake/OnTarget")
+    private boolean onTarget() {
+        return Math.abs(getError()) < Constants.TOLERANCE;
     }
 
     @AutoLogOutput(key = "Intake/Sensor")
@@ -64,10 +90,14 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        motor.set(setpoint);
+        pid.setReference(setpoint, ControlType.kVelocity);
     }
 
     // Command factories
+    public Command shoot() {
+        return runOnce(() -> setpoint = Constants.SHOOT_SPEED);
+    }
+
     public Command intake() {
         return runOnce(() -> setpoint = Constants.INTAKE_SPEED);
     }

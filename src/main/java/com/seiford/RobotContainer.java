@@ -64,7 +64,8 @@ public class RobotContainer {
         // Set up default commands
         bass.setDefaultCommand(bass.defaultCommand(this::getChassisSpeeds, false));
         arm.setDefaultCommand(
-                arm.defaultCommand(() -> MathUtil.applyDeadband(controller.getLeftY(), Constants.GAMEPAD_DEADBAND)));
+                arm.defaultCommand(() -> MathUtil.applyDeadband(controller.getLeftY(),
+                        Constants.GAMEPAD_DEADBAND)));
 
         // Set up joystick one bindings
         one.trigger().toggleOnTrue(bass.turtle());
@@ -78,13 +79,23 @@ public class RobotContainer {
                 Commands.sequence(
                         arm.speaker(),
                         upbeat.speaker()))
-                .onFalse(shootStopAndStow());
+                .onFalse(Commands.sequence(
+                        downbeat.shoot(),
+                        Commands.waitSeconds(0.5),
+                        upbeat.stop(),
+                        downbeat.stop(),
+                        arm.stow()));
         controller.rightBumper().toggleOnTrue(Commands.parallel(arm.pickupStow(), downbeat.intakeStop()));
         controller.leftTrigger().onTrue(
                 Commands.sequence(
                         arm.amp(),
                         upbeat.amp()))
-                .onFalse(shootStopAndStow());
+                .onFalse(Commands.sequence(
+                        downbeat.intake(),
+                        Commands.waitSeconds(0.5),
+                        upbeat.stop(),
+                        downbeat.stop(),
+                        arm.stow()));
         controller.leftBumper().onTrue(downbeat.eject()).onFalse(downbeat.stop());
         controller.povUp().onTrue(glissando.climb()).onFalse(glissando.stop());
         controller.povDown().onTrue(glissando.reverse()).onFalse(glissando.stop());
@@ -100,14 +111,5 @@ public class RobotContainer {
     // Command factories
     public Command getAutonomousCommand() {
         return autoChooser.get();
-    }
-
-    public Command shootStopAndStow() {
-        return Commands.sequence(
-                downbeat.intake(),
-                Commands.waitSeconds(0.5),
-                upbeat.stop(),
-                downbeat.stop(),
-                arm.stow());
     }
 }

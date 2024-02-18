@@ -3,7 +3,6 @@ package com.seiford.subsystems;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
-
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -33,7 +32,7 @@ public class Arm extends SubsystemBase {
                 IdleMode.kBrake,
                 CurrentLimitConfiguration.complex(30, 20, 10, 35.0),
                 StatusFrameConfiguration.absoluteEncoderLeader(),
-                ClosedLoopConfiguration.wrapping(0.0175, 0.0, 0.005, 0.0, 0, 360),
+                ClosedLoopConfiguration.wrapping(0.026, 0.0, 0.0, 0.0, 0, 360),
                 FeedbackConfiguration.absoluteEncoder(true, 360));
         public static final SparkConfiguration LEFT_CONFIG = new SparkConfiguration(
                 false,
@@ -44,10 +43,12 @@ public class Arm extends SubsystemBase {
 
         public static final Rotation2d MANUAL_SPEED = Rotation2d.fromDegrees(1.0); // per loop
 
-        public static final Rotation2d PICKUP = Rotation2d.fromDegrees(-3.0);
+        public static final Rotation2d MIN = Rotation2d.fromDegrees(-5.0);
+        public static final Rotation2d PICKUP = Rotation2d.fromDegrees(-1.0);
+        public static final Rotation2d SPEAKER = Rotation2d.fromDegrees(9.5);
         public static final Rotation2d STOW = Rotation2d.fromDegrees(20.0);
         public static final Rotation2d AMP = Rotation2d.fromDegrees(85.0);
-        public static final Rotation2d SPEAKER = Rotation2d.fromDegrees(35.0);
+        public static final Rotation2d MAX = Rotation2d.fromDegrees(135);
 
         public static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2.0);
     }
@@ -98,13 +99,23 @@ public class Arm extends SubsystemBase {
         pid.setReference(setpoint.getDegrees(), ControlType.kPosition);
     }
 
+    private void set(Rotation2d angle) {
+        if (angle.getDegrees() > Constants.MAX.getDegrees()) {
+            setpoint = Constants.MAX;
+        } else if (angle.getDegrees() < Constants.MIN.getDegrees()) {
+            setpoint = Constants.MIN;
+        } else {
+            setpoint = angle;
+        }
+    }
+
     // Command factories
     private Command positionCommand(Rotation2d angle) {
-        return run(() -> setpoint = angle).until(this::onTarget);
+        return run(() -> set(angle)).until(this::onTarget);
     }
 
     public Command pickupStow() {
-        return startEnd(() -> setpoint = Constants.PICKUP, () -> setpoint = Constants.STOW);
+        return startEnd(() -> set(Constants.PICKUP), () -> set(Constants.STOW));
     }
 
     public Command stow() {
@@ -120,6 +131,6 @@ public class Arm extends SubsystemBase {
     }
 
     public Command defaultCommand(Supplier<Double> change) {
-        return run(() -> setpoint = setpoint.plus(Constants.MANUAL_SPEED.times(change.get())));
+        return run(() -> set(setpoint.plus(Constants.MANUAL_SPEED.times(change.get()))));
     }
 }

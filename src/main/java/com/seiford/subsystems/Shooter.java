@@ -10,7 +10,6 @@ import com.revrobotics.SparkPIDController;
 import com.seiford.util.spark.ClosedLoopConfiguration;
 import com.seiford.util.spark.CurrentLimitConfiguration;
 import com.seiford.util.spark.FeedbackConfiguration;
-import com.seiford.util.spark.FollowingConfiguration;
 import com.seiford.util.spark.SparkConfiguration;
 import com.seiford.util.spark.StatusFrameConfiguration;
 
@@ -23,19 +22,13 @@ public class Shooter extends SubsystemBase {
         public static final int TOP_CAN_ID = 10;
         public static final int BOTTOM_CAN_ID = 11;
 
-        public static final SparkConfiguration TOP_CONFIG = new SparkConfiguration(
-                false,
-                IdleMode.kCoast,
-                CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
-                StatusFrameConfiguration.leader(),
-                ClosedLoopConfiguration.outputConstraints(0.0003, 0.0000001, 0.0, 0.0001875, 0.0, 1.0),
-                FeedbackConfiguration.builtInEncoder(1));
-        public static final SparkConfiguration BOTTOM_CONFIG = new SparkConfiguration(
+        public static final SparkConfiguration CONFIG = new SparkConfiguration(
                 false,
                 IdleMode.kCoast,
                 CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
                 StatusFrameConfiguration.normal(),
-                FollowingConfiguration.spark(TOP_CAN_ID, false));
+                ClosedLoopConfiguration.outputConstraints(0.0003, 0.0000001, 0.0, 0.0001875, 0.0, 1.0),
+                FeedbackConfiguration.builtInEncoder(1));
 
         public static final double SPEAKER_SPEED = 5000; // rotations per minute
         public static final double AMP_SPEED = 1000; // rotations per minute
@@ -47,7 +40,7 @@ public class Shooter extends SubsystemBase {
     // Objects
     private final CANSparkMax topMotor, bottomMotor;
     private final RelativeEncoder topEncoder, bottomEncoder;
-    private final SparkPIDController pid;
+    private final SparkPIDController topPID, bottomPID;
 
     private double setpoint;
 
@@ -57,10 +50,10 @@ public class Shooter extends SubsystemBase {
         bottomMotor = new CANSparkMax(Constants.BOTTOM_CAN_ID, MotorType.kBrushless);
         topEncoder = topMotor.getEncoder();
         bottomEncoder = bottomMotor.getEncoder();
-        pid = topMotor.getPIDController();
+        topPID = topMotor.getPIDController();
+        bottomPID = bottomMotor.getPIDController();
 
-        Constants.TOP_CONFIG.apply(topMotor);
-        Constants.BOTTOM_CONFIG.apply(bottomMotor);
+        Constants.CONFIG.apply(topMotor, bottomMotor);
 
         topMotor.burnFlash();
         bottomMotor.burnFlash();
@@ -72,12 +65,12 @@ public class Shooter extends SubsystemBase {
         return setpoint;
     }
 
-    @AutoLogOutput(key = "Shooter/TopVelocity")
+    @AutoLogOutput(key = "Shooter/Top/Velocity")
     private double getTopVelocity() {
         return topEncoder.getVelocity();
     }
 
-    @AutoLogOutput(key = "Shooter/BottomVelocity")
+    @AutoLogOutput(key = "Shooter/Bottom/Velocity")
     private double getBottomVelocity() {
         return bottomEncoder.getVelocity();
     }
@@ -99,7 +92,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        pid.setReference(setpoint, ControlType.kVelocity);
+        topPID.setReference(setpoint, ControlType.kVelocity);
+        bottomPID.setReference(setpoint, ControlType.kVelocity);
     }
 
     private Command speedCommand(double speed) {
