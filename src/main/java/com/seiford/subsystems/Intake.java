@@ -110,6 +110,10 @@ public class Intake extends SubsystemBase {
         return runOnce(() -> setpoint = 0.0);
     }
 
+    public Command autoIntake() {
+        return run(() -> setpoint = Constants.INTAKE_SPEED).until(this::getSensor).withTimeout(2.5);
+    }
+
     public Command intakeStop() {
         return startEnd(() -> setpoint = Constants.INTAKE_SPEED, () -> setpoint = 0.0);
     }

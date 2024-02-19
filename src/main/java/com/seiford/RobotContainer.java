@@ -28,6 +28,8 @@ public class RobotContainer {
 
         public static final double JOYSTICK_DEADBAND = 0.05;
         public static final double GAMEPAD_DEADBAND = 0.2;
+
+        public static final double SHOOT_DELAY = 0.25;
     }
 
     // Objects
@@ -58,7 +60,17 @@ public class RobotContainer {
 
         // Set up for autos
         NamedCommands.registerCommands(Map.of(
-                "TODO", Commands.none()));
+                "Shoot", Commands.sequence(
+                        arm.speaker(),
+                        upbeat.speaker(),
+                        downbeat.shoot(),
+                        Commands.waitSeconds(Constants.SHOOT_DELAY),
+                        upbeat.stop(),
+                        downbeat.stop()),
+                "Intake", Commands.sequence(
+                        arm.pickup(),
+                        downbeat.autoIntake(),
+                        arm.stow())));
         autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
 
         // Set up default commands
@@ -81,7 +93,7 @@ public class RobotContainer {
                         upbeat.speaker()))
                 .onFalse(Commands.sequence(
                         downbeat.shoot(),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(Constants.SHOOT_DELAY),
                         upbeat.stop(),
                         downbeat.stop(),
                         arm.stow()));
@@ -92,7 +104,7 @@ public class RobotContainer {
                         upbeat.amp()))
                 .onFalse(Commands.sequence(
                         downbeat.intake(),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(Constants.SHOOT_DELAY),
                         upbeat.stop(),
                         downbeat.stop(),
                         arm.stow()));

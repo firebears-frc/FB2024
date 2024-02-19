@@ -118,6 +118,10 @@ public class Arm extends SubsystemBase {
         return startEnd(() -> set(Constants.PICKUP), () -> set(Constants.STOW));
     }
 
+    public Command pickup() {
+        return positionCommand(Constants.PICKUP);
+    }
+
     public Command stow() {
         return positionCommand(Constants.STOW);
     }
