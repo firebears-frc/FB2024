@@ -17,7 +17,6 @@ import com.seiford.util.spark.StatusFrameConfiguration;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Intake extends SubsystemBase {
     // Constants
@@ -46,7 +45,8 @@ public class Intake extends SubsystemBase {
     private final SparkPIDController pid;
     private final DigitalInput sensor;
 
-    private double setpoint;
+    private double setpoint = 0.0;
+    private boolean hasNote = false;
 
     // Constructor
     public Intake() {
@@ -59,7 +59,6 @@ public class Intake extends SubsystemBase {
         motor.burnFlash();
 
         sensor = new DigitalInput(Constants.SENSOR_DIO_PORT);
-        new Trigger(this::getSensor).onTrue(stop());
     }
 
     // Interface functions
@@ -90,6 +89,14 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (getSensor() && !hasNote) {
+            setpoint = 0;
+            hasNote = true;
+        }
+        else if (!getSensor()) {
+            hasNote = false;
+        }
+
         pid.setReference(setpoint, ControlType.kVelocity);
     }
 
