@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,10 +28,12 @@ public class Lights extends SubsystemBase {
         if (ally.isPresent() && (ally.get() == Alliance.Blue)) {
                 isRed = false;
             }else{
-                isRed = false;
+                isRed = true;
             }
 
         setDefault();
+
+        Logger.recordOutput("Lights/isRedAlliance", isRed);
     }
 
     private void setDefault() {
