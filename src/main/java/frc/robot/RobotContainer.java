@@ -29,6 +29,7 @@ import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.Glissando;
 import frc.robot.subsystems.UpBeat;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Lights;
 
 public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
@@ -37,6 +38,7 @@ public class RobotContainer {
     private final Arm m_arm = new Arm();
     //private final Glissando m_climb = new Glissando();
     private Vision vision;
+    private Lights lights = new Lights();
     private final CommandJoystick one = new CommandJoystick(0);
     private final CommandJoystick two = new CommandJoystick(1);
     private final CommandXboxController xboxController = new CommandXboxController(2);
