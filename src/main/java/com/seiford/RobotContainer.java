@@ -61,8 +61,6 @@ public class RobotContainer {
         // Set up for autos
         NamedCommands.registerCommands(Map.of(
                 "Shoot", Commands.sequence(
-                        arm.speaker(),
-                        upbeat.speaker(),
                         downbeat.shoot(),
                         Commands.waitSeconds(Constants.SHOOT_DELAY),
                         upbeat.stop(),
@@ -70,7 +68,9 @@ public class RobotContainer {
                 "Intake", Commands.sequence(
                         arm.pickup(),
                         downbeat.autoIntake(),
-                        arm.stow())));
+                        arm.stow(),
+                        upbeat.speaker(),
+                        arm.speaker())));
         autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
 
         // Set up default commands

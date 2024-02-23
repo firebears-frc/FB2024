@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends LoggedRobot {
-    public static class Constants {
+    /*public static class Constants {
         public static final Map<Integer, String> CAN_IDs = Map.of(
                 1, "Front Left Driving",
                 2, "Front Left Turning",
@@ -31,7 +31,7 @@ public class Robot extends LoggedRobot {
                 13, "Left Arm",
                 14, "Right Climber",
                 15, "Left Climber");
-    }
+    }*/
 
     private RobotContainer robotContainer;
     private Command autonomousCommand;
@@ -94,7 +94,7 @@ public class Robot extends LoggedRobot {
             Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
         }
 
-        Logger.registerURCL(URCL.startExternal(Constants.CAN_IDs));
+        Logger.registerURCL(URCL.startExternal(/*Constants.CAN_IDs*/));
         Logger.start();
     }
 }
