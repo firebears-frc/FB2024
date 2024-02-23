@@ -48,11 +48,13 @@ public class Lights extends SubsystemBase {
         for (var i = 0; i < light_stripBuffer.getLength(); i++) {
             light_stripBuffer.setRGB(i, 255, 0, 0);
         }
+        light_strip.setData(light_stripBuffer);
     }
 
     public void setBlue() {
         for (var i = 0; i < light_stripBuffer.getLength(); i++) {
             light_stripBuffer.setRGB(i, 0, 0, 255);
         }
+        light_strip.setData(light_stripBuffer);
     }
 }
