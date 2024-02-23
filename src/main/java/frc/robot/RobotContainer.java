@@ -54,7 +54,7 @@ public class RobotContainer {
             "shootSequence", Commands.sequence(
                 m_arm.speakerShoot(),
                 m_shooter.autoShoot(),
-                Commands.waitSeconds(.125),
+                Commands.waitSeconds(.25),
                 m_intake.intakeNote(),
                 Commands.waitSeconds(.256),
                 m_shooter.pauseUpBeat()

@@ -30,12 +30,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "5PNV2"
@@ -57,12 +51,6 @@
           "type": "path",
           "data": {
             "pathName": "5PNV3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
           }
         },
         {
@@ -90,12 +78,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "5PNV6"
@@ -111,12 +93,6 @@
           "type": "named",
           "data": {
             "name": "armLow"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
           }
         }
       ]
