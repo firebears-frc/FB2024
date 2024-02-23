@@ -94,6 +94,12 @@
           "data": {
             "name": "armLow"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopPickUp"
+          }
         }
       ]
     }

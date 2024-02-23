@@ -49,12 +49,13 @@ public class RobotContainer {
                 Commands.waitSeconds(.125)
             ),
             "stopPickUp", Commands.sequence(
+                Commands.waitSeconds(.125),
                 m_intake.pauseDownBeat()
             ),
             "shootSequence", Commands.sequence(
                 m_arm.speakerShoot(),
                 m_shooter.autoShoot(),
-                Commands.waitSeconds(.25),
+                Commands.waitSeconds(.5),
                 m_intake.intakeNote(),
                 Commands.waitSeconds(.256),
                 m_shooter.pauseUpBeat()
