@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Lights extends SubsystemBase {
     private AddressableLED light_strip;
@@ -43,40 +43,26 @@ public class Lights extends SubsystemBase {
         Logger.recordOutput("Lights/isRedAlliance", isRed);
     }
 
+    private void setColor(Color color){
+        for (var i = 0; i < light_stripBuffer.getLength(); i++) {
+            light_stripBuffer.setLED(i, color);;
+        }
+        light_strip.setData(light_stripBuffer);
+    }
+
     public void setDefault() {
         if(isRed){
-            setRed();
+            setColor(Color.kRed);
         }else{
-            setBlue();
+            setColor(Color.kBlue);;
         }
-    }
-
-    private void setRed(){
-        for (var i = 0; i < light_stripBuffer.getLength(); i++) {
-            light_stripBuffer.setRGB(i, 255, 0, 0);
-        }
-        light_strip.setData(light_stripBuffer);
-    }
-
-    private void setBlue(){
-        for (var i = 0; i < light_stripBuffer.getLength(); i++) {
-            light_stripBuffer.setRGB(i, 0, 0, 255);
-        }
-        light_strip.setData(light_stripBuffer);
-    }
-
-    private void setOrange(){
-        for (var i = 0; i < light_stripBuffer.getLength(); i++) {
-            light_stripBuffer.setRGB(i, 229, 83, 0);
-        }
-        light_strip.setData(light_stripBuffer);
     }
 
     @Override
     public void periodic() {
         if(sensor.get()){
             if(!e){
-                setOrange();
+                setColor(Color.kOrange);
                 e = true;
             }
         }else if(e){
