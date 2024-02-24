@@ -1,6 +1,9 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.LoggedRobot;
+
+import java.util.Optional;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -12,6 +15,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -197,6 +201,13 @@ public class Bass extends SubsystemBase {
         double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
         double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
+
+        //get alliance color
+        Optional<Alliance> ally = DriverStation.getAlliance();
+        if (ally.isPresent() && ally.get() == Alliance.Red) {
+            xSpeedDelivered *= -1;
+            ySpeedDelivered *= -1;
+        }
 
         drive(new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered), fieldRelative);
     }
