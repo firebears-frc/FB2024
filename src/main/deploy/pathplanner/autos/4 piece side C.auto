@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4312286972999573,
-      "y": 4.110689163208008
+      "x": 1.5140527486801147,
+      "y": 3.352712392807007
     },
-    "rotation": 1.3640905962833822e-19
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
@@ -20,7 +20,7 @@
         {
           "type": "named",
           "data": {
-            "name": "sideShoot"
+            "name": "shootSequence"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "sideShoot"
+            "name": "shootSequence"
           }
         },
         {
@@ -68,7 +68,7 @@
         {
           "type": "named",
           "data": {
-            "name": "sideShoot"
+            "name": "shootSequence"
           }
         },
         {
@@ -87,6 +87,12 @@
           "type": "path",
           "data": {
             "pathName": "4 piece side.7"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
           }
         }
       ]

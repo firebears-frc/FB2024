@@ -58,6 +58,14 @@ public class RobotContainer {
                 Commands.waitSeconds(.35),
                 m_intake.intakeNote(),
                 Commands.waitSeconds(.256),
+                m_shooter.pauseUpBeat()            
+            ),
+            "shootSequence2", Commands.sequence(
+                m_arm.speakerShoot(),
+                m_shooter.autoShoot(),
+                Commands.waitSeconds(.25),
+                m_intake.intakeNote(),
+                Commands.waitSeconds(.256),
                 m_shooter.pauseUpBeat()
             )
             ));
@@ -116,8 +124,8 @@ public class RobotContainer {
             m_arm.speakerShoot(),
             m_shooter.shootNote()
         )).onFalse(Commands.sequence(  
-            m_intake.intakeNote(),
-            Commands.waitSeconds(1),
+            m_intake.shootNote(),
+            Commands.waitSeconds(.25),
             m_shooter.pauseUpBeat(),
             m_intake.pauseDownBeat(),
             m_arm.pickUp()
