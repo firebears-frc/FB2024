@@ -32,19 +32,19 @@ import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Lights;
 
 public class RobotContainer {
-    private final Bass m_robotDrive = new Bass();
-    private final DownBeat m_intake = new DownBeat();
-    private final UpBeat m_shooter = new UpBeat();
-    private final Arm m_arm = new Arm();
+    //private final Bass m_robotDrive = new Bass();
+    //private final DownBeat m_intake = new DownBeat();
+    //private final UpBeat m_shooter = new UpBeat();
+    //private final Arm m_arm = new Arm();
     //private final Glissando m_climb = new Glissando();
-    private Vision vision;
+    //private Vision vision;
     private Lights lights = new Lights();
     private final CommandJoystick one = new CommandJoystick(0);
     private final CommandJoystick two = new CommandJoystick(1);
     private final CommandXboxController xboxController = new CommandXboxController(2);
-    private final LoggedDashboardChooser<Command> autoChooser;
+    //private final LoggedDashboardChooser<Command> autoChooser;
 
-    private void configureAutoCommands(){
+    /*private void configureAutoCommands(){
         NamedCommands.registerCommands(Map.of(
             "armLow", Commands.sequence(
                 m_arm.pickUp(),
@@ -143,4 +143,4 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.get();
     }
-}
+*/}
