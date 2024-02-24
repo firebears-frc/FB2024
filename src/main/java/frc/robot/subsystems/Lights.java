@@ -63,6 +63,17 @@ public class Lights extends SubsystemBase {
         }
     }
 
+    int a=5;
+    private void dimPattern(){
+        List<Color> dim = new ArrayList<Color>();
+        for(var i = 0; i < light_stripBuffer.getLength(); i++){
+            final var brightness = a+(i*5);
+            light_stripBuffer.setRGB(i, brightness, 0, 0);
+        }
+        a+=5;
+        light_strip.setData(light_stripBuffer);
+    }
+
     @Override
     public void periodic() {
         if(sensor.get()){
