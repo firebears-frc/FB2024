@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Lights extends SubsystemBase {
     private AddressableLED light_strip;
     private AddressableLEDBuffer light_stripBuffer;
+    private Color currentColor;
 
     private boolean isRed;
     private boolean e = false;
@@ -43,18 +46,20 @@ public class Lights extends SubsystemBase {
         Logger.recordOutput("Lights/isRedAlliance", isRed);
     }
 
-    private void setColor(Color color){
+    private void setColor(){
         for (var i = 0; i < light_stripBuffer.getLength(); i++) {
-            light_stripBuffer.setLED(i, color);;
+            light_stripBuffer.setLED(i, currentColor);;
         }
         light_strip.setData(light_stripBuffer);
     }
 
     public void setDefault() {
         if(isRed){
-            setColor(Color.kRed);
+            currentColor = Color.kRed;
+            setColor();
         }else{
-            setColor(Color.kBlue);;
+            currentColor = Color.kBlue;
+            setColor();
         }
     }
 
@@ -62,12 +67,14 @@ public class Lights extends SubsystemBase {
     public void periodic() {
         if(sensor.get()){
             if(!e){
-                setColor(Color.kOrange);
+                currentColor = Color.kOrange;
+                setColor();
                 e = true;
             }
         }else if(e){
             setDefault();
             e = false;
         }
+        Logger.recordOutput("Lights/color", currentColor.toString());
     }
 }
