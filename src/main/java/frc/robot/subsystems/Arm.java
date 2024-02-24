@@ -58,7 +58,7 @@ public class Arm extends SubsystemBase {
         shoulderPID.setP(ArmConstants.shoulderP);
         shoulderPID.setI(ArmConstants.shoulderI);
         shoulderPID.setD(ArmConstants.shoulderD);
-
+  
         shoulderPID.setFeedbackDevice(shoulderEncoder);
         shoulderPID.setPositionPIDWrappingEnabled(true);
         shoulderPID.setPositionPIDWrappingMinInput(0.0);
@@ -129,7 +129,8 @@ public class Arm extends SubsystemBase {
         Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
         Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());    
         Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
-        shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition);
+        double feedForward = Math.cos(getShoulderAngle().getRadians()) * ArmConstants.shoulderG;
+        shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition, 0, feedForward);
     }
     
 }
