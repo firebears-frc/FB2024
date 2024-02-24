@@ -1,0 +1,115 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4,
+      "y": 5.54
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}
