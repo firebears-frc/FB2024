@@ -5,7 +5,7 @@
       "x": 1.4,
       "y": 5.54
     },
-    "rotation": 0.0
+    "rotation": 3.901743768174351e-17
   },
   "command": {
     "type": "sequential",
@@ -30,6 +30,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.2"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shootSequence"
@@ -39,12 +45,6 @@
           "type": "named",
           "data": {
             "name": "armLow"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4 piece no vison.2"
           }
         },
         {
@@ -54,6 +54,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.4"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shootSequence"
@@ -63,12 +69,6 @@
           "type": "named",
           "data": {
             "name": "armLow"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "4 piece no vison.4"
           }
         },
         {
@@ -78,15 +78,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shootSequence"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "armLow"
+            "pathName": null
           }
         },
         {
@@ -105,6 +99,12 @@
           "type": "named",
           "data": {
             "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison (1) (1).1"
           }
         }
       ]
