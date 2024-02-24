@@ -30,12 +30,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "5PNV2"
@@ -60,12 +54,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "5PNV4"
@@ -87,12 +75,6 @@
           "type": "path",
           "data": {
             "pathName": "5PNV5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
           }
         },
         {
