@@ -74,7 +74,8 @@ public class Arm extends SubsystemBase {
         private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(15);
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
-        private static final Rotation2d sideShoot = Rotation2d.fromDegrees(20);
+        private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
+        
     }
     @AutoLogOutput(key = "arm/Angle")
     public Rotation2d getShoulderAngle() {

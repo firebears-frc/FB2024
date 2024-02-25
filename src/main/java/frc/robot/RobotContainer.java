@@ -61,7 +61,7 @@ public class RobotContainer {
                 m_shooter.pauseUpBeat()            
             ),
             "shootSequence2", Commands.sequence(
-                m_arm.speakerShoot(),
+                m_arm.sideShoot(),
                 m_shooter.autoShoot(),
                 Commands.waitSeconds(.25),
                 m_intake.intakeNote(),
@@ -122,7 +122,7 @@ public class RobotContainer {
 
         xboxController.rightTrigger().onTrue(Commands.sequence(
             m_arm.speakerShoot(),
-            m_shooter.shootNote()
+            m_shooter.autoShoot()
         )).onFalse(Commands.sequence(  
             m_intake.shootNote(),
             Commands.waitSeconds(.25),
