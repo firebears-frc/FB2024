@@ -63,7 +63,7 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-        leftMotor.set(setpoint);
+        rightMotor.set(setpoint);
     }
 
     // Command factories

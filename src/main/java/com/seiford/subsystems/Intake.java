@@ -1,6 +1,7 @@
 package com.seiford.subsystems;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -29,7 +30,7 @@ public class Intake extends SubsystemBase {
                 IdleMode.kBrake,
                 CurrentLimitConfiguration.complex(20, 10, 10, 25.0),
                 StatusFrameConfiguration.normal(),
-                ClosedLoopConfiguration.simple(0.00001, 0.0, 0.0, 0.0),
+                ClosedLoopConfiguration.simple(0.00001, 0.0, 0.0, 0.000115),
                 FeedbackConfiguration.builtInEncoder(1.0));
 
         public static final double INTAKE_SPEED = 4000; // rotations per minute
@@ -97,6 +98,7 @@ public class Intake extends SubsystemBase {
             hasNote = false;
         }
 
+        Logger.recordOutput("Intake/Output", motor.getAppliedOutput());
         pid.setReference(setpoint, ControlType.kVelocity);
     }
 

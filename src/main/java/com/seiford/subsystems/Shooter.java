@@ -1,6 +1,8 @@
 package com.seiford.subsystems;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -25,7 +27,7 @@ public class Shooter extends SubsystemBase {
         public static final SparkConfiguration CONFIG = new SparkConfiguration(
                 false,
                 IdleMode.kCoast,
-                CurrentLimitConfiguration.complex(40, 20, 10, 45.0),
+                CurrentLimitConfiguration.complex(50, 30, 10, 60.0),
                 StatusFrameConfiguration.normal(),
                 ClosedLoopConfiguration.outputConstraints(0.0003, 0.0000001, 0.0, 0.0001875, 0.0, 1.0),
                 FeedbackConfiguration.builtInEncoder(1));
@@ -92,6 +94,9 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Logger.recordOutput("Shooter/Top/Output", topMotor.getAppliedOutput());
+        Logger.recordOutput("Shooter/Bottom/Output", bottomMotor.getAppliedOutput());
+
         topPID.setReference(setpoint, ControlType.kVelocity);
         bottomPID.setReference(setpoint, ControlType.kVelocity);
     }

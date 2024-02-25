@@ -1,6 +1,7 @@
 package com.seiford.drive;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,7 +15,7 @@ import edu.wpi.first.math.util.Units;
 public class Chassis {
     public static final double ROBOT_WIDTH = Units.inchesToMeters(22);
     public static final double ROBOT_LENGTH = Units.inchesToMeters(28);
-    public static final double MAX_VELOCITY = 8.0; // meters per second
+    public static final double MAX_VELOCITY = 7.8; // meters per second
 
     // Wheels are offset 1.75" into the modules
     private static final double WHEEL_OFFSET = Units.inchesToMeters(1.75);
@@ -88,7 +89,7 @@ public class Chassis {
     }
 
     public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
-        swerveDrive(kinematics.toSwerveModuleStates(chassisSpeeds));
+        swerveDrive(kinematics.toSwerveModuleStates(ChassisSpeeds.discretize(chassisSpeeds, LoggedRobot.defaultPeriodSecs)));
     }
 
     private void swerveDrive(SwerveModuleState states[]) {

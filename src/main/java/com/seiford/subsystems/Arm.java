@@ -3,6 +3,8 @@ package com.seiford.subsystems;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -24,8 +26,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Arm extends SubsystemBase {
     // Constants
     private static final class Constants {
-        public static final int RIGHT_CAN_ID = 12;
-        public static final int LEFT_CAN_ID = 13;
+        public static final int RIGHT_CAN_ID = 13;
+        public static final int LEFT_CAN_ID = 12;
 
         public static final SparkConfiguration RIGHT_CONFIG = new SparkConfiguration(
                 true,
@@ -44,13 +46,13 @@ public class Arm extends SubsystemBase {
         public static final Rotation2d MANUAL_SPEED = Rotation2d.fromDegrees(1.0); // per loop
 
         public static final Rotation2d MIN = Rotation2d.fromDegrees(-5.0);
-        public static final Rotation2d PICKUP = Rotation2d.fromDegrees(-1.0);
-        public static final Rotation2d SPEAKER = Rotation2d.fromDegrees(9.5);
+        public static final Rotation2d PICKUP = Rotation2d.fromDegrees(0.0);
+        public static final Rotation2d SPEAKER = Rotation2d.fromDegrees(15);
         public static final Rotation2d STOW = Rotation2d.fromDegrees(20.0);
         public static final Rotation2d AMP = Rotation2d.fromDegrees(85.0);
         public static final Rotation2d MAX = Rotation2d.fromDegrees(135);
 
-        public static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(2.0);
+        public static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(1.0);
     }
 
     // Objects
@@ -96,6 +98,9 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Logger.recordOutput("Arm/Left/Output", leftMotor.getAppliedOutput());
+        Logger.recordOutput("Arm/Right/Output", rightMotor.getAppliedOutput());
+
         pid.setReference(setpoint.getDegrees(), ControlType.kPosition);
     }
 

@@ -11,9 +11,11 @@ import com.seiford.subsystems.Arm;
 import com.seiford.subsystems.Shooter;
 
 import java.util.Map;
+import java.util.Optional;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -114,10 +116,17 @@ public class RobotContainer {
     }
 
     private ChassisSpeeds getChassisSpeeds() {
-        return new ChassisSpeeds(
-                -MathUtil.applyDeadband(one.getY(), Constants.JOYSTICK_DEADBAND),
-                -MathUtil.applyDeadband(one.getX(), Constants.JOYSTICK_DEADBAND),
-                -MathUtil.applyDeadband(two.getX(), Constants.JOYSTICK_DEADBAND));
+        double x = MathUtil.applyDeadband(one.getY(), Constants.JOYSTICK_DEADBAND);
+        double z = MathUtil.applyDeadband(one.getX(), Constants.JOYSTICK_DEADBAND);
+        double omega = -MathUtil.applyDeadband(two.getX(), Constants.JOYSTICK_DEADBAND);
+
+        Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+            x *= -1.0;
+            z *= -1.0;
+        }
+
+        return new ChassisSpeeds(x, z, omega);
     }
 
     // Command factories
