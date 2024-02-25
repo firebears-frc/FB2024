@@ -34,10 +34,10 @@ public class Lights extends SubsystemBase {
         // choose default color
         Optional<Alliance> ally = DriverStation.getAlliance();
         if (ally.isPresent() && (ally.get() == Alliance.Blue)) {
-                isRed = false;
-            }else{
-                isRed = true;
-            }
+            isRed = false;
+        } else {
+            isRed = true;
+        }
 
         setDefault();
 
@@ -46,46 +46,69 @@ public class Lights extends SubsystemBase {
         Logger.recordOutput("Lights/isRedAlliance", isRed);
     }
 
-    private void setColor(){
+    private void setColor() {
         for (var i = 0; i < light_stripBuffer.getLength(); i++) {
-            light_stripBuffer.setLED(i, currentColor);;
+            light_stripBuffer.setLED(i, currentColor);
+            ;
         }
         light_strip.setData(light_stripBuffer);
     }
 
     public void setDefault() {
-        if(isRed){
+        if (isRed) {
             currentColor = Color.kRed;
             setColor();
-        }else{
+        } else {
             currentColor = Color.kBlue;
             setColor();
         }
     }
 
-    int a=5;
-    private void dimPattern(){
-        List<Color> dim = new ArrayList<Color>();
-        for(var i = 0; i < light_stripBuffer.getLength(); i++){
-            final var brightness = a+(i*5);
-            light_stripBuffer.setRGB(i, brightness, 0, 0);
+    private boolean twinkle = false;
+    private void twinklePattern() {
+        for (var i = 0; i < light_stripBuffer.getLength(); i++) {
+            if (i%2==0 && twinkle) {
+                light_stripBuffer.setLED(i, currentColor);
+            }else if (i%2==1 && twinkle){
+                light_stripBuffer.setLED(i, Color.kBlack);
+            } else if (i%2==0 && !twinkle){
+                light_stripBuffer.setLED(i, Color.kBlack);
+            }else{
+                light_stripBuffer.setLED(i, currentColor);
+            }
         }
-        a+=5;
         light_strip.setData(light_stripBuffer);
     }
 
+    /*
+     * private int a=5;
+     * private boolean
+     * private void dimPattern(){
+     * List<Color> dim = new ArrayList<Color>();
+     * for(var i = 0; i < light_stripBuffer.getLength(); i++){
+     * final var brightness = a+(i*5);
+     * light_stripBuffer.setRGB(i, brightness, 0, 0);
+     * }
+     * a+=5;
+     * light_strip.setData(light_stripBuffer);
+     * }
+     */
+
     @Override
     public void periodic() {
-        if(sensor.get()){
-            if(!e){
+        if (sensor.get()) {
+            if (!e) {
                 currentColor = Color.kOrange;
                 setColor();
                 e = true;
             }
-        }else if(e){
+        } else if (e) {
             setDefault();
             e = false;
         }
+
+        twinklePattern();
+
         Logger.recordOutput("Lights/color", currentColor.toString());
     }
 }
