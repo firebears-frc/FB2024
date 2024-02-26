@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3962770782684422,
-      "y": 5.541202510976451
+      "x": 1.4,
+      "y": 5.54
     },
-    "rotation": 0
+    "rotation": 3.901743768174351e-17
   },
   "command": {
     "type": "sequential",
@@ -26,13 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV1"
+            "pathName": "4 piece no vison.1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV2"
+            "pathName": "4 piece no vison.2"
           }
         },
         {
@@ -50,13 +50,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV3"
+            "pathName": "4 piece no vison.3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV4"
+            "pathName": "4 piece no vison.4"
           }
         },
         {
@@ -74,13 +74,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV5"
+            "pathName": "4 piece no vison.5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV6"
+            "pathName": "4 piece no vison.6"
           }
         },
         {
@@ -96,14 +96,14 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "stopPickUp"
+            "pathName": "4 piece no vison (1) (1).1"
           }
         }
       ]
     }
   },
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

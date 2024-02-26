@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -19,6 +20,7 @@ public class DownBeat extends SubsystemBase {
     private SparkPIDController pid;
     private DigitalInput sensor;
     private double setPoint = 0;
+    private boolean hasNote = false;
 
     public DownBeat() {
         downBeatMotor = new CANSparkMax(9, MotorType.kBrushless);
@@ -38,7 +40,6 @@ public class DownBeat extends SubsystemBase {
 
         //sensor
         sensor = new DigitalInput(0);
-        new Trigger(this :: beamBreak).onTrue(pauseDownBeat());
     }
 
     @AutoLogOutput(key = "downBeat/beamBreak")
@@ -85,6 +86,12 @@ public class DownBeat extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if(beamBreak() && !hasNote){
+            setPoint = 0;
+            hasNote = true;
+        } else if(!beamBreak()){
+            hasNote = false;
+        }
         pid.setReference(setPoint, ControlType.kVelocity);
         
         Logger.recordOutput("downBeat/Output", downBeatMotor.getAppliedOutput());

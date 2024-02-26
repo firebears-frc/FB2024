@@ -145,13 +145,13 @@ public class Constants {
         public static final String kCameraName = "Arducam_OV2311_USB_Camera";
         public static final Transform3d kCameraOffset = new Transform3d(
             new Translation3d(
-                Units.inchesToMeters(16.0),
-                Units.inchesToMeters(-1.5),
-                Units.inchesToMeters(16.0)),
+                Units.inchesToMeters(-11.5),
+                Units.inchesToMeters(0),
+                Units.inchesToMeters(13.00)),
             new Rotation3d(
                 0.0,
-                Rotation2d.fromDegrees(-15.0).getRadians(),
-                0.0
+                Rotation2d.fromDegrees(-30.0).getRadians(),
+                Rotation2d.fromDegrees(180).getRadians()
             ));
     }
 }
