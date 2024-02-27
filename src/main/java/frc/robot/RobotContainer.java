@@ -109,7 +109,7 @@ public class RobotContainer {
         xboxController.povUp().onTrue(m_arm.stow());
         xboxController.povDown().onTrue(m_arm.ampShoot());
         
-        xboxController.leftTrigger().onTrue(Commands.sequence(
+        xboxController.leftTrigger().onTrue(Commands.parallel(
             m_arm.ampShoot(),
             m_shooter.ampSpeed()
         )).onFalse(Commands.sequence(  
@@ -120,7 +120,7 @@ public class RobotContainer {
             m_arm.pickUp()
         ));
 
-        xboxController.rightTrigger().onTrue(Commands.sequence(
+        xboxController.rightTrigger().onTrue(Commands.parallel(
             m_arm.speakerShoot(),
             m_shooter.autoShoot()
         )).onFalse(Commands.sequence(  
