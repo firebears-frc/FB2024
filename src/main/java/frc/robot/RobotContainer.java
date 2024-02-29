@@ -37,7 +37,7 @@ public class RobotContainer {
     private final DownBeat m_intake = new DownBeat();
     private final UpBeat m_shooter = new UpBeat();
     private final Arm m_arm = new Arm();
-    //private final Glissando m_climb = new Glissando();
+    private final Glissando m_climb = new Glissando();
     private Vision vision;
     private final UsbCamera usbcamera;
     private final CommandJoystick one = new CommandJoystick(0);
@@ -111,8 +111,6 @@ public class RobotContainer {
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
         xboxController.b().onTrue(m_arm.pickUp()); 
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
-        xboxController.povUp().onTrue(m_arm.stow());
-        xboxController.povDown().onTrue(m_arm.ampShoot());
         
         xboxController.leftTrigger().onTrue(Commands.parallel(
             m_arm.ampShoot(),
@@ -146,8 +144,8 @@ public class RobotContainer {
             )
         );
         
-        //xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
-        //xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
+        xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
+        xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
         //xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
 
     }
