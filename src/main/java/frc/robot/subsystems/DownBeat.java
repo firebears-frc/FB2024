@@ -14,6 +14,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 public class DownBeat extends SubsystemBase {
     private CANSparkMax downBeatMotor;
@@ -30,6 +31,9 @@ public class DownBeat extends SubsystemBase {
         downBeatMotor.setInverted(true);
         downBeatMotor.setIdleMode(IdleMode.kBrake);
         pid = downBeatMotor.getPIDController();
+        downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
         pid.setP(0.00001);
         pid.setI(0.0);

@@ -40,6 +40,9 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+        shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
         shoulderMotorLeft = new CANSparkMax(12, MotorType.kBrushless);
 
@@ -50,7 +53,11 @@ public class Arm extends SubsystemBase {
         shoulderMotorLeft.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
         shoulderMotorLeft.follow(shoulderMotorRight, true);
         shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+        shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
         shoulderMotorLeft.burnFlash();
+
 
         shoulderPID = shoulderMotorRight.getPIDController();
         shoulderEncoder = shoulderMotorRight.getAbsoluteEncoder(Type.kDutyCycle);

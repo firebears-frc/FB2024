@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,6 +33,16 @@ public class Glissando extends SubsystemBase {
 
         climbRight.setSecondaryCurrentLimit(scndLimit);
         climbLeft.setSecondaryCurrentLimit(scndLimit);
+
+        climbRight.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        climbRight.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        climbRight.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+        climbLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        climbLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        climbLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+
+        climbRight.burnFlash();
+        climbLeft.burnFlash();
     }
 
     public Command climb() {
