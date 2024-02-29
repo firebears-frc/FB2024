@@ -13,6 +13,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -37,6 +39,7 @@ public class RobotContainer {
     private final Arm m_arm = new Arm();
     private final Glissando m_climb = new Glissando();
     private Vision vision;
+    private final UsbCamera usbcamera;
     private final CommandJoystick one = new CommandJoystick(0);
     private final CommandJoystick two = new CommandJoystick(1);
     private final CommandXboxController xboxController = new CommandXboxController(2);
@@ -78,6 +81,8 @@ public class RobotContainer {
         catch(IOException e){
             DriverStation.reportWarning("Unable to initialize vision", e.getStackTrace());
         }
+        usbcamera = CameraServer.startAutomaticCapture();
+        usbcamera.setResolution(320, 240);
         configureBindings();
 
         m_robotDrive.setDefaultCommand(
