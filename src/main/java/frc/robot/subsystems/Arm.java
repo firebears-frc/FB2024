@@ -85,8 +85,8 @@ public class Arm extends SubsystemBase {
     public void setShoulderSetpoint(Rotation2d setpoint) {        
         if (setpoint.getDegrees() < -5) {
              setpoint = Rotation2d.fromDegrees(-5);
-        } else if (setpoint.getDegrees() > 130) {
-             setpoint = Rotation2d.fromDegrees(130);
+        } else if (setpoint.getDegrees() > 100) {
+             setpoint = Rotation2d.fromDegrees(100);
         }
         shoulderSetpoint = setpoint;
     }
