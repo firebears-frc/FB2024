@@ -16,7 +16,7 @@ public class Glissando extends SubsystemBase {
     private static int freeLimit = 20;
     private static int scndLimit = 40;
 
-    private static double climbSpeed = 0.5;
+    private static double climbSpeed = 1;
 
     public Glissando() {
         climbRight = new CANSparkMax(14, MotorType.kBrushless);
