@@ -106,9 +106,9 @@ public class RobotContainer {
         two.button(6).onTrue(m_climb.climbLeftUp()).onFalse(m_climb.pauseClimb());
         two.button(7).onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
 
-        two.button(8).onTrue(m_climb.climbRightDown()).onFalse(m_climb.pauseClimb());
+        two.button(10).onTrue(m_climb.climbRightDown()).onFalse(m_climb.pauseClimb());
         two.button(9).onTrue(m_climb.climbLeftDown()).onFalse(m_climb.pauseClimb());
-        two.button(10).onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
+        two.button(8).onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
 
         xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
