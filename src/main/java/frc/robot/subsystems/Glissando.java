@@ -72,4 +72,23 @@ public class Glissando extends SubsystemBase {
                 () ->  pauseClimb()
                 );
     }
+
+    public Command climbSideUp(Boolean side){
+        return runOnce(() -> {
+            if(side == true){
+            climbRight.set(climbSpeed);
+            } else {
+                climbLeft.set(climbSpeed);
+            }
+        });
+    }
+    public Command climbSideDown(Boolean side){
+        return runOnce(() -> {
+            if(side == true){
+            climbRight.set(-(climbSpeed));
+            } else {
+                climbLeft.set(-(climbSpeed));
+            }
+        });
+    }
 }

@@ -40,8 +40,8 @@ public class RobotContainer {
     private final Glissando m_climb = new Glissando();
     private Vision vision;
     private final UsbCamera usbcamera;
-    private final CommandJoystick one = new CommandJoystick(0);
-    private final CommandJoystick two = new CommandJoystick(1);
+    private final CommandJoystick one = new CommandJoystick(0); //right
+    private final CommandJoystick two = new CommandJoystick(1); //left
     private final CommandXboxController xboxController = new CommandXboxController(2);
     private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -101,9 +101,14 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        one.trigger().toggleOnTrue(new StartEndCommand(m_robotDrive::setX, () -> {
-        }, m_robotDrive));
-        two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        one.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        one.button(5).onTrue(m_climb.climbSideUp(false));
+        one.button(6).onTrue(m_climb.climbSideUp(true));
+        one.button(7).onTrue(m_climb.climb());
+
+        one.button(8).onTrue(m_climb.climbSideDown(false));
+        one.button(9).onTrue(m_climb.climbSideDown(true));
+        one.button(10).onTrue(m_climb.climb());
 
         xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
