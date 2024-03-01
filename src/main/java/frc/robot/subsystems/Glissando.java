@@ -65,4 +65,11 @@ public class Glissando extends SubsystemBase {
             climbLeft.set(0);
         });
     }
+
+    private Command driveTillStop(){
+            return startEnd(
+                () -> climb(),
+                () ->  pauseClimb()
+                );
+    }
 }
