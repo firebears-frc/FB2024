@@ -66,7 +66,7 @@ public class Glissando extends SubsystemBase {
         });
     }
 
-    private Command driveTillStop(){
+    public Command climbTillStop(){
             return startEnd(
                 () -> climb(),
                 () ->  pauseClimb()

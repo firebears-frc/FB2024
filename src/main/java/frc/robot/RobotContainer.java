@@ -111,6 +111,12 @@ public class RobotContainer {
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
         xboxController.b().onTrue(m_arm.pickUp()); 
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
+        xboxController.leftBumper().onTrue(m_climb.climbTillStop());
+
+        xboxController.povRight().onTrue(Commands.sequence(
+            m_arm.pickUp(),
+            m_shooter.pauseUpBeat()
+        ));
         
         xboxController.leftTrigger().onTrue(Commands.parallel(
             m_arm.ampShoot(),
