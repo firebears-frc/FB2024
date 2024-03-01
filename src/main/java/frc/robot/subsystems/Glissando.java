@@ -66,11 +66,11 @@ public class Glissando extends SubsystemBase {
         });
     }
 
-    public Command climbTillStop(){
-            return startEnd(
-                () -> climb(),
-                () ->  pauseClimb()
-                );
+    public Command climbHalfSpeed(){
+            return runOnce(() -> {
+                climbRight.set((climbSpeed)/2);
+                climbLeft.set((climbSpeed)/2);
+            });
     }
 
     public Command climbRightUp(){
