@@ -73,22 +73,27 @@ public class Glissando extends SubsystemBase {
                 );
     }
 
-    public Command climbSideUp(Boolean side){
+    public Command climbRightUp(){
         return runOnce(() -> {
-            if(side == true){
             climbRight.set(climbSpeed);
-            } else {
-                climbLeft.set(climbSpeed);
-            }
+        });
+
+    }
+    public Command climbRightDown(){
+        return runOnce(() -> {
+            climbRight.set(-(climbSpeed));
         });
     }
-    public Command climbSideDown(Boolean side){
+
+    public Command climbLeftUp(){
         return runOnce(() -> {
-            if(side == true){
-            climbRight.set(-(climbSpeed));
-            } else {
-                climbLeft.set(-(climbSpeed));
-            }
+            climbLeft.set(climbSpeed);
+        });
+
+    }
+    public Command climbLeftDown(){
+        return runOnce(() -> {
+            climbLeft.set(-(climbSpeed));
         });
     }
 }
