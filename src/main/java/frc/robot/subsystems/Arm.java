@@ -82,6 +82,7 @@ public class Arm extends SubsystemBase {
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
         private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
+        private static final Rotation2d straightShot = Rotation2d.fromDegrees(13.5);
         
     }
     @AutoLogOutput(key = "arm/Angle")
@@ -130,6 +131,9 @@ public class Arm extends SubsystemBase {
     }
     public Command sideShoot(){
         return positionCommand(Constants.sideShoot);
+    }
+    public Command straightShot(){
+        return positionCommand(Constants.straightShot);
     }
 
     private Command positionCommand(Rotation2d position){

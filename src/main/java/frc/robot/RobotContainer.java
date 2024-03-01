@@ -56,16 +56,16 @@ public class RobotContainer {
                 m_intake.pauseDownBeat()
             ),
             "shootSequence", Commands.sequence(
-                m_arm.speakerShoot(),
-                m_shooter.autoShoot(),
+                m_arm.straightShot(),
+                m_shooter.straightAutoShot(),
                 Commands.waitSeconds(.35),
                 m_intake.intakeNote(),
                 Commands.waitSeconds(.256),
                 m_shooter.pauseUpBeat()            
             ),
             "shootSequence2", Commands.sequence(
-                m_arm.sideShoot(),
-                m_shooter.autoShoot(),
+                m_arm.straightShot(),
+                m_shooter.straightAutoShot(),
                 Commands.waitSeconds(.25),
                 m_intake.intakeNote(),
                 Commands.waitSeconds(.256),

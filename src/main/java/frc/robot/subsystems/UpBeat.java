@@ -67,6 +67,7 @@ public class UpBeat extends SubsystemBase {
         private static final double reverse = -1000.00;
         private static final double shoot = 3600.00;
         private static final double amp = 1000.00;
+        private static final double straightShot = 3600.00;
     }
 
     @AutoLogOutput(key = "upBeat/speed")
@@ -109,6 +110,10 @@ public class UpBeat extends SubsystemBase {
 
     public Command autoShoot() {
         return speedCommand(Constants.shoot);
+    }
+
+    public Command straightAutoShot(){
+        return speedCommand(Constants.straightShot);
     }
 
     @Override
