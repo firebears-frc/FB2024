@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.708089344106616,
+      "y": 6.683920394867817
+    },
+    "rotation": 61.0490047925332
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armHigh"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopPickUp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "finals match 1 1v8 1"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 8.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "finals match 1 1v8 2"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
