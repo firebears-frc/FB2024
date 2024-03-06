@@ -2,19 +2,38 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4500000000000004,
-      "y": 2.7500000000000004
+      "x": 0.8,
+      "y": 4.45
     },
-    "rotation": -90.0
+    "rotation": -60.16056848873644
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Glue.5"
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Bottom - Close.1"
+                }
+              }
+            ]
           }
         },
         {
@@ -49,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Bottom - Center.1"
+                  "pathName": "Glue.3"
                 }
               }
             ]

@@ -2,19 +2,38 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4500000000000004,
-      "y": 2.7500000000000004
+      "x": 0.8,
+      "y": 6.65
     },
-    "rotation": -90.0
+    "rotation": 60.16056848873644
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Glue.5"
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Top - Close.1"
+                }
+              }
+            ]
           }
         },
         {
@@ -49,7 +68,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Bottom - Center.1"
+                  "pathName": "Glue.1"
                 }
               }
             ]
@@ -58,7 +77,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.2"
+            "pathName": "Top - Center.2"
           }
         },
         {
@@ -93,7 +112,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Bottom - Center.3"
+                  "pathName": "Top - Center.3"
                 }
               }
             ]
@@ -102,7 +121,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.4"
+            "pathName": "Top - Center.4"
           }
         },
         {
@@ -137,7 +156,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Bottom - Center.5"
+                  "pathName": "Top - Center.5"
                 }
               }
             ]
@@ -146,7 +165,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Bottom - Center.6"
+            "pathName": "Top - Center.6"
           }
         },
         {
