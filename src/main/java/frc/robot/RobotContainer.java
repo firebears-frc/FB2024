@@ -40,8 +40,8 @@ public class RobotContainer {
     private final Glissando m_climb = new Glissando();
     private Vision vision;
     private final UsbCamera usbcamera;
-    private final CommandJoystick one = new CommandJoystick(0);
-    private final CommandJoystick two = new CommandJoystick(1);
+    private final CommandJoystick one = new CommandJoystick(0); //right
+    private final CommandJoystick two = new CommandJoystick(1); //left
     private final CommandXboxController xboxController = new CommandXboxController(2);
     private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -56,16 +56,16 @@ public class RobotContainer {
                 m_intake.pauseDownBeat()
             ),
             "shootSequence", Commands.sequence(
-                m_arm.speakerShoot(),
-                m_shooter.autoShoot(),
+                m_arm.straightShot(),
+                Commands.waitSeconds(.1),
+                m_shooter.straightAutoShot(),
                 Commands.waitSeconds(.35),
                 m_intake.intakeNote(),
-                Commands.waitSeconds(.256),
                 m_shooter.pauseUpBeat()            
             ),
             "shootSequence2", Commands.sequence(
-                m_arm.sideShoot(),
-                m_shooter.autoShoot(),
+                m_arm.straightShot(),
+                m_shooter.straightAutoShot(),
                 Commands.waitSeconds(.25),
                 m_intake.intakeNote(),
                 Commands.waitSeconds(.256),
@@ -101,9 +101,14 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        one.trigger().toggleOnTrue(new StartEndCommand(m_robotDrive::setX, () -> {
-        }, m_robotDrive));
-        two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        one.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        two.button(5).onTrue(m_climb.climbRightUp()).onFalse(m_climb.pauseClimb());
+        two.button(6).onTrue(m_climb.climbLeftUp()).onFalse(m_climb.pauseClimb());
+        two.button(7).onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
+
+        two.button(10).onTrue(m_climb.climbRightDown()).onFalse(m_climb.pauseClimb());
+        two.button(9).onTrue(m_climb.climbLeftDown()).onFalse(m_climb.pauseClimb());
+        two.button(8).onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
 
         xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
@@ -111,6 +116,12 @@ public class RobotContainer {
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
         xboxController.b().onTrue(m_arm.pickUp()); 
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
+        xboxController.leftBumper().toggleOnTrue(m_climb.climbHalfSpeed()).toggleOnFalse(m_climb.pauseClimb());
+
+        xboxController.povRight().onTrue(Commands.sequence(
+            m_arm.pickUp(),
+            m_shooter.pauseUpBeat()
+        ));
         
         xboxController.leftTrigger().onTrue(Commands.parallel(
             m_arm.ampShoot(),

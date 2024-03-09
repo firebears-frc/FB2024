@@ -40,6 +40,9 @@ public class Arm extends SubsystemBase {
         shoulderMotorRight.setSmartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
         shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+        shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        shoulderMotorRight.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
         shoulderMotorLeft = new CANSparkMax(12, MotorType.kBrushless);
 
@@ -50,7 +53,11 @@ public class Arm extends SubsystemBase {
         shoulderMotorLeft.setSecondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER);
         shoulderMotorLeft.follow(shoulderMotorRight, true);
         shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+        shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
         shoulderMotorLeft.burnFlash();
+
 
         shoulderPID = shoulderMotorRight.getPIDController();
         shoulderEncoder = shoulderMotorRight.getAbsoluteEncoder(Type.kDutyCycle);
@@ -75,6 +82,7 @@ public class Arm extends SubsystemBase {
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
         private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
+        private static final Rotation2d straightShot = Rotation2d.fromDegrees(13.5);
         
     }
     @AutoLogOutput(key = "arm/Angle")
@@ -85,8 +93,8 @@ public class Arm extends SubsystemBase {
     public void setShoulderSetpoint(Rotation2d setpoint) {        
         if (setpoint.getDegrees() < -5) {
              setpoint = Rotation2d.fromDegrees(-5);
-        } else if (setpoint.getDegrees() > 130) {
-             setpoint = Rotation2d.fromDegrees(130);
+        } else if (setpoint.getDegrees() > 100) {
+             setpoint = Rotation2d.fromDegrees(100);
         }
         shoulderSetpoint = setpoint;
     }
@@ -123,6 +131,9 @@ public class Arm extends SubsystemBase {
     }
     public Command sideShoot(){
         return positionCommand(Constants.sideShoot);
+    }
+    public Command straightShot(){
+        return positionCommand(Constants.straightShot);
     }
 
     private Command positionCommand(Rotation2d position){
