@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +26,8 @@ public class Lights extends SubsystemBase {
 
     private DigitalInput sensor;
 
+    private List<Integer> pattern;
+
     public Lights() {
         light_strip = new AddressableLED(9);
         light_stripBuffer = new AddressableLEDBuffer(50);
@@ -44,6 +48,12 @@ public class Lights extends SubsystemBase {
         sensor = new DigitalInput(0);
 
         Logger.recordOutput("Lights/isRedAlliance", isRed);
+
+        pattern = new ArrayList<>();
+        pattern.add(1); //twinkle
+        pattern.add(2); //pulse
+        pattern.add(3); //laser
+        Collections.shuffle(pattern);
     }
 
     private void setColor() {
@@ -64,6 +74,16 @@ public class Lights extends SubsystemBase {
         }
     }
 
+    private void runPattern(int current){
+        if(current == 1){
+            twinklePattern();
+        }else if(current == 2){
+            pulsePattern();
+        }else if(current == 3){
+            laserPattern();
+        }
+    }
+
     private boolean twinkle = false;
     private void twinklePattern() {
         for (var i = 0; i < light_stripBuffer.getLength(); i++) {
@@ -78,6 +98,25 @@ public class Lights extends SubsystemBase {
             }
         }
         light_strip.setData(light_stripBuffer);
+    }
+
+    private int pulse = 0;
+    private boolean pulsee = false;
+    private void pulsePattern(){
+        if(!pulsee){
+            light_stripBuffer.setLED(pulse, Color.kBlack);
+        }else{
+            light_stripBuffer.setLED(pulse, currentColor);
+        }
+        if(pulse>=light_stripBuffer.getLength()){
+            pulse=0;
+            pulsee = !pulsee;
+        }
+        light_strip.setData(light_stripBuffer);
+    }
+
+    private void laserPattern(){
+
     }
 
     /*
@@ -107,7 +146,7 @@ public class Lights extends SubsystemBase {
             e = false;
         }
 
-        twinklePattern();
+        runPattern(pattern.get(1));
 
         Logger.recordOutput("Lights/color", currentColor.toString());
     }
