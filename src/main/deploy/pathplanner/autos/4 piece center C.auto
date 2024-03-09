@@ -1,0 +1,109 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4,
+      "y": 5.54
+    },
+    "rotation": 3.901743768174351e-17
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison.6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootSequence"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece no vison (1) (1).1"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

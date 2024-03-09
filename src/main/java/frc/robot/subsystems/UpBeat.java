@@ -11,6 +11,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 public class UpBeat extends SubsystemBase {
     private CANSparkMax topMotor;
@@ -29,6 +30,9 @@ public class UpBeat extends SubsystemBase {
         topMotor.setInverted(false);
         topMotor.setIdleMode(IdleMode.kCoast);
         topPid = topMotor.getPIDController();
+        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
         bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
         bottomMotor.setSmartCurrentLimit(50, 50);
@@ -37,6 +41,9 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setInverted(false);
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
+        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
         topPid.setP(0.0003);
         topPid.setI(0.0000001);
@@ -58,8 +65,9 @@ public class UpBeat extends SubsystemBase {
     private final static class Constants{
         private static final double stop = 0.00;
         private static final double reverse = -1000.00;
-        private static final double shoot = 5000.00;
+        private static final double shoot = 3600.00;
         private static final double amp = 1000.00;
+        private static final double straightShot = 3600.00;
     }
 
     @AutoLogOutput(key = "upBeat/speed")
@@ -102,6 +110,10 @@ public class UpBeat extends SubsystemBase {
 
     public Command autoShoot() {
         return speedCommand(Constants.shoot);
+    }
+
+    public Command straightAutoShot(){
+        return speedCommand(Constants.straightShot);
     }
 
     @Override

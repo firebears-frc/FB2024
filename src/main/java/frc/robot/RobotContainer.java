@@ -13,6 +13,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,10 +37,11 @@ public class RobotContainer {
     private final DownBeat m_intake = new DownBeat();
     private final UpBeat m_shooter = new UpBeat();
     private final Arm m_arm = new Arm();
-    //private final Glissando m_climb = new Glissando();
+    private final Glissando m_climb = new Glissando();
     private Vision vision;
-    private final CommandJoystick one = new CommandJoystick(0);
-    private final CommandJoystick two = new CommandJoystick(1);
+    private final UsbCamera usbcamera;
+    private final CommandJoystick one = new CommandJoystick(0); //right
+    private final CommandJoystick two = new CommandJoystick(1); //left
     private final CommandXboxController xboxController = new CommandXboxController(2);
     private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -53,9 +56,17 @@ public class RobotContainer {
                 m_intake.pauseDownBeat()
             ),
             "shootSequence", Commands.sequence(
-                m_arm.speakerShoot(),
-                m_shooter.autoShoot(),
-                Commands.waitSeconds(.5),
+                m_arm.straightShot(),
+                Commands.waitSeconds(.1),
+                m_shooter.straightAutoShot(),
+                Commands.waitSeconds(.35),
+                m_intake.intakeNote(),
+                m_shooter.pauseUpBeat()            
+            ),
+            "shootSequence2", Commands.sequence(
+                m_arm.straightShot(),
+                m_shooter.straightAutoShot(),
+                Commands.waitSeconds(.25),
                 m_intake.intakeNote(),
                 Commands.waitSeconds(.256),
                 m_shooter.pauseUpBeat()
@@ -70,6 +81,8 @@ public class RobotContainer {
         catch(IOException e){
             DriverStation.reportWarning("Unable to initialize vision", e.getStackTrace());
         }
+        usbcamera = CameraServer.startAutomaticCapture();
+        usbcamera.setResolution(320, 240);
         configureBindings();
 
         m_robotDrive.setDefaultCommand(
@@ -88,9 +101,14 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        one.trigger().toggleOnTrue(new StartEndCommand(m_robotDrive::setX, () -> {
-        }, m_robotDrive));
-        two.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        one.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
+        two.button(5).onTrue(m_climb.climbRightUp()).onFalse(m_climb.pauseClimb());
+        two.button(6).onTrue(m_climb.climbLeftUp()).onFalse(m_climb.pauseClimb());
+        two.button(7).onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
+
+        two.button(10).onTrue(m_climb.climbRightDown()).onFalse(m_climb.pauseClimb());
+        two.button(9).onTrue(m_climb.climbLeftDown()).onFalse(m_climb.pauseClimb());
+        two.button(8).onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
 
         xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
@@ -98,10 +116,14 @@ public class RobotContainer {
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
         xboxController.b().onTrue(m_arm.pickUp()); 
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
-        xboxController.povUp().onTrue(m_arm.stow());
-        xboxController.povDown().onTrue(m_arm.ampShoot());
+        xboxController.leftBumper().toggleOnTrue(m_climb.climbHalfSpeed()).toggleOnFalse(m_climb.pauseClimb());
+
+        xboxController.povRight().onTrue(Commands.sequence(
+            m_arm.pickUp(),
+            m_shooter.pauseUpBeat()
+        ));
         
-        xboxController.leftTrigger().onTrue(Commands.sequence(
+        xboxController.leftTrigger().onTrue(Commands.parallel(
             m_arm.ampShoot(),
             m_shooter.ampSpeed()
         )).onFalse(Commands.sequence(  
@@ -112,12 +134,12 @@ public class RobotContainer {
             m_arm.pickUp()
         ));
 
-        xboxController.rightTrigger().onTrue(Commands.sequence(
+        xboxController.rightTrigger().onTrue(Commands.parallel(
             m_arm.speakerShoot(),
-            m_shooter.shootNote()
+            m_shooter.autoShoot()
         )).onFalse(Commands.sequence(  
-            m_intake.intakeNote(),
-            Commands.waitSeconds(1),
+            m_intake.shootNote(),
+            Commands.waitSeconds(.25),
             m_shooter.pauseUpBeat(),
             m_intake.pauseDownBeat(),
             m_arm.pickUp()
@@ -133,8 +155,8 @@ public class RobotContainer {
             )
         );
         
-        //xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
-        //xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
+        xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
+        xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
         //xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
 
     }
