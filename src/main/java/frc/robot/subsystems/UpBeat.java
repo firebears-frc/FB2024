@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -19,6 +20,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
+    private SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.25001, 0.1326, 0.02354);
 
 
     public UpBeat() {
@@ -38,18 +40,18 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
 
-        topPid.setP(0.0003);
-        topPid.setI(0.0000001);
+        topPid.setP(1.2557E-08);
+        topPid.setI(0.0);
         topPid.setD(0.0);
-        topPid.setFF(0.0001875);
+        topPid.setFF(0.0);
         topPid.setIZone(100);
         topPid.setOutputRange(0.0, 1.0);
         topMotor.burnFlash();
 
-        bottomPid.setP(0.0003);
-        bottomPid.setI(0.0000001);
+        bottomPid.setP(1.2557E-08);
+        bottomPid.setI(0.0);
         bottomPid.setD(0.0);
-        bottomPid.setFF(0.0001875);
+        bottomPid.setFF(0.0);
         bottomPid.setIZone(100);
         bottomPid.setOutputRange(0.0, 1.0);
         bottomMotor.burnFlash();
@@ -84,8 +86,7 @@ public class UpBeat extends SubsystemBase {
     public Command shootNote() {
         return startEnd(
             () -> setPoint = Constants.shoot,
-            () -> setPoint = Constants.stop
-            );
+            () -> setPoint = Constants.stop);
     }
 
     public Command reverseShootNote() {
@@ -106,9 +107,11 @@ public class UpBeat extends SubsystemBase {
 
     @Override
     public void periodic() {
-        topPid.setReference(setPoint, ControlType.kVelocity);
-        bottomPid.setReference(setPoint, ControlType.kVelocity);
+        double feedforwardVolts = feedforward.calculate(setPoint);
+        topPid.setReference(setPoint, ControlType.kVelocity, 0, feedforwardVolts);
+        bottomPid.setReference(setPoint, ControlType.kVelocity, 0, feedforwardVolts);
 
+        Logger.recordOutput("upBeat/feedForward", feedforwardVolts);
         Logger.recordOutput("upBeat/topOutput", topMotor.getAppliedOutput());
         Logger.recordOutput("upBeat/bottomOutput", bottomMotor.getAppliedOutput());
         Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
