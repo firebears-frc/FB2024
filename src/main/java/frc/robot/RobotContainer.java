@@ -56,19 +56,19 @@ public class RobotContainer {
                 m_intake.pauseDownBeat()
             ),
             "shootSequence", Commands.sequence(
-                m_arm.straightShot(),
-                Commands.waitSeconds(.1),
-                m_shooter.straightAutoShot(),
-                Commands.waitSeconds(.35),
+                Commands.parallel(m_arm.straightShot(),
+                m_shooter.straightAutoShot()),
+                Commands.waitSeconds(.256),
                 m_intake.intakeNote(),
+                Commands.waitSeconds(.256),
                 m_shooter.pauseUpBeat()            
             ),
             "shootSequence2", Commands.sequence(
-                m_arm.straightShot(),
-                m_shooter.straightAutoShot(),
-                Commands.waitSeconds(.25),
-                m_intake.intakeNote(),
+                Commands.parallel(m_arm.straightShot(),
+                m_shooter.straightAutoShot()),
                 Commands.waitSeconds(.256),
+                m_intake.intakeNote(),
+                Commands.waitSeconds(.256*1.5),
                 m_shooter.pauseUpBeat()
             )
             ));
@@ -158,7 +158,6 @@ public class RobotContainer {
         xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
         xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
         //xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
-
     }
 
     public Command getAutonomousCommand() {
