@@ -127,7 +127,7 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
-        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());    
+        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput()); 
         Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
         double feedForward = Math.cos(getShoulderAngle().getRadians()) * ArmConstants.shoulderG;
         shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition, 0, feedForward);
