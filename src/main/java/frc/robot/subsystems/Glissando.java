@@ -22,12 +22,16 @@ public class Glissando extends SubsystemBase {
     private static int freeLimit = 20;
     private static int scndLimit = 40;
 
+    private double rightCommandSpeed;
+    private double leftCommandSpeed;
     private double rightClimbSpeed;
     private double leftClimbSpeed;
 
     public Glissando() {
         gyro = new AHRS(SPI.Port.kMXP);
 
+        rightCommandSpeed = 0;
+        leftCommandSpeed = 0;
         rightClimbSpeed = 0;
         leftClimbSpeed = 0;
 
@@ -59,61 +63,78 @@ public class Glissando extends SubsystemBase {
 
     public Command climb() {
         return runOnce(() -> {
-            rightClimbSpeed = 1;
-            leftClimbSpeed = 1;
+            rightCommandSpeed = 1;
+            leftCommandSpeed = 1;
         });
     }
 
     public Command unclimb() {
         return runOnce(() -> {
-            rightClimbSpeed = -1;
-            leftClimbSpeed = -1;
+            rightCommandSpeed = -1;
+            leftCommandSpeed = -1;
         });
     }
 
     public Command pauseClimb() {
         return runOnce(() -> {
-            rightClimbSpeed = 0;
-            leftClimbSpeed = 0;
+            rightCommandSpeed = 0;
+            leftCommandSpeed = 0;
         });
     }
 
     public Command climbHalfSpeed(){
             return runOnce(() -> {
-            rightClimbSpeed = 0.5;
-            leftClimbSpeed = 0.5;
+            rightCommandSpeed = 0.5;
+            leftCommandSpeed = 0.5;
             });
     }
 
     public Command climbRightUp(){
         return runOnce(() -> {
-            rightClimbSpeed = 1;
+            rightCommandSpeed = 1;
         });
 
     }
     public Command climbRightDown(){
         return runOnce(() -> {
-            rightClimbSpeed = -1;
+            rightCommandSpeed = -1;
         });
     }
 
     public Command climbLeftUp(){
         return runOnce(() -> {
-            leftClimbSpeed = 1;
+            leftCommandSpeed = 1;
         });
 
     }
     public Command climbLeftDown(){
         return runOnce(() -> {
-            leftClimbSpeed = -1;
+            leftCommandSpeed = -1;
         });
+    }
+
+    private void level(){
+        if(gyro.getRoll()>=5){
+            rightClimbSpeed = rightCommandSpeed;
+            leftClimbSpeed = rightCommandSpeed*0.5;
+        }else if(gyro.getRoll()<=-5){
+            rightClimbSpeed = rightCommandSpeed*0.5;
+            leftClimbSpeed = leftCommandSpeed*0.5;
+        }else{
+            rightClimbSpeed = rightCommandSpeed;
+            leftClimbSpeed = leftCommandSpeed;
+        }
     }
 
     @Override
     public void periodic() {
+        level();
+
         climbRight.set(rightClimbSpeed);
         climbLeft.set(leftClimbSpeed);
 
+        Logger.recordOutput("glissando/setPointRight", rightCommandSpeed);
+        Logger.recordOutput("glissando/setPointLeft", leftCommandSpeed);        
         Logger.recordOutput("glissando/climbRight", rightClimbSpeed);
         Logger.recordOutput("glissando/climbLeft", leftClimbSpeed);
         Logger.recordOutput("glissando/gyro", gyro.getRoll());
