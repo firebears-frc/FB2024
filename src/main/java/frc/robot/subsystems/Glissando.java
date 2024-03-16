@@ -1,16 +1,22 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Glissando extends SubsystemBase {
     private CANSparkMax climbRight;
     private CANSparkMax climbLeft;
+
+    private AHRS gyro;
 
     private static int stallLimit = 30;
     private static int freeLimit = 20;
@@ -19,6 +25,8 @@ public class Glissando extends SubsystemBase {
     private static double climbSpeed = 1;
 
     public Glissando() {
+        gyro = new AHRS(SPI.Port.kMXP);
+
         climbRight = new CANSparkMax(14, MotorType.kBrushless);
         climbLeft = new CANSparkMax(15, MotorType.kBrushless);
 
@@ -95,5 +103,10 @@ public class Glissando extends SubsystemBase {
         return runOnce(() -> {
             climbLeft.set(-(climbSpeed));
         });
+    }
+
+    @Override
+    public void periodic() {
+        Logger.recordOutput("glissando/gyro", gyro.getRoll());
     }
 }
