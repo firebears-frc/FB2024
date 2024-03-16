@@ -68,6 +68,7 @@ public class UpBeat extends SubsystemBase {
         private static final double shoot = 3600.00;
         private static final double amp = 1000.00;
         private static final double straightShot = 3600.00;
+        private static final double magicNumber = 5000.0;
     }
 
     @AutoLogOutput(key = "upBeat/speed")
@@ -91,7 +92,7 @@ public class UpBeat extends SubsystemBase {
 
     public Command shootNote() {
         return startEnd(
-            () -> setPoint = Constants.shoot,
+            () -> setPoint = Constants.magicNumber,
             () -> setPoint = Constants.stop
             );
     }

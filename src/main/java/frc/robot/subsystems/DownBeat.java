@@ -21,6 +21,7 @@ public class DownBeat extends SubsystemBase {
     private SparkPIDController pid;
     private DigitalInput sensor;
     private double setPoint = 0;
+    @AutoLogOutput(key="downBeat/hasNote")
     private boolean hasNote = false;
 
     public DownBeat() {
