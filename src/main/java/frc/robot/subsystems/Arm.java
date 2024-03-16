@@ -21,9 +21,9 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import frc.robot.Constants.*;
 
 public class Arm extends SubsystemBase {
-    private static int STALL_CURRENT_LIMIT_SHOULDER = 30;
-    private static int FREE_CURRENT_LIMIT_SHOULDER = 25;
-    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 35;
+    private static int STALL_CURRENT_LIMIT_SHOULDER = 10;
+    private static int FREE_CURRENT_LIMIT_SHOULDER = 5;
+    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 15;
     private CANSparkMax shoulderMotorRight;
     private CANSparkMax shoulderMotorLeft;
     private static SparkAbsoluteEncoder shoulderEncoder;
@@ -79,7 +79,7 @@ public class Arm extends SubsystemBase {
     private final static class Constants{     // arm setpoints
         private static final Rotation2d pickUp = Rotation2d.fromDegrees(0);
         private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(13.5);
-        private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
+        private static final Rotation2d ampShoot = Rotation2d.fromDegrees(90);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
         private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
         private static final Rotation2d straightShot = Rotation2d.fromDegrees(13.5);
