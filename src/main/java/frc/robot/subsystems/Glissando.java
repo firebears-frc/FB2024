@@ -115,11 +115,11 @@ public class Glissando extends SubsystemBase {
 
     private void level(){
         if(gyro.getRoll()>=5){
-            rightClimbSpeed = rightCommandSpeed;
-            leftClimbSpeed = rightCommandSpeed*0.5;
-        }else if(gyro.getRoll()<=-5){
             rightClimbSpeed = rightCommandSpeed*0.5;
             leftClimbSpeed = leftCommandSpeed;
+        }else if(gyro.getRoll()<=-5){
+            rightClimbSpeed = rightCommandSpeed;
+            leftClimbSpeed = leftCommandSpeed*0.5;
         }else{
             rightClimbSpeed = rightCommandSpeed;
             leftClimbSpeed = leftCommandSpeed;
