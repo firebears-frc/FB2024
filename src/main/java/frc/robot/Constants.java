@@ -150,7 +150,7 @@ public class Constants {
                 Units.inchesToMeters(0),
                 Units.inchesToMeters(13.00)),
             new Rotation3d(
-                0.0,
+                Rotation2d.fromDegrees(180).getRadians(),
                 Rotation2d.fromDegrees(-30.0).getRadians(),
                 Rotation2d.fromDegrees(180).getRadians()
             ));
