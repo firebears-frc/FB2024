@@ -78,11 +78,12 @@ public class Arm extends SubsystemBase {
 
     private final static class Constants{     // arm setpoints
         private static final Rotation2d pickUp = Rotation2d.fromDegrees(0);
-        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(13.5);
+        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(3.5);
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(90);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
         private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
-        private static final Rotation2d straightShot = Rotation2d.fromDegrees(13.5);
+        private static final Rotation2d straightShot = Rotation2d.fromDegrees(14.5);
+        private static final Rotation2d autoPickUp = Rotation2d.fromDegrees(-2);
         
     }
     @AutoLogOutput(key = "arm/Angle")
@@ -105,7 +106,7 @@ public class Arm extends SubsystemBase {
 
     @AutoLogOutput(key = "arm/onTarget")
     private boolean onTarget(){
-      return Math.abs(getError().getDegrees()) < 1;
+      return Math.abs(getError().getDegrees()) < 2;
 
     }
 
@@ -117,6 +118,9 @@ public class Arm extends SubsystemBase {
     
     public Command pickUp(){
         return positionCommand(Constants.pickUp);
+    }
+    public Command autoPickUp(){
+        return positionCommand(Constants.autoPickUp);
     }
     public Command speakerShoot(){
         return positionCommand(Constants.speakerShoot);
