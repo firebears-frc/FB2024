@@ -5,12 +5,18 @@
       "x": 1.4,
       "y": 5.54
     },
-    "rotation": 3.901743768174351e-17
+    "rotation": -1.5006994509461167e-26
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "armLow"
+          }
+        },
         {
           "type": "named",
           "data": {
