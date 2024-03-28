@@ -49,7 +49,8 @@ public class RobotContainer {
         NamedCommands.registerCommands(Map.of(
             "armLow", 
                 m_arm.pickUp(),
-
+            "groundSlam",
+                m_arm.groundSlam(),
             "shootSequence", Commands.sequence(
                 Commands.parallel(
                 m_arm.straightShot(),

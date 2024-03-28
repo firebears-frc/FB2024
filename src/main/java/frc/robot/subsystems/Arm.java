@@ -111,10 +111,6 @@ public class Arm extends SubsystemBase {
            setShoulderSetpoint(shoulderSetpoint.minus(Rotation2d.fromDegrees(shoulderChange.get())));
         });
     }
-    
-    public Command groundSlam(){
-        
-    }
 
     public Command pickUp(){
         return positionCommand(Constants.pickUp, 2.5);
@@ -135,6 +131,7 @@ public class Arm extends SubsystemBase {
         return positionCommand(Constants.straightShot, 1);
     }
 
+
     private boolean onTarget(double tolerance){
         boolean onTarget = Math.abs(getError().getDegrees()) < tolerance;
         Logger.recordOutput("arm/onTargt",onTarget);
@@ -148,6 +145,14 @@ public class Arm extends SubsystemBase {
             runOnce(() -> setShoulderSetpoint(position)),
             Commands.waitSeconds(0.1),
             run(()-> {}).until(()-> onTarget(tolerance))
+        );
+    }
+
+     public Command groundSlam(){
+        return Commands.sequence(
+            runOnce(() -> setShoulderSetpoint(Constants.pickUp)),
+            Commands.waitSeconds(0.1),
+            run(()-> {}).until(()-> getShoulderAngle().getDegrees() < 5)
         );
     }
 

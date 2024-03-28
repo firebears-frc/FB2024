@@ -5,7 +5,7 @@
       "x": 1.4,
       "y": 5.54
     },
-    "rotation": -1.5006994509461167e-26
+    "rotation": 9.893183140694282e-22
   },
   "command": {
     "type": "sequential",
@@ -104,7 +104,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4 piece no vison (1) (1).1"
+            "pathName": "4 piece no vison.3"
           }
         }
       ]
