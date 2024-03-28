@@ -108,7 +108,7 @@ public class Arm extends SubsystemBase {
 
     @AutoLogOutput(key = "arm/onTarget")
     private boolean onTarget(){
-      return Math.abs(getError().getDegrees()) < 0.75;
+      return Math.abs(getError().getDegrees()) < 1;
 
     }
 
