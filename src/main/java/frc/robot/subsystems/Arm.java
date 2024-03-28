@@ -112,12 +112,16 @@ public class Arm extends SubsystemBase {
         });
     }
     
+    public Command groundSlam(){
+        
+    }
+
     public Command pickUp(){
-        return positionCommand(Constants.pickUp, 1);
+        return positionCommand(Constants.pickUp, 2.5);
     }
 
     public Command speakerShoot(){
-        return positionCommand(Constants.speakerShoot, .5);
+        return positionCommand(Constants.speakerShoot, 1);
     }
 
     public Command ampShoot(){
@@ -125,10 +129,10 @@ public class Arm extends SubsystemBase {
     }
 
     public Command sideShoot(){
-        return positionCommand(Constants.sideShoot, .5);
+        return positionCommand(Constants.sideShoot, 1);
     }
     public Command straightShot(){
-        return positionCommand(Constants.straightShot, .5);
+        return positionCommand(Constants.straightShot, 1);
     }
 
     private boolean onTarget(double tolerance){
