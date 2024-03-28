@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.function.Supplier;
@@ -30,6 +32,7 @@ public class Arm extends SubsystemBase {
     private SparkPIDController shoulderPID;
     @AutoLogOutput(key = "arm/setPoint")
     private Rotation2d shoulderSetpoint = new Rotation2d();
+    private Debouncer debounce = new Debouncer(0.2);
 
     public Arm() {
         shoulderMotorRight = new CANSparkMax(13, MotorType.kBrushless);
@@ -142,8 +145,17 @@ public class Arm extends SubsystemBase {
         return positionCommand(Constants.straightShot);
     }
 
+    @AutoLogOutput(key = "arm/at debouncespeed")
+    private boolean debounceSpeed() {
+        return debounce.calculate(onTarget());
+    }
+
     private Command positionCommand(Rotation2d position){
-        return run(()-> setShoulderSetpoint(position)).until(this::onTarget);
+        return Commands.sequence(
+            runOnce(() -> setShoulderSetpoint(position)),
+            Commands.waitSeconds(0.1),
+            run(()-> {}).until(this::debounceSpeed)
+        );
     }
 
     @Override
