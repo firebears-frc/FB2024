@@ -106,12 +106,6 @@ public class Arm extends SubsystemBase {
         return getShoulderAngle().minus(shoulderSetpoint);
     }
 
-    @AutoLogOutput(key = "arm/onTarget")
-    private boolean onTarget(){
-      return Math.abs(getError().getDegrees()) < 1;
-
-    }
-
     public Command defaultCommand(Supplier<Double> shoulderChange) {
         return run(() -> {
            setShoulderSetpoint(shoulderSetpoint.minus(Rotation2d.fromDegrees(shoulderChange.get())));
@@ -119,37 +113,37 @@ public class Arm extends SubsystemBase {
     }
     
     public Command pickUp(){
-        return positionCommand(Constants.pickUp);
+        return positionCommand(Constants.pickUp, 1);
     }
 
     public Command speakerShoot(){
-        return positionCommand(Constants.speakerShoot);
+        return positionCommand(Constants.speakerShoot, .5);
     }
 
     public Command ampShoot(){
-        return positionCommand(Constants.ampShoot);
+        return positionCommand(Constants.ampShoot, 1);
     }
 
-    public Command stow(){
-        return positionCommand(Constants.stow);
-    }
     public Command sideShoot(){
-        return positionCommand(Constants.sideShoot);
+        return positionCommand(Constants.sideShoot, .5);
     }
     public Command straightShot(){
-        return positionCommand(Constants.straightShot);
+        return positionCommand(Constants.straightShot, .5);
     }
 
-    @AutoLogOutput(key = "arm/at debouncespeed")
-    private boolean debounceSpeed() {
-        return debounce.calculate(onTarget());
+    private boolean onTarget(double tolerance){
+        boolean onTarget = Math.abs(getError().getDegrees()) < tolerance;
+        Logger.recordOutput("arm/onTargt",onTarget);
+        boolean debounced = debounce.calculate(onTarget);
+        Logger.recordOutput("arm/at debouncespeed",debounced);
+        return debounced;
     }
 
-    private Command positionCommand(Rotation2d position){
+    private Command positionCommand(Rotation2d position, double tolerance){
         return Commands.sequence(
             runOnce(() -> setShoulderSetpoint(position)),
             Commands.waitSeconds(0.1),
-            run(()-> {}).until(this::debounceSpeed)
+            run(()-> {}).until(()-> onTarget(tolerance))
         );
     }
 
