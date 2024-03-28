@@ -22,8 +22,8 @@ import frc.robot.Constants.*;
 
 public class Arm extends SubsystemBase {
     private static int STALL_CURRENT_LIMIT_SHOULDER = 10;
-    private static int FREE_CURRENT_LIMIT_SHOULDER = 5;
-    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 15;
+    private static int FREE_CURRENT_LIMIT_SHOULDER = 10;
+    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 25;
     private CANSparkMax shoulderMotorRight;
     private CANSparkMax shoulderMotorLeft;
     private static SparkAbsoluteEncoder shoulderEncoder;
@@ -142,12 +142,14 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
-        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput()); 
-        Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
         double feedForward = Math.cos(getShoulderAngle().getRadians()) * ArmConstants.shoulderG;
         shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition, 0, feedForward);
-    }
-    
-}
 
+        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
+        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());
+        Logger.recordOutput("arm/MotorLeftCurrent", shoulderMotorLeft.getOutputCurrent());
+        Logger.recordOutput("arm/MotorRightCurrent", shoulderMotorRight.getOutputCurrent());
+        Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
+        Logger.recordOutput("arm/FeedForward", feedForward);
+    }    
+}
