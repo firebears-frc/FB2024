@@ -21,9 +21,9 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import frc.robot.Constants.*;
 
 public class Arm extends SubsystemBase {
-    private static int STALL_CURRENT_LIMIT_SHOULDER = 10;
-    private static int FREE_CURRENT_LIMIT_SHOULDER = 10;
-    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 25;
+    private static int STALL_CURRENT_LIMIT_SHOULDER = 20;
+    private static int FREE_CURRENT_LIMIT_SHOULDER = 20;
+    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 30;
     private CANSparkMax shoulderMotorRight;
     private CANSparkMax shoulderMotorLeft;
     private static SparkAbsoluteEncoder shoulderEncoder;
