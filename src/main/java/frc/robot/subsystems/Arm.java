@@ -21,9 +21,9 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import frc.robot.Constants.*;
 
 public class Arm extends SubsystemBase {
-    private static int STALL_CURRENT_LIMIT_SHOULDER = 10;
-    private static int FREE_CURRENT_LIMIT_SHOULDER = 5;
-    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 15;
+    private static int STALL_CURRENT_LIMIT_SHOULDER = 20;
+    private static int FREE_CURRENT_LIMIT_SHOULDER = 20;
+    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 30;
     private CANSparkMax shoulderMotorRight;
     private CANSparkMax shoulderMotorLeft;
     private static SparkAbsoluteEncoder shoulderEncoder;
@@ -78,7 +78,7 @@ public class Arm extends SubsystemBase {
 
     private final static class Constants{     // arm setpoints
         private static final Rotation2d pickUp = Rotation2d.fromDegrees(0);
-        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(3.5);
+        private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(13.5);
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(90);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
         private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
@@ -106,7 +106,7 @@ public class Arm extends SubsystemBase {
 
     @AutoLogOutput(key = "arm/onTarget")
     private boolean onTarget(){
-      return Math.abs(getError().getDegrees()) < 2;
+      return Math.abs(getError().getDegrees()) < 1;
 
     }
 
@@ -119,9 +119,11 @@ public class Arm extends SubsystemBase {
     public Command pickUp(){
         return positionCommand(Constants.pickUp);
     }
+
     public Command autoPickUp(){
         return positionCommand(Constants.autoPickUp);
     }
+
     public Command speakerShoot(){
         return positionCommand(Constants.speakerShoot);
     }
@@ -146,12 +148,14 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
-        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput()); 
-        Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
         double feedForward = Math.cos(getShoulderAngle().getRadians()) * ArmConstants.shoulderG;
         shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition, 0, feedForward);
-    }
-    
-}
 
+        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
+        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());
+        Logger.recordOutput("arm/MotorLeftCurrent", shoulderMotorLeft.getOutputCurrent());
+        Logger.recordOutput("arm/MotorRightCurrent", shoulderMotorRight.getOutputCurrent());
+        Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
+        Logger.recordOutput("arm/FeedForward", feedForward);
+    }    
+}

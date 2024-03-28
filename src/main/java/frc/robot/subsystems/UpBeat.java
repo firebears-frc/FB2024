@@ -62,7 +62,6 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.burnFlash();
     }
 
-    
     private final static class Constants{
         private static final double stop = 0.00;
         private static final double reverse = -1000.00;
