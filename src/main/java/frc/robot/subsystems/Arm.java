@@ -84,7 +84,7 @@ public class Arm extends SubsystemBase {
         private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(13.5);
         private static final Rotation2d ampShoot = Rotation2d.fromDegrees(90);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
-        private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
+        private static final Rotation2d sideShoot = Rotation2d.fromDegrees(33.75);
         private static final Rotation2d straightShot = Rotation2d.fromDegrees(14.5);
         
     }
