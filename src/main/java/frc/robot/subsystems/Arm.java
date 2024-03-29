@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.function.Supplier;
@@ -30,6 +32,7 @@ public class Arm extends SubsystemBase {
     private SparkPIDController shoulderPID;
     @AutoLogOutput(key = "arm/setPoint")
     private Rotation2d shoulderSetpoint = new Rotation2d();
+    private Debouncer debounce = new Debouncer(0.2);
 
     public Arm() {
         shoulderMotorRight = new CANSparkMax(13, MotorType.kBrushless);
@@ -83,7 +86,6 @@ public class Arm extends SubsystemBase {
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
         private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
         private static final Rotation2d straightShot = Rotation2d.fromDegrees(14.5);
-        private static final Rotation2d autoPickUp = Rotation2d.fromDegrees(-2);
         
     }
     @AutoLogOutput(key = "arm/Angle")
@@ -104,46 +106,54 @@ public class Arm extends SubsystemBase {
         return getShoulderAngle().minus(shoulderSetpoint);
     }
 
-    @AutoLogOutput(key = "arm/onTarget")
-    private boolean onTarget(){
-      return Math.abs(getError().getDegrees()) < 1;
-
-    }
-
     public Command defaultCommand(Supplier<Double> shoulderChange) {
         return run(() -> {
            setShoulderSetpoint(shoulderSetpoint.minus(Rotation2d.fromDegrees(shoulderChange.get())));
         });
     }
-    
-    public Command pickUp(){
-        return positionCommand(Constants.pickUp);
-    }
 
-    public Command autoPickUp(){
-        return positionCommand(Constants.autoPickUp);
+    public Command pickUp(){
+        return positionCommand(Constants.pickUp, 2.5);
     }
 
     public Command speakerShoot(){
-        return positionCommand(Constants.speakerShoot);
+        return positionCommand(Constants.speakerShoot, 1);
     }
 
     public Command ampShoot(){
-        return positionCommand(Constants.ampShoot);
+        return positionCommand(Constants.ampShoot, 1);
     }
 
-    public Command stow(){
-        return positionCommand(Constants.stow);
-    }
     public Command sideShoot(){
-        return positionCommand(Constants.sideShoot);
+        return positionCommand(Constants.sideShoot, 1);
     }
     public Command straightShot(){
-        return positionCommand(Constants.straightShot);
+        return positionCommand(Constants.straightShot, 1);
     }
 
-    private Command positionCommand(Rotation2d position){
-        return run(()-> setShoulderSetpoint(position)).until(this::onTarget);
+
+    private boolean onTarget(double tolerance){
+        boolean onTarget = Math.abs(getError().getDegrees()) < tolerance;
+        Logger.recordOutput("arm/onTargt",onTarget);
+        boolean debounced = debounce.calculate(onTarget);
+        Logger.recordOutput("arm/at debouncespeed",debounced);
+        return debounced;
+    }
+
+    private Command positionCommand(Rotation2d position, double tolerance){
+        return Commands.sequence(
+            runOnce(() -> setShoulderSetpoint(position)),
+            Commands.waitSeconds(0.1),
+            run(()-> {}).until(()-> onTarget(tolerance))
+        );
+    }
+
+     public Command groundSlam(){
+        return Commands.sequence(
+            runOnce(() -> setShoulderSetpoint(Constants.pickUp)),
+            Commands.waitSeconds(0.1),
+            run(()-> {}).until(()-> getShoulderAngle().getDegrees() < 5)
+        );
     }
 
     @Override
