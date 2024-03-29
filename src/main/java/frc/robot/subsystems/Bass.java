@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.LoggedRobot;
 
+import java.lang.annotation.Target;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -10,8 +11,10 @@ import org.littletonrobotics.junction.Logger;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
@@ -100,6 +103,7 @@ public class Bass extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
+        PathPlannerLogging.setLogCurrentPoseCallback(pose -> Logger.recordOutput("Chassis/targetPose",pose));
     }
 
     @Override
