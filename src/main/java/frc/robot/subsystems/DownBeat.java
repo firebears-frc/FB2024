@@ -89,6 +89,10 @@ public class DownBeat extends SubsystemBase {
         });
     }
 
+    public Command autoIntake() {
+        return run(() -> setPoint = 7000).until(this::beamBreak);
+    }
+
     @Override
     public void periodic() {
         if(beamBreak() && !hasNote){
