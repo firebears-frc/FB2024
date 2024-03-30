@@ -48,15 +48,13 @@ public class RobotContainer {
 
     private void configureAutoCommands(){
         NamedCommands.registerCommands(Map.of(
-            "intake",Commands.sequence(
-                    Commands.parallel(
+            "intake",Commands.parallel(
                     m_shooter.pauseUpBeat(),
                     m_arm.pickUp(),
-                    m_intake.autoIntake())),
-            "armUp",Commands.sequence(
-                    Commands.parallel(
+                    m_intake.autoIntake()),
+            "armUp",Commands.parallel(
                     m_arm.straightShot(),
-                    m_shooter.autoShoot())),
+                    m_shooter.autoShoot()),
             "shoot",Commands.sequence(
                     m_intake.shootNote(),
                     Commands.waitSeconds(0.25)),
