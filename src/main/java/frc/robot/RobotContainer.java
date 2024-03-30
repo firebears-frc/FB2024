@@ -65,7 +65,7 @@ public class RobotContainer {
                     m_arm.groundSlam(),
                     m_arm.straightShot())),
                     m_intake.shootNote(),
-                    Commands.waitSeconds(.25)),
+                    Commands.waitSeconds(0.25)),
             "lastShot",Commands.sequence(
                     m_intake.shootNote(),
                     Commands.waitSeconds(0.25),
