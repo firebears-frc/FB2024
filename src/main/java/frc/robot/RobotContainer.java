@@ -18,6 +18,7 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -47,26 +48,32 @@ public class RobotContainer {
 
     private void configureAutoCommands(){
         NamedCommands.registerCommands(Map.of(
-            "armLow", 
-                m_arm.pickUp(),
-            "groundSlam",
-                m_arm.groundSlam(),
-            "shootSequence", Commands.sequence(
-                Commands.parallel(
-                m_arm.straightShot(),
-                m_shooter.straightAutoShot()),
-                m_intake.shootNote(),
-                Commands.waitSeconds(.25),
-                m_shooter.pauseUpBeat()            
-            ),
-            "shootSequence2", Commands.sequence(
-                Commands.parallel(
-                m_arm.sideShoot(),
-                m_shooter.straightAutoShot()),
-                m_intake.shootNote(),
-                Commands.waitSeconds(.25),
-                m_shooter.pauseUpBeat() 
-            )
+            "intake",Commands.sequence(
+                    Commands.parallel(
+                    m_shooter.pauseUpBeat(),
+                    m_arm.pickUp())),
+            "armUp",Commands.sequence(
+                    Commands.parallel(
+                    m_arm.straightShot(),
+                    m_shooter.autoShoot())),
+            "shoot",Commands.sequence(
+                    m_intake.shootNote(),
+                    Commands.waitSeconds(0.25)),
+            "firstShot",Commands.sequence(
+                    Commands.parallel(
+                    m_shooter.autoShoot(),
+                    Commands.sequence(
+                    m_arm.groundSlam(),
+                    m_arm.straightShot())),
+                    m_intake.shootNote(),
+                    Commands.waitSeconds(.25)),
+            "lastShot",Commands.sequence(
+                    m_intake.shootNote(),
+                    Commands.waitSeconds(0.25),
+                    m_shooter.pauseUpBeat(),
+                    m_arm.pickUp(),
+                    m_intake.pauseDownBeat()
+                )
             ));
     }
 
