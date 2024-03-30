@@ -47,29 +47,25 @@ public class RobotContainer {
 
     private void configureAutoCommands(){
         NamedCommands.registerCommands(Map.of(
-            "armLow", Commands.sequence(
+            "armLow", 
                 m_arm.pickUp(),
-                Commands.waitSeconds(.125)
-            ),
-            "stopPickUp", Commands.sequence(
-                Commands.waitSeconds(.125),
-                m_intake.pauseDownBeat()
-            ),
+            "groundSlam",
+                m_arm.groundSlam(),
             "shootSequence", Commands.sequence(
+                Commands.parallel(
                 m_arm.straightShot(),
-                Commands.waitSeconds(.1),
-                m_shooter.straightAutoShot(),
-                Commands.waitSeconds(.35),
-                m_intake.intakeNote(),
+                m_shooter.straightAutoShot()),
+                m_intake.shootNote(),
+                Commands.waitSeconds(.25),
                 m_shooter.pauseUpBeat()            
             ),
             "shootSequence2", Commands.sequence(
-                m_arm.straightShot(),
-                m_shooter.straightAutoShot(),
+                Commands.parallel(
+                m_arm.sideShoot(),
+                m_shooter.straightAutoShot()),
+                m_intake.shootNote(),
                 Commands.waitSeconds(.25),
-                m_intake.intakeNote(),
-                Commands.waitSeconds(.256),
-                m_shooter.pauseUpBeat()
+                m_shooter.pauseUpBeat() 
             )
             ));
     }
@@ -116,9 +112,8 @@ public class RobotContainer {
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
         xboxController.b().onTrue(m_arm.pickUp()); 
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
-        xboxController.leftBumper().toggleOnTrue(m_climb.climbHalfSpeed()).toggleOnFalse(m_climb.pauseClimb());
-        xboxController.povRight().onTrue(m_arm.ampShoot());
-
+        xboxController.leftBumper().onTrue(m_arm.ampShoot());
+        
         xboxController.leftTrigger().onTrue(Commands.parallel(
             m_arm.ampShoot(),
             m_shooter.ampSpeed()
@@ -141,7 +136,6 @@ public class RobotContainer {
             m_arm.pickUp()
         ));
 
-    
         m_arm.setDefaultCommand(
             m_arm.defaultCommand(
                     () -> MathUtil.applyDeadband(
@@ -153,8 +147,6 @@ public class RobotContainer {
         
         xboxController.povUp().onTrue(m_climb.climb()).onFalse(m_climb.pauseClimb());
         xboxController.povDown().onTrue(m_climb.unclimb()).onFalse(m_climb.pauseClimb());
-        //xboxController.b().onTrue(m_shooter.reverseShootNote()).onFalse(m_shooter.pauseUpBeat());
-
     }
 
     public Command getAutonomousCommand() {
