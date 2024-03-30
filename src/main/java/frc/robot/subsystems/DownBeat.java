@@ -90,7 +90,7 @@ public class DownBeat extends SubsystemBase {
     }
 
     public Command autoIntake() {
-        return run(() -> setPoint = 7000).until(this::beamBreak);
+        return run(() -> setPoint = 7000).until(this::beamBreak).withTimeout(2.5);
     }
 
     @Override
