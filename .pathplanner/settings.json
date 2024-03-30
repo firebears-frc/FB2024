@@ -3,8 +3,7 @@
   "robotLength": 0.89,
   "holonomicMode": true,
   "pathFolders": [
-    "4-5 piece center auto",
-    "1 piece side",
+    "Test and other pathplaner",
     "match paths"
   ],
   "autoFolders": [],
