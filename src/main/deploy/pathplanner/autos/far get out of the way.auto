@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "oneShot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Get out of the way far 1"

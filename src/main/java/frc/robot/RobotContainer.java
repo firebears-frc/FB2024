@@ -71,8 +71,20 @@ public class RobotContainer {
                     Commands.waitSeconds(0.25),
                     m_shooter.pauseUpBeat(),
                     m_arm.pickUp(),
-                    m_intake.pauseDownBeat()
-                )
+                    m_intake.pauseDownBeat()),
+            "oneShot",Commands.sequence(
+                    Commands.parallel(
+                    Commands.sequence(
+                    m_arm.groundSlam(),
+                    m_arm.straightShot()),
+                    m_shooter.autoShoot()),
+                    m_intake.shootNote(),
+                    Commands.waitSeconds(.25),
+                    Commands.parallel(
+                    m_arm.ampShoot(),
+                    m_shooter.pauseUpBeat(),
+                    m_intake.pauseDownBeat())
+                   )
             ));
     }
 

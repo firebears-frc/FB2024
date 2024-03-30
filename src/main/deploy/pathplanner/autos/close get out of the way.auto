@@ -14,19 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shootSequence"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "armHigh"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
+            "name": "oneShot"
           }
         },
         {
