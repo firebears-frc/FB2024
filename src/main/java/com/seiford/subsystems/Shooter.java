@@ -15,7 +15,9 @@ import com.seiford.util.spark.FeedbackConfiguration;
 import com.seiford.util.spark.SparkConfiguration;
 import com.seiford.util.spark.StatusFrameConfiguration;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
@@ -37,12 +39,15 @@ public class Shooter extends SubsystemBase {
         public static final double EJECT_SPEED = -1000; // rotations per minute
 
         public static final double TOLERANCE = 100; // rotations per minute
+
+        public static final double DEBOUNCE_TIME = 0.05;
     }
 
     // Objects
     private final CANSparkMax topMotor, bottomMotor;
     private final RelativeEncoder topEncoder, bottomEncoder;
     private final SparkPIDController topPID, bottomPID;
+    private final Debouncer debouncer;
 
     private double setpoint;
 
@@ -54,6 +59,7 @@ public class Shooter extends SubsystemBase {
         bottomEncoder = bottomMotor.getEncoder();
         topPID = topMotor.getPIDController();
         bottomPID = bottomMotor.getPIDController();
+        debouncer = new Debouncer(Constants.DEBOUNCE_TIME);
 
         Constants.CONFIG.apply(topMotor, bottomMotor);
 
@@ -87,9 +93,14 @@ public class Shooter extends SubsystemBase {
         return getVelocity() - getTargetVelocity();
     }
 
+    @AutoLogOutput(key = "Shooter/NearTarget")
+    private boolean nearTarget() {
+        return Math.abs(getError()) < Constants.TOLERANCE;
+    }
+
     @AutoLogOutput(key = "Shooter/OnTarget")
     private boolean onTarget() {
-        return Math.abs(getError()) < Constants.TOLERANCE;
+        return debouncer.calculate(nearTarget());
     }
 
     @Override
@@ -102,7 +113,11 @@ public class Shooter extends SubsystemBase {
     }
 
     private Command speedCommand(double speed) {
-        return run(() -> setpoint = speed).until(this::onTarget);
+        return Commands.sequence(
+                runOnce(() -> setpoint = speed),
+                Commands.waitSeconds(Constants.DEBOUNCE_TIME),
+                run(() -> {}).until(this::onTarget)
+        );
     }
 
     public Command speaker() {

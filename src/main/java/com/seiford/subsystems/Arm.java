@@ -19,8 +19,10 @@ import com.seiford.util.spark.FollowingConfiguration;
 import com.seiford.util.spark.SparkConfiguration;
 import com.seiford.util.spark.StatusFrameConfiguration;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
@@ -53,12 +55,15 @@ public class Arm extends SubsystemBase {
         public static final Rotation2d MAX = Rotation2d.fromDegrees(135);
 
         public static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(1.0);
+
+        public static final double DEBOUNCE_TIME = 0.05;
     }
 
     // Objects
     private final CANSparkMax rightMotor, leftMotor;
     private final SparkAbsoluteEncoder encoder;
     private final SparkPIDController pid;
+    private final Debouncer debouncer;
 
     private Rotation2d setpoint;
 
@@ -68,6 +73,7 @@ public class Arm extends SubsystemBase {
         leftMotor = new CANSparkMax(Constants.LEFT_CAN_ID, MotorType.kBrushless);
         encoder = rightMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pid = rightMotor.getPIDController();
+        debouncer = new Debouncer(Constants.DEBOUNCE_TIME);
 
         Constants.RIGHT_CONFIG.apply(rightMotor);
         Constants.LEFT_CONFIG.apply(leftMotor);
@@ -91,9 +97,14 @@ public class Arm extends SubsystemBase {
         return getAngle().minus(getTargetAngle());
     }
 
+    @AutoLogOutput(key = "Arm/NearTarget")
+    private boolean nearTarget() {
+        return Math.abs(getError().getDegrees()) < Constants.TOLERANCE.getDegrees();
+    }
+
     @AutoLogOutput(key = "Arm/OnTarget")
     private boolean onTarget() {
-        return Math.abs(getError().getDegrees()) < Constants.TOLERANCE.getDegrees();
+        return debouncer.calculate(nearTarget());
     }
 
     @Override
@@ -116,7 +127,11 @@ public class Arm extends SubsystemBase {
 
     // Command factories
     private Command positionCommand(Rotation2d angle) {
-        return run(() -> set(angle)).until(this::onTarget);
+        return Commands.sequence(
+                runOnce(() -> set(angle)),
+                Commands.waitSeconds(Constants.DEBOUNCE_TIME),
+                run(() -> {}).until(this::onTarget)
+        );
     }
 
     public Command pickupStow() {
