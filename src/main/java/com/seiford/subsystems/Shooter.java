@@ -114,9 +114,6 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Shooter/Top/Output", topMotor.getAppliedOutput());
-        Logger.recordOutput("Shooter/Bottom/Output", bottomMotor.getAppliedOutput());
-
         // calculate the speed setpoint based on state
         setpoint = switch (state) {
             case AMP -> Constants.AMP_SPEED;
@@ -127,6 +124,9 @@ public class Shooter extends SubsystemBase {
 
         topPID.setReference(setpoint, ControlType.kVelocity);
         bottomPID.setReference(setpoint, ControlType.kVelocity);
+
+        Logger.recordOutput("Shooter/Top/Output", topMotor.getAppliedOutput());
+        Logger.recordOutput("Shooter/Bottom/Output", bottomMotor.getAppliedOutput());
     }
 
     private Command stateCommand(State target) {

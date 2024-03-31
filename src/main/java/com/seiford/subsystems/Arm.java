@@ -34,14 +34,14 @@ public class Arm extends SubsystemBase {
         public static final SparkConfiguration RIGHT_CONFIG = new SparkConfiguration(
                 true,
                 IdleMode.kBrake,
-                CurrentLimitConfiguration.complex(30, 20, 10, 35.0),
+                CurrentLimitConfiguration.complex(20, 20, 10, 30.0),
                 StatusFrameConfiguration.absoluteEncoderLeader(),
-                ClosedLoopConfiguration.wrapping(0.026, 0.0, 0.0, 0.0, 0, 360),
+                ClosedLoopConfiguration.wrapping(0.02, 0.0, 0.0, 0.0, 0, 360),
                 FeedbackConfiguration.absoluteEncoder(true, 360));
         public static final SparkConfiguration LEFT_CONFIG = new SparkConfiguration(
                 false,
                 IdleMode.kBrake,
-                CurrentLimitConfiguration.complex(30, 20, 10, 35.0),
+                CurrentLimitConfiguration.complex(20, 20, 10, 30.0),
                 StatusFrameConfiguration.normal(),
                 FollowingConfiguration.spark(RIGHT_CAN_ID, true));
 
@@ -49,12 +49,14 @@ public class Arm extends SubsystemBase {
 
         public static final Rotation2d MIN = Rotation2d.fromDegrees(-5.0);
         public static final Rotation2d PICKUP = Rotation2d.fromDegrees(0.0);
-        public static final Rotation2d SPEAKER = Rotation2d.fromDegrees(15);
+        public static final Rotation2d SPEAKER = Rotation2d.fromDegrees(14.5);
         public static final Rotation2d STOW = Rotation2d.fromDegrees(20.0);
-        public static final Rotation2d AMP = Rotation2d.fromDegrees(85.0);
-        public static final Rotation2d MAX = Rotation2d.fromDegrees(135);
+        public static final Rotation2d AMP = Rotation2d.fromDegrees(90.0);
+        public static final Rotation2d MAX = Rotation2d.fromDegrees(100);
 
         public static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(1.0);
+
+        public static final double kG = 0.35; // volts to hold horizontal
 
         public static final double DEBOUNCE_TIME = 0.05;
     }
@@ -109,10 +111,12 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
+        double feedforward = Math.cos(getAngle().getDegrees()) * Constants.kG;
+        pid.setReference(setpoint.getDegrees(), ControlType.kPosition, 0, feedforward);
+
         Logger.recordOutput("Arm/Left/Output", leftMotor.getAppliedOutput());
         Logger.recordOutput("Arm/Right/Output", rightMotor.getAppliedOutput());
-
-        pid.setReference(setpoint.getDegrees(), ControlType.kPosition);
+        Logger.recordOutput("Arm/Feedforward", feedforward);
     }
 
     private void set(Rotation2d angle) {

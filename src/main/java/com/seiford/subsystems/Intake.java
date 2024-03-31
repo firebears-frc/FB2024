@@ -99,8 +99,9 @@ public class Intake extends SubsystemBase {
             hasNote = false;
         }
 
-        Logger.recordOutput("Intake/Output", motor.getAppliedOutput());
         pid.setReference(setpoint, ControlType.kVelocity);
+
+        Logger.recordOutput("Intake/Output", motor.getAppliedOutput());
     }
 
     // Command factories
