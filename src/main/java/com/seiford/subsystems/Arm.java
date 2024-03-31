@@ -1,5 +1,7 @@
 package com.seiford.subsystems;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -44,7 +46,6 @@ public class Arm extends SubsystemBase {
                 FollowingConfiguration.spark(RIGHT_CAN_ID, true));
 
         public static final Rotation2d PICKUP_ANGLE = Rotation2d.fromDegrees(0.0);
-        public static final Rotation2d SPEAKER_ANGLE = Rotation2d.fromDegrees(14.5);
         public static final Rotation2d AMP_ANGLE = Rotation2d.fromDegrees(90.0);
 
         public static final Rotation2d PICKUP_TOLERANCE = Rotation2d.fromDegrees(2.5);
@@ -68,17 +69,19 @@ public class Arm extends SubsystemBase {
     private final SparkAbsoluteEncoder encoder;
     private final SparkPIDController pid;
     private final Debouncer debouncer;
+    private final Supplier<Rotation2d> angleSupplier;
 
     @AutoLogOutput(key = "Arm/State")
     private State state = State.STARTUP;
 
     // Constructor
-    public Arm() {
+    public Arm(Supplier<Rotation2d> angleSupplier) {
         rightMotor = new CANSparkMax(Constants.RIGHT_CAN_ID, MotorType.kBrushless);
         leftMotor = new CANSparkMax(Constants.LEFT_CAN_ID, MotorType.kBrushless);
         encoder = rightMotor.getAbsoluteEncoder(Type.kDutyCycle);
         pid = rightMotor.getPIDController();
         debouncer = new Debouncer(Constants.DEBOUNCE_TIME);
+        this.angleSupplier = angleSupplier;
 
         Constants.RIGHT_CONFIG.apply(rightMotor);
         Constants.LEFT_CONFIG.apply(leftMotor);
@@ -90,7 +93,7 @@ public class Arm extends SubsystemBase {
         return switch (state) {
             case STARTUP -> getAngle();
             case PICKUP -> Constants.PICKUP_ANGLE;
-            case SPEAKER -> Constants.SPEAKER_ANGLE;
+            case SPEAKER -> angleSupplier.get();
             case AMP -> Constants.AMP_ANGLE;
         };
     }

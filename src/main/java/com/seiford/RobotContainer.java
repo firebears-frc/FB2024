@@ -9,13 +9,11 @@ import com.seiford.subsystems.Intake;
 import com.seiford.subsystems.Climber;
 import com.seiford.subsystems.Arm;
 import com.seiford.subsystems.Shooter;
+import com.seiford.subsystems.Conductor;
 
 import java.util.Map;
-import java.util.Optional;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -36,6 +34,7 @@ public class RobotContainer {
     // Objects
     private final Drive bass;
     private final Intake downbeat;
+    private final Conductor conductor;
     private final Shooter upbeat;
     private final Climber glissando;
     private final Arm arm;
@@ -50,9 +49,10 @@ public class RobotContainer {
         // Create subsystems
         bass = new Drive();
         downbeat = new Intake();
-        upbeat = new Shooter();
+        conductor = new Conductor(bass::getPose);
+        upbeat = new Shooter(conductor::getShooterRPM);
         glissando = new Climber(bass::getRoll);
-        arm = new Arm();
+        arm = new Arm(conductor::getArmAngle);
 
         // Create control interfaces
         one = new CommandJoystick(Constants.JOYSTICK_1_PORT);
@@ -122,8 +122,7 @@ public class RobotContainer {
         double z = MathUtil.applyDeadband(one.getX(), Constants.JOYSTICK_DEADBAND);
         double omega = -MathUtil.applyDeadband(two.getX(), Constants.JOYSTICK_DEADBAND);
 
-        Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red) {
+        if (Util.isRedAlliance()) {
             x *= -1.0;
             z *= -1.0;
         }

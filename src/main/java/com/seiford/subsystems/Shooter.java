@@ -1,5 +1,7 @@
 package com.seiford.subsystems;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -34,7 +36,6 @@ public class Shooter extends SubsystemBase {
                 ClosedLoopConfiguration.outputConstraints(0.0003, 0.0000001, 0.0, 0.0001875, 0.0, 1.0),
                 FeedbackConfiguration.builtInEncoder(1));
 
-        public static final double SPEAKER_SPEED = 3600; // rotations per minute
         public static final double AMP_SPEED = 1000; // rotations per minute
         public static final double EJECT_SPEED = -1000; // rotations per minute
 
@@ -55,13 +56,13 @@ public class Shooter extends SubsystemBase {
     private final RelativeEncoder topEncoder, bottomEncoder;
     private final SparkPIDController topPID, bottomPID;
     private final Debouncer debouncer;
+    private final Supplier<Double> speedSupplier;
 
     @AutoLogOutput(key = "Shooter/State")
     private State state = State.STOPPED;
-    private double setpoint;
 
     // Constructor
-    public Shooter() {
+    public Shooter(Supplier<Double> speedSupplier) {
         topMotor = new CANSparkMax(Constants.TOP_CAN_ID, MotorType.kBrushless);
         bottomMotor = new CANSparkMax(Constants.BOTTOM_CAN_ID, MotorType.kBrushless);
         topEncoder = topMotor.getEncoder();
@@ -69,6 +70,7 @@ public class Shooter extends SubsystemBase {
         topPID = topMotor.getPIDController();
         bottomPID = bottomMotor.getPIDController();
         debouncer = new Debouncer(Constants.DEBOUNCE_TIME);
+        this.speedSupplier = speedSupplier;
 
         Constants.CONFIG.apply(topMotor, bottomMotor);
 
@@ -79,7 +81,12 @@ public class Shooter extends SubsystemBase {
     // Interface functions
     @AutoLogOutput(key = "Shooter/Setpoint")
     private double getTargetVelocity() {
-        return setpoint;
+        return switch (state) {
+            case AMP -> Constants.AMP_SPEED;
+            case EJECT -> Constants.EJECT_SPEED;
+            case SPEAKER -> speedSupplier.get();
+            case STOPPED -> 0.0;
+        };
     }
 
     @AutoLogOutput(key = "Shooter/Top/Velocity")
@@ -114,16 +121,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // calculate the speed setpoint based on state
-        setpoint = switch (state) {
-            case AMP -> Constants.AMP_SPEED;
-            case EJECT -> Constants.EJECT_SPEED;
-            case SPEAKER -> Constants.SPEAKER_SPEED;
-            case STOPPED -> 0.0;
-        };
-
-        topPID.setReference(setpoint, ControlType.kVelocity);
-        bottomPID.setReference(setpoint, ControlType.kVelocity);
+        topPID.setReference(getTargetVelocity(), ControlType.kVelocity);
+        bottomPID.setReference(getTargetVelocity(), ControlType.kVelocity);
 
         Logger.recordOutput("Shooter/Top/Output", topMotor.getAppliedOutput());
         Logger.recordOutput("Shooter/Bottom/Output", bottomMotor.getAppliedOutput());
@@ -133,8 +132,7 @@ public class Shooter extends SubsystemBase {
         return Commands.sequence(
                 runOnce(() -> state = target),
                 Commands.waitSeconds(Constants.DEBOUNCE_TIME),
-                run(() -> {
-                }).until(this::onTarget));
+                run(() -> {}).until(this::onTarget));
     }
 
     public Command speaker() {

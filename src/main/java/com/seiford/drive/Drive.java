@@ -1,6 +1,5 @@
 package com.seiford.drive;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -11,12 +10,11 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.seiford.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -48,7 +46,7 @@ public class Drive extends SubsystemBase {
                 chassis::getSpeeds,
                 chassis::driveRobotRelative,
                 Constants.CONFIG,
-                this::isRedAlliance,
+                Util::isRedAlliance,
                 this);
 
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -64,15 +62,6 @@ public class Drive extends SubsystemBase {
         localization.setPose(pose, chassis.getModulePositions());
     }
 
-    private boolean isRedAlliance() {
-        Optional<Alliance> alliance = DriverStation.getAlliance();
-        if (alliance.isPresent())
-            return alliance.get() == DriverStation.Alliance.Red;
-
-        DriverStation.reportWarning("Unable to get alliance color", true);
-        return false;
-    }
-
     @Override
     public void periodic() {
         localization.periodic(chassis.getModulePositions());
@@ -81,19 +70,21 @@ public class Drive extends SubsystemBase {
     public Command zeroHeading() {
         return runOnce(() -> {
             Pose2d pose = localization.getPose();
-            pose = new Pose2d(pose.getX(), pose.getY(), Rotation2d.fromDegrees(0.0));
-            localization.setPose(pose, chassis.getModulePositions());
+            setPose(new Pose2d(pose.getX(), pose.getY(), Rotation2d.fromDegrees(0.0)));
         });
     }
 
     public Command turtle() {
-        return startEnd(chassis::setX, () -> {
-        });
+        return startEnd(chassis::setX, () -> {});
     }
 
     public Command defaultCommand(Supplier<ChassisSpeeds> commandSupplier, boolean slowMode) {
         return new DefaultCommand(commandSupplier,
                 speeds -> chassis.driveFieldRelative(speeds, localization.getRawYaw()), slowMode, this);
+    }
+
+    public Pose2d getPose() {
+        return localization.getPose();
     }
 
     public Rotation2d getRoll() {
