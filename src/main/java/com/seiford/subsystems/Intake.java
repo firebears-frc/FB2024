@@ -17,6 +17,7 @@ import com.seiford.util.spark.StatusFrameConfiguration;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
@@ -120,7 +121,11 @@ public class Intake extends SubsystemBase {
     }
 
     public Command autoIntake() {
-        return run(() -> setpoint = Constants.INTAKE_SPEED).until(this::getSensor).withTimeout(2.5);
+        return Commands.sequence(
+            runOnce(() -> setpoint = Constants.INTAKE_SPEED),
+            Commands.waitSeconds(0.05),
+            run(() -> {}).until(this::getSensor).withTimeout(2.5)
+        );
     }
 
     public Command intakeStop() {

@@ -43,12 +43,21 @@ public class Shooter extends SubsystemBase {
         public static final double DEBOUNCE_TIME = 0.05;
     }
 
+    private static enum State {
+        STOPPED,
+        SPEAKER,
+        AMP,
+        EJECT
+    };
+
     // Objects
     private final CANSparkMax topMotor, bottomMotor;
     private final RelativeEncoder topEncoder, bottomEncoder;
     private final SparkPIDController topPID, bottomPID;
     private final Debouncer debouncer;
 
+    @AutoLogOutput(key = "Shooter/State")
+    private State state = State.STOPPED;
     private double setpoint;
 
     // Constructor
@@ -108,31 +117,39 @@ public class Shooter extends SubsystemBase {
         Logger.recordOutput("Shooter/Top/Output", topMotor.getAppliedOutput());
         Logger.recordOutput("Shooter/Bottom/Output", bottomMotor.getAppliedOutput());
 
+        // calculate the speed setpoint based on state
+        setpoint = switch (state) {
+            case AMP -> Constants.AMP_SPEED;
+            case EJECT -> Constants.EJECT_SPEED;
+            case SPEAKER -> Constants.SPEAKER_SPEED;
+            case STOPPED -> 0.0;
+        };
+
         topPID.setReference(setpoint, ControlType.kVelocity);
         bottomPID.setReference(setpoint, ControlType.kVelocity);
     }
 
-    private Command speedCommand(double speed) {
+    private Command stateCommand(State target) {
         return Commands.sequence(
-                runOnce(() -> setpoint = speed),
+                runOnce(() -> state = target),
                 Commands.waitSeconds(Constants.DEBOUNCE_TIME),
-                run(() -> {}).until(this::onTarget)
-        );
+                run(() -> {
+                }).until(this::onTarget));
     }
 
     public Command speaker() {
-        return speedCommand(Constants.SPEAKER_SPEED);
+        return stateCommand(State.SPEAKER);
     }
 
     public Command amp() {
-        return speedCommand(Constants.AMP_SPEED);
+        return stateCommand(State.AMP);
     }
 
     public Command eject() {
-        return speedCommand(Constants.EJECT_SPEED);
+        return stateCommand(State.EJECT);
     }
 
     public Command stop() {
-        return runOnce(() -> setpoint = 0.0);
+        return runOnce(() -> state = State.STOPPED);
     }
 }
