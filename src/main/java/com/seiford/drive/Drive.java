@@ -95,4 +95,8 @@ public class Drive extends SubsystemBase {
         return new DefaultCommand(commandSupplier,
                 speeds -> chassis.driveFieldRelative(speeds, localization.getRawYaw()), slowMode, this);
     }
+
+    public Rotation2d getRoll() {
+        return localization.getRawRoll();
+    }
 }

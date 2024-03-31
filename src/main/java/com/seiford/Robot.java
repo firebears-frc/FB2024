@@ -8,30 +8,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
 
-import java.util.Map;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends LoggedRobot {
-    /*public static class Constants {
-        public static final Map<Integer, String> CAN_IDs = Map.of(
-                1, "Front Left Driving",
-                2, "Front Left Turning",
-                3, "Front Right Driving",
-                4, "Front Right Turning",
-                5, "Rear Left Driving",
-                6, "Rear Left Turning",
-                7, "Rear Right Driving",
-                8, "Rear Right Turning",
-                9, "Intake",
-                10, "Top Shooter",
-                11, "Bottom Shooter",
-                12, "Right Arm",
-                13, "Left Arm",
-                14, "Right Climber",
-                15, "Left Climber");
-    }*/
 
     private RobotContainer robotContainer;
     private Command autonomousCommand;

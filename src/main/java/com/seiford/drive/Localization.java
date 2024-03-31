@@ -50,6 +50,14 @@ public class Localization {
         return navX.getRotation2d();
     }
 
+    @AutoLogOutput(key = "Drive/Localization/RawRoll")
+    public Rotation2d getRawRoll() {
+        if (!isActive())
+            return Rotation2d.fromDegrees(0.0);
+
+        return Rotation2d.fromDegrees(navX.getRoll());
+    }
+
     public void visionPose(Pose2d pose, double timestampSeconds) {
         poseEstimator.addVisionMeasurement(pose, timestampSeconds);
     }

@@ -52,7 +52,7 @@ public class RobotContainer {
         bass = new Drive();
         downbeat = new Intake();
         upbeat = new Shooter();
-        glissando = new Climber();
+        glissando = new Climber(bass::getRoll);
         arm = new Arm();
 
         // Create control interfaces
