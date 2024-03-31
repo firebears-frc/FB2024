@@ -1,7 +1,5 @@
 package com.seiford.subsystems;
 
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -45,15 +43,12 @@ public class Arm extends SubsystemBase {
                 StatusFrameConfiguration.normal(),
                 FollowingConfiguration.spark(RIGHT_CAN_ID, true));
 
-        public static final Rotation2d MANUAL_SPEED = Rotation2d.fromDegrees(1.0); // per loop
+        public static final Rotation2d PICKUP_ANGLE = Rotation2d.fromDegrees(0.0);
+        public static final Rotation2d SPEAKER_ANGLE = Rotation2d.fromDegrees(14.5);
+        public static final Rotation2d AMP_ANGLE = Rotation2d.fromDegrees(90.0);
 
-        public static final Rotation2d MIN = Rotation2d.fromDegrees(-5.0);
-        public static final Rotation2d PICKUP = Rotation2d.fromDegrees(0.0);
-        public static final Rotation2d SPEAKER = Rotation2d.fromDegrees(14.5);
-        public static final Rotation2d STOW = Rotation2d.fromDegrees(20.0);
-        public static final Rotation2d AMP = Rotation2d.fromDegrees(90.0);
-        public static final Rotation2d MAX = Rotation2d.fromDegrees(100);
-
+        public static final Rotation2d PICKUP_TOLERANCE = Rotation2d.fromDegrees(2.5);
+        public static final Rotation2d SPEAKER_TOLERANCE = Rotation2d.fromDegrees(0.75);
         public static final Rotation2d TOLERANCE = Rotation2d.fromDegrees(1.0);
 
         public static final double kG = 0.35; // volts to hold horizontal
@@ -61,13 +56,21 @@ public class Arm extends SubsystemBase {
         public static final double DEBOUNCE_TIME = 0.05;
     }
 
+    private static enum State {
+        STARTUP,
+        PICKUP,
+        SPEAKER,
+        AMP
+    };
+
     // Objects
     private final CANSparkMax rightMotor, leftMotor;
     private final SparkAbsoluteEncoder encoder;
     private final SparkPIDController pid;
     private final Debouncer debouncer;
 
-    private Rotation2d setpoint;
+    @AutoLogOutput(key = "Arm/State")
+    private State state = State.STARTUP;
 
     // Constructor
     public Arm() {
@@ -79,14 +82,17 @@ public class Arm extends SubsystemBase {
 
         Constants.RIGHT_CONFIG.apply(rightMotor);
         Constants.LEFT_CONFIG.apply(leftMotor);
-
-        setpoint = getAngle();
     }
 
     // Interface functions
     @AutoLogOutput(key = "Arm/Target")
     private Rotation2d getTargetAngle() {
-        return setpoint;
+        return switch (state) {
+            case STARTUP -> getAngle();
+            case PICKUP -> Constants.PICKUP_ANGLE;
+            case SPEAKER -> Constants.SPEAKER_ANGLE;
+            case AMP -> Constants.AMP_ANGLE;
+        };
     }
 
     @AutoLogOutput(key = "Arm/Actual")
@@ -99,9 +105,18 @@ public class Arm extends SubsystemBase {
         return getAngle().minus(getTargetAngle());
     }
 
+    @AutoLogOutput(key = "Arm/Tolerance")
+    private Rotation2d getTolerance() {
+        return switch (state) {
+            case PICKUP -> Constants.PICKUP_TOLERANCE;
+            case SPEAKER -> Constants.SPEAKER_TOLERANCE;
+            default -> Constants.TOLERANCE;
+        };
+    }
+
     @AutoLogOutput(key = "Arm/NearTarget")
     private boolean nearTarget() {
-        return Math.abs(getError().getDegrees()) < Constants.TOLERANCE.getDegrees();
+        return Math.abs(getError().getDegrees()) < getTolerance().getDegrees();
     }
 
     @AutoLogOutput(key = "Arm/OnTarget")
@@ -112,53 +127,37 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
         double feedforward = Math.cos(getAngle().getDegrees()) * Constants.kG;
-        pid.setReference(setpoint.getDegrees(), ControlType.kPosition, 0, feedforward);
+        pid.setReference(getTargetAngle().getDegrees(), ControlType.kPosition, 0, feedforward);
 
         Logger.recordOutput("Arm/Left/Output", leftMotor.getAppliedOutput());
         Logger.recordOutput("Arm/Right/Output", rightMotor.getAppliedOutput());
         Logger.recordOutput("Arm/Feedforward", feedforward);
     }
 
-    private void set(Rotation2d angle) {
-        if (angle.getDegrees() > Constants.MAX.getDegrees()) {
-            setpoint = Constants.MAX;
-        } else if (angle.getDegrees() < Constants.MIN.getDegrees()) {
-            setpoint = Constants.MIN;
-        } else {
-            setpoint = angle;
-        }
-    }
-
     // Command factories
-    private Command positionCommand(Rotation2d angle) {
+    private Command stateCommand(State target) {
         return Commands.sequence(
-                runOnce(() -> set(angle)),
+                runOnce(() -> state = target),
                 Commands.waitSeconds(Constants.DEBOUNCE_TIME),
-                run(() -> {}).until(this::onTarget)
-        );
-    }
-
-    public Command pickupStow() {
-        return startEnd(() -> set(Constants.PICKUP), () -> set(Constants.STOW));
+                run(() -> {}).until(this::onTarget));
     }
 
     public Command pickup() {
-        return positionCommand(Constants.PICKUP);
-    }
-
-    public Command stow() {
-        return positionCommand(Constants.STOW);
+        return stateCommand(State.PICKUP);
     }
 
     public Command amp() {
-        return positionCommand(Constants.AMP);
+        return stateCommand(State.AMP);
     }
 
     public Command speaker() {
-        return positionCommand(Constants.SPEAKER);
+        return stateCommand(State.SPEAKER);
     }
 
-    public Command defaultCommand(Supplier<Double> change) {
-        return run(() -> set(setpoint.plus(Constants.MANUAL_SPEED.times(change.get()))));
+    public Command groundSlam() {
+        return Commands.sequence(
+                runOnce(() -> state = State.PICKUP),
+                Commands.waitSeconds(Constants.DEBOUNCE_TIME),
+                run(() -> {}).until(() -> getAngle().getDegrees() < 10.0));
     }
 }

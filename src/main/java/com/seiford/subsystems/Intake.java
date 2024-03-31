@@ -34,9 +34,9 @@ public class Intake extends SubsystemBase {
                 ClosedLoopConfiguration.simple(0.00001, 0.0, 0.0, 0.000115),
                 FeedbackConfiguration.builtInEncoder(1.0));
 
-        public static final double INTAKE_SPEED = 4000; // rotations per minute
+        public static final double INTAKE_SPEED = 6000; // rotations per minute
         public static final double SHOOT_SPEED = 8000; // rotations per minute
-        public static final double EJECT_SPEED = -1000; // rotations per minute
+        public static final double EJECT_SPEED = -4000; // rotations per minute
 
         public static final double TOLERANCE = 100; // rotations per minute
     }
@@ -127,9 +127,5 @@ public class Intake extends SubsystemBase {
             Commands.waitSeconds(0.05),
             run(() -> {}).until(this::getSensor).withTimeout(2.5)
         );
-    }
-
-    public Command intakeStop() {
-        return startEnd(() -> setpoint = Constants.INTAKE_SPEED, () -> setpoint = 0.0);
     }
 }

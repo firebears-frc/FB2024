@@ -29,7 +29,6 @@ public class RobotContainer {
         public static final int CONTROLLER_PORT = 2;
 
         public static final double JOYSTICK_DEADBAND = 0.05;
-        public static final double GAMEPAD_DEADBAND = 0.2;
 
         public static final double SHOOT_DELAY = 0.25;
     }
@@ -62,24 +61,23 @@ public class RobotContainer {
 
         // Set up for autos
         NamedCommands.registerCommands(Map.of(
+                "GroundSlam", arm.groundSlam(),
                 "Shoot", Commands.sequence(
                         downbeat.shoot(),
                         Commands.waitSeconds(Constants.SHOOT_DELAY),
-                        upbeat.stop(),
-                        downbeat.stop()),
-                "Intake", Commands.sequence(
+                        Commands.parallel(
+                                upbeat.stop(),
+                                downbeat.stop())),
+                "Intake", Commands.parallel(
                         arm.pickup(),
-                        downbeat.autoIntake(),
-                        arm.stow(),
-                        upbeat.speaker(),
-                        arm.speaker())));
+                        downbeat.autoIntake()),
+                "PrepareShoot", Commands.parallel(
+                        arm.speaker(),
+                        upbeat.speaker())));
         autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser());
 
         // Set up default commands
         bass.setDefaultCommand(bass.defaultCommand(this::getChassisSpeeds, false));
-        arm.setDefaultCommand(
-                arm.defaultCommand(() -> MathUtil.applyDeadband(controller.getLeftY(),
-                        Constants.GAMEPAD_DEADBAND)));
 
         // Set up joystick one bindings
         one.trigger().toggleOnTrue(bass.turtle());
@@ -90,26 +88,30 @@ public class RobotContainer {
 
         // Set up controller bindings
         controller.rightTrigger().onTrue(
-                Commands.sequence(
+                Commands.parallel(
                         arm.speaker(),
                         upbeat.speaker()))
                 .onFalse(Commands.sequence(
                         downbeat.shoot(),
                         Commands.waitSeconds(Constants.SHOOT_DELAY),
-                        upbeat.stop(),
-                        downbeat.stop(),
-                        arm.stow()));
-        controller.rightBumper().toggleOnTrue(Commands.parallel(arm.pickupStow(), downbeat.intakeStop()));
+                        Commands.parallel(
+                                upbeat.stop(),
+                                downbeat.stop())));
+        controller.rightBumper().onTrue(Commands.sequence(
+                arm.pickup(),
+                downbeat.autoIntake(),
+                arm.speaker()));
         controller.leftTrigger().onTrue(
-                Commands.sequence(
+                Commands.parallel(
                         arm.amp(),
                         upbeat.amp()))
                 .onFalse(Commands.sequence(
                         downbeat.intake(),
                         Commands.waitSeconds(Constants.SHOOT_DELAY),
-                        upbeat.stop(),
-                        downbeat.stop(),
-                        arm.stow()));
+                        Commands.parallel(
+                                upbeat.stop(),
+                                downbeat.stop(),
+                                arm.speaker())));
         controller.leftBumper().onTrue(downbeat.eject()).onFalse(downbeat.stop());
         controller.povUp().onTrue(glissando.climb()).onFalse(glissando.stop());
         controller.povDown().onTrue(glissando.reverse()).onFalse(glissando.stop());

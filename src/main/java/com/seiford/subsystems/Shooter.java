@@ -34,7 +34,7 @@ public class Shooter extends SubsystemBase {
                 ClosedLoopConfiguration.outputConstraints(0.0003, 0.0000001, 0.0, 0.0001875, 0.0, 1.0),
                 FeedbackConfiguration.builtInEncoder(1));
 
-        public static final double SPEAKER_SPEED = 5000; // rotations per minute
+        public static final double SPEAKER_SPEED = 3600; // rotations per minute
         public static final double AMP_SPEED = 1000; // rotations per minute
         public static final double EJECT_SPEED = -1000; // rotations per minute
 
