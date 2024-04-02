@@ -56,7 +56,7 @@ public class RobotContainer {
                     m_arm.straightShot(),
                     m_shooter.autoShoot()),
             "shoot",Commands.sequence(
-                    m_intake.shootNote(),
+                    m_intake.autoIntake(),
                     Commands.waitSeconds(0.25)),
             "firstShot",Commands.sequence(
                     Commands.parallel(
@@ -67,6 +67,7 @@ public class RobotContainer {
                     m_intake.shootNote(),
                     Commands.waitSeconds(0.25)),
             "lastShot",Commands.sequence(
+                    Commands.waitSeconds(.1),
                     m_intake.shootNote(),
                     Commands.waitSeconds(0.25),
                     m_shooter.pauseUpBeat(),

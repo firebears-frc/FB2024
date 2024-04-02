@@ -113,7 +113,7 @@ public class Arm extends SubsystemBase {
     }
 
     public Command pickUp(){
-        return positionCommand(Constants.pickUp, 2.5);
+        return positionCommand(Constants.pickUp, 1);
     }
 
     public Command speakerShoot(){

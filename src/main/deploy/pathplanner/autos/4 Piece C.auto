@@ -5,7 +5,7 @@
       "x": 1.4,
       "y": 5.54
     },
-    "rotation": 9.893183140694282e-22
+    "rotation": 3.98633072531841e-21
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "firstShoot"
+            "name": "firstShot"
           }
         },
         {
@@ -22,9 +22,9 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "4 piece no vison.1"
+                  "name": "intake"
                 }
               },
               {
@@ -32,9 +32,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "intake"
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "4 piece no vison.1"
                       }
                     }
                   ]
@@ -73,22 +79,28 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "4 piece no vison.3"
-                }
-              },
-              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "intake"
+                        "waitTime": 0.75
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "4 piece no vison.3"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake"
                 }
               }
             ]
@@ -124,9 +136,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "4 piece no vison.5"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "4 piece no vison.5"
+                      }
+                    }
+                  ]
                 }
               },
               {
