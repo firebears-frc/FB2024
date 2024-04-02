@@ -64,14 +64,14 @@ public class Glissando extends SubsystemBase {
     public Command climb() {
         return runOnce(() -> {
             rightCommandSpeed = 1;
-            leftCommandSpeed = 1;
+            leftCommandSpeed = .7;
         });
     }
 
     public Command unclimb() {
         return runOnce(() -> {
             rightCommandSpeed = -1;
-            leftCommandSpeed = -1;
+            leftCommandSpeed = -.7;
         });
     }
 
@@ -114,10 +114,10 @@ public class Glissando extends SubsystemBase {
     }
 
     private void level(){
-        if(gyro.getRoll()<=-3){
+        if(gyro.getRoll()<=-5){
             rightClimbSpeed = rightCommandSpeed*0.25;
             leftClimbSpeed = leftCommandSpeed;
-        }else if(gyro.getRoll()>=3){
+        }else if(gyro.getRoll()>=5){
             rightClimbSpeed = rightCommandSpeed;
             leftClimbSpeed = leftCommandSpeed*0.25;
         }else{
