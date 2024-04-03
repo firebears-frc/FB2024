@@ -38,7 +38,7 @@ public class RobotContainer {
     private final UpBeat m_shooter = new UpBeat();
     private final Arm m_arm = new Arm();
     private final Glissando m_climb = new Glissando();
-    private Vision vision;
+    private final Vision vision;
     private final UsbCamera usbcamera;
     private final CommandJoystick one = new CommandJoystick(0); //right
     private final CommandJoystick two = new CommandJoystick(1); //left
