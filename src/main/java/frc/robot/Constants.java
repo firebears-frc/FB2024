@@ -71,7 +71,7 @@ public class Constants {
 
         // Calculations required for driving motor conversion factors and feed forward
         public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-        public static final double kWheelDiameterMeters = 0.07331075;
+        public static final double kWheelDiameterMeters = 0.0751825;
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
         // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
         // teeth on the bevel pinion
@@ -112,9 +112,10 @@ public class Constants {
     }
 
     public static final class ArmConstants {
-        public static final double shoulderP = 0.026;
+        public static final double shoulderP = 0.02;
         public static final double shoulderI = 0.0;
         public static final double shoulderD = 0.0;
+        public static final double shoulderG = 0.35;
     }
 
     public static final class OIConstants {
@@ -145,13 +146,13 @@ public class Constants {
         public static final String kCameraName = "Arducam_OV2311_USB_Camera";
         public static final Transform3d kCameraOffset = new Transform3d(
             new Translation3d(
-                Units.inchesToMeters(16.0),
-                Units.inchesToMeters(-1.5),
-                Units.inchesToMeters(16.0)),
+                Units.inchesToMeters(-11.5),
+                Units.inchesToMeters(0),
+                Units.inchesToMeters(13.00)),
             new Rotation3d(
-                0.0,
-                Rotation2d.fromDegrees(-15.0).getRadians(),
-                0.0
+                Rotation2d.fromDegrees(180).getRadians(),
+                Rotation2d.fromDegrees(-30.0).getRadians(),
+                Rotation2d.fromDegrees(180).getRadians()
             ));
     }
 }

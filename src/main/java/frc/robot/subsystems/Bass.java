@@ -4,20 +4,27 @@ import org.littletonrobotics.junction.LoggedRobot;
 
 import java.util.List;
 
+
+import java.lang.annotation.Target;
+import java.util.Optional;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -103,6 +110,7 @@ public class Bass extends SubsystemBase {
                 },
                 this // Reference to this subsystem to set requirements
         );
+        PathPlannerLogging.setLogCurrentPoseCallback(pose -> Logger.recordOutput("Chassis/targetPose",pose));
 
         // Create a list of bezier points from poses. Each pose represents one waypoint.
         // The rotation component of the pose should be the direction of travel. Do not
@@ -231,6 +239,13 @@ public class Bass extends SubsystemBase {
         double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
         double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
+
+        //get alliance color
+        Optional<Alliance> ally = DriverStation.getAlliance();
+        if (ally.isPresent() && ally.get() == Alliance.Red) {
+            xSpeedDelivered *= -1;
+            ySpeedDelivered *= -1;
+        }
 
         drive(new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered), fieldRelative);
     }

@@ -2,37 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3962770782684422,
-      "y": 5.541202510976451
+      "x": 1.503224492073059,
+      "y": 3.753357410430908
     },
-    "rotation": 0
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "shootSequence"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "armLow"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "5PNV1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "5PNV2"
+            "pathName": "4 piece side.1"
           }
         },
         {
@@ -50,13 +32,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV3"
+            "pathName": "4 piece side.2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV4"
+            "pathName": "4 piece side.3"
           }
         },
         {
@@ -74,13 +56,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV5"
+            "pathName": "4 piece side.4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "5PNV6"
+            "pathName": "4 piece side.5"
           }
         },
         {
@@ -96,14 +78,26 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece side.6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4 piece side.7"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "stopPickUp"
+            "name": "shootSequence"
           }
         }
       ]
     }
   },
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

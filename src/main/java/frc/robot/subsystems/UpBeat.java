@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -11,6 +13,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 public class UpBeat extends SubsystemBase {
     private CANSparkMax topMotor;
@@ -19,7 +22,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
-
+    private Debouncer debounce = new Debouncer(0.2);
 
     public UpBeat() {
         topMotor = new CANSparkMax(10, MotorType.kBrushless);
@@ -29,6 +32,9 @@ public class UpBeat extends SubsystemBase {
         topMotor.setInverted(false);
         topMotor.setIdleMode(IdleMode.kCoast);
         topPid = topMotor.getPIDController();
+        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
         bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
         bottomMotor.setSmartCurrentLimit(50, 50);
@@ -37,6 +43,9 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.setInverted(false);
         bottomMotor.setIdleMode(IdleMode.kCoast);
         bottomPid = bottomMotor.getPIDController();
+        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
         topPid.setP(0.0003);
         topPid.setI(0.0000001);
@@ -55,11 +64,13 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.burnFlash();
     }
 
-    private final static class Constants{
+    private final static class Constants {
         private static final double stop = 0.00;
         private static final double reverse = -1000.00;
-        private static final double shoot = 5000.00;
+        private static final double shoot = 3600.00;
         private static final double amp = 1000.00;
+        private static final double straightShot = 3600.00;
+        private static final double magicNumber = 5000.0;
     }
 
     @AutoLogOutput(key = "upBeat/speed")
@@ -68,24 +79,32 @@ public class UpBeat extends SubsystemBase {
     }
 
     @AutoLogOutput(key = "upBeat/error")
-    private double getError(){
-        return setPoint-getSpeed();
+    private double getError() {
+        return setPoint - getSpeed();
     }
 
     @AutoLogOutput(key = "upBeat/at speed")
-    private boolean atSpeed(){
+    private boolean atSpeed() {
         return Math.abs(getError()) < 100;
     }
 
-    private Command speedCommand(double speed){
-        return run (()-> setPoint = speed).until(this::atSpeed); 
+    @AutoLogOutput(key = "upBeat/at debouncespeed")
+    private boolean debounceSpeend() {
+        return debounce.calculate(atSpeed());
+    }
+
+    private Command speedCommand(double speed) {
+        return Commands.sequence(
+            runOnce(() -> setPoint = speed),
+            Commands.waitSeconds(0.1),
+            run(() -> {}).until(this::debounceSpeend)
+        );
     }
 
     public Command shootNote() {
         return startEnd(
-            () -> setPoint = Constants.shoot,
-            () -> setPoint = Constants.stop
-            );
+                () -> setPoint = Constants.magicNumber,
+                () -> setPoint = Constants.stop);
     }
 
     public Command reverseShootNote() {
@@ -102,6 +121,10 @@ public class UpBeat extends SubsystemBase {
 
     public Command autoShoot() {
         return speedCommand(Constants.shoot);
+    }
+
+    public Command straightAutoShot() {
+        return speedCommand(Constants.straightShot);
     }
 
     @Override

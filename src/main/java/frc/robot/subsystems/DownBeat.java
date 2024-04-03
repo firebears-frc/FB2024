@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -13,12 +14,15 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
 public class DownBeat extends SubsystemBase {
     private CANSparkMax downBeatMotor;
     private SparkPIDController pid;
     private DigitalInput sensor;
     private double setPoint = 0;
+    @AutoLogOutput(key="downBeat/hasNote")
+    private boolean hasNote = false;
 
     public DownBeat() {
         downBeatMotor = new CANSparkMax(9, MotorType.kBrushless);
@@ -28,6 +32,9 @@ public class DownBeat extends SubsystemBase {
         downBeatMotor.setInverted(true);
         downBeatMotor.setIdleMode(IdleMode.kBrake);
         pid = downBeatMotor.getPIDController();
+        downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+        downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+        downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
         pid.setP(0.00001);
         pid.setI(0.0);
@@ -38,7 +45,6 @@ public class DownBeat extends SubsystemBase {
 
         //sensor
         sensor = new DigitalInput(0);
-        new Trigger(this :: beamBreak).onTrue(pauseDownBeat());
     }
 
     @AutoLogOutput(key = "downBeat/beamBreak")
@@ -85,6 +91,12 @@ public class DownBeat extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if(beamBreak() && !hasNote){
+            setPoint = 0;
+            hasNote = true;
+        } else if(!beamBreak()){
+            hasNote = false;
+        }
         pid.setReference(setPoint, ControlType.kVelocity);
         
         Logger.recordOutput("downBeat/Output", downBeatMotor.getAppliedOutput());
