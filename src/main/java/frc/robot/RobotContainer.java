@@ -31,12 +31,14 @@ import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.Glissando;
 import frc.robot.subsystems.UpBeat;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Conductor;
 
 public class RobotContainer {
     private final Bass m_robotDrive = new Bass();
     private final DownBeat m_intake = new DownBeat();
     private final UpBeat m_shooter = new UpBeat();
-    private final Arm m_arm = new Arm();
+    private final Conductor m_conductor = new Conductor(m_robotDrive::getPose);
+    private final Arm m_arm = new Arm(m_conductor::getArmAngle);
     private final Glissando m_climb = new Glissando();
     private final Vision vision;
     private final UsbCamera usbcamera;

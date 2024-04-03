@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -12,18 +13,20 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 
 public class Conductor extends SubsystemBase {
 
+    private boolean isRed;
+
     private static final class Constants {
         public static final Translation2d BLUE_SPEAKER = new Translation2d(0.0, 5.550);
         public static final Translation2d RED_SPEAKER = new Translation2d(16.541, 5.550);
     }
-
-    private static final boolean isRedAlliance = true;
 
     private final InterpolatingDoubleTreeMap angleInterpolator = new InterpolatingDoubleTreeMap();
     private final InterpolatingDoubleTreeMap speedInterpolator = new InterpolatingDoubleTreeMap();
@@ -39,6 +42,13 @@ public class Conductor extends SubsystemBase {
         put(3.40, 30.00, 4800.00); // not tuned podium shot
         put(4.25, 33.75, 5000.00); // partially tuned far side shot
         put(6.25, 35.00, 5000.00); // not tuned far shot
+
+        Optional<Alliance> ally = DriverStation.getAlliance();
+        if (ally.isPresent() && (ally.get() == Alliance.Blue)) {
+            isRed = false;
+        } else {
+            isRed = true;
+        }
     }
 
     private void put(double distance, double angle, double speed) {
@@ -68,17 +78,15 @@ public class Conductor extends SubsystemBase {
 
     @AutoLogOutput(key = "Conductor/SpeakerPosition")
     private Translation2d getSpeakerPosition() {
-        if(isRedAlliance){
+        if(isRed){
             return Constants.RED_SPEAKER;
         } else {
             return Constants.BLUE_SPEAKER;
         }
-        //return Util.isRedAlliance() ? Constants.RED_SPEAKER : Constants.BLUE_SPEAKER;
     }
 
     @Override
     public void periodic() {
         speakerTranslation = poseSupplier.get().getTranslation().minus(getSpeakerPosition());
     }
-
 }
