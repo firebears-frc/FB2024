@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -20,7 +22,7 @@ public class UpBeat extends SubsystemBase {
     private SparkPIDController bottomPid;
     @AutoLogOutput(key = "upBeat/setPoint")
     private double setPoint = 0;
-
+    private Debouncer debounce = new Debouncer(0.2);
 
     public UpBeat() {
         topMotor = new CANSparkMax(10, MotorType.kBrushless);
@@ -62,12 +64,13 @@ public class UpBeat extends SubsystemBase {
         bottomMotor.burnFlash();
     }
 
-    private final static class Constants{
+    private final static class Constants {
         private static final double stop = 0.00;
         private static final double reverse = -1000.00;
         private static final double shoot = 3600.00;
         private static final double amp = 1000.00;
         private static final double straightShot = 3600.00;
+        private static final double magicNumber = 5000.0;
     }
 
     @AutoLogOutput(key = "upBeat/speed")
@@ -76,24 +79,32 @@ public class UpBeat extends SubsystemBase {
     }
 
     @AutoLogOutput(key = "upBeat/error")
-    private double getError(){
-        return setPoint-getSpeed();
+    private double getError() {
+        return setPoint - getSpeed();
     }
 
     @AutoLogOutput(key = "upBeat/at speed")
-    private boolean atSpeed(){
+    private boolean atSpeed() {
         return Math.abs(getError()) < 100;
     }
 
-    private Command speedCommand(double speed){
-        return run (()-> setPoint = speed).until(this::atSpeed); 
+    @AutoLogOutput(key = "upBeat/at debouncespeed")
+    private boolean debounceSpeend() {
+        return debounce.calculate(atSpeed());
+    }
+
+    private Command speedCommand(double speed) {
+        return Commands.sequence(
+            runOnce(() -> setPoint = speed),
+            Commands.waitSeconds(0.1),
+            run(() -> {}).until(this::debounceSpeend)
+        );
     }
 
     public Command shootNote() {
         return startEnd(
-            () -> setPoint = Constants.shoot,
-            () -> setPoint = Constants.stop
-            );
+                () -> setPoint = Constants.magicNumber,
+                () -> setPoint = Constants.stop);
     }
 
     public Command reverseShootNote() {
@@ -112,7 +123,7 @@ public class UpBeat extends SubsystemBase {
         return speedCommand(Constants.shoot);
     }
 
-    public Command straightAutoShot(){
+    public Command straightAutoShot() {
         return speedCommand(Constants.straightShot);
     }
 

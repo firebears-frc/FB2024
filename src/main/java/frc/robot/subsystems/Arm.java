@@ -2,9 +2,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.function.Supplier;
@@ -25,15 +27,16 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import frc.robot.Constants.*;
 
 public class Arm extends SubsystemBase {
-    private static int STALL_CURRENT_LIMIT_SHOULDER = 30;
-    private static int FREE_CURRENT_LIMIT_SHOULDER = 25;
-    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 35;
+    private static int STALL_CURRENT_LIMIT_SHOULDER = 20;
+    private static int FREE_CURRENT_LIMIT_SHOULDER = 20;
+    private static int SECONDARY_CURRENT_LIMIT_SHOULDER = 30;
     private CANSparkMax shoulderMotorRight;
     private CANSparkMax shoulderMotorLeft;
     private static SparkAbsoluteEncoder shoulderEncoder;
     private SparkPIDController shoulderPID;
     @AutoLogOutput(key = "arm/setPoint")
     private Rotation2d shoulderSetpoint = new Rotation2d();
+    private Debouncer debounce = new Debouncer(0.2);
 
     private final Supplier<Rotation2d> angleSupplier;
 
@@ -87,10 +90,10 @@ public class Arm extends SubsystemBase {
     private final static class Constants{     // arm setpoints
         private static final Rotation2d pickUp = Rotation2d.fromDegrees(0);
         private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(13.5);
-        private static final Rotation2d ampShoot = Rotation2d.fromDegrees(85);
+        private static final Rotation2d ampShoot = Rotation2d.fromDegrees(90);
         private static final Rotation2d stow = Rotation2d.fromDegrees(20);
-        private static final Rotation2d sideShoot = Rotation2d.fromDegrees(30);
-        private static final Rotation2d straightShot = Rotation2d.fromDegrees(13.5);
+        private static final Rotation2d sideShoot = Rotation2d.fromDegrees(33.75);
+        private static final Rotation2d straightShot = Rotation2d.fromDegrees(14.5);
         
     }
     @AutoLogOutput(key = "arm/Angle")
@@ -111,51 +114,66 @@ public class Arm extends SubsystemBase {
         return getShoulderAngle().minus(shoulderSetpoint);
     }
 
-    @AutoLogOutput(key = "arm/onTarget")
-    private boolean onTarget(){
-      return Math.abs(getError().getDegrees()) < 1;
-
-    }
-
     public Command defaultCommand(Supplier<Double> shoulderChange) {
         return run(() -> {
            setShoulderSetpoint(shoulderSetpoint.minus(Rotation2d.fromDegrees(shoulderChange.get())));
         });
     }
-    
+
     public Command pickUp(){
-        return positionCommand(Constants.pickUp);
+        return positionCommand(Constants.pickUp, 2.5);
     }
+
     public Command speakerShoot(){
-        return positionCommand(Constants.speakerShoot);
+        return positionCommand(Constants.speakerShoot, 1);
     }
 
     public Command ampShoot(){
-        return positionCommand(Constants.ampShoot);
+        return positionCommand(Constants.ampShoot, 1);
     }
 
-    public Command stow(){
-        return positionCommand(Constants.stow);
-    }
     public Command sideShoot(){
-        return positionCommand(Constants.sideShoot);
+        return positionCommand(Constants.sideShoot, 1);
     }
     public Command straightShot(){
-        return positionCommand(Constants.straightShot);
+        return positionCommand(Constants.straightShot, 1);
     }
 
-    private Command positionCommand(Rotation2d position){
-        return run(()-> setShoulderSetpoint(position)).until(this::onTarget);
+
+    private boolean onTarget(double tolerance){
+        boolean onTarget = Math.abs(getError().getDegrees()) < tolerance;
+        Logger.recordOutput("arm/onTargt",onTarget);
+        boolean debounced = debounce.calculate(onTarget);
+        Logger.recordOutput("arm/at debouncespeed",debounced);
+        return debounced;
+    }
+
+    private Command positionCommand(Rotation2d position, double tolerance){
+        return Commands.sequence(
+            runOnce(() -> setShoulderSetpoint(position)),
+            Commands.waitSeconds(0.1),
+            run(()-> {}).until(()-> onTarget(tolerance))
+        );
+    }
+
+     public Command groundSlam(){
+        return Commands.sequence(
+            runOnce(() -> setShoulderSetpoint(Constants.pickUp)),
+            Commands.waitSeconds(0.1),
+            run(()-> {}).until(()-> getShoulderAngle().getDegrees() < 5)
+        );
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
-        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput()); 
-        Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
         double feedForward = Math.cos(getShoulderAngle().getRadians()) * ArmConstants.shoulderG;
         shoulderPID.setReference(shoulderSetpoint.getDegrees(), ControlType.kPosition, 0, feedForward);
-    }
-    
-}
 
+        Logger.recordOutput("arm/MotorLeft", shoulderMotorLeft.getAppliedOutput());
+        Logger.recordOutput("arm/MotorRight", shoulderMotorRight.getAppliedOutput());
+        Logger.recordOutput("arm/MotorLeftCurrent", shoulderMotorLeft.getOutputCurrent());
+        Logger.recordOutput("arm/MotorRightCurrent", shoulderMotorRight.getOutputCurrent());
+        Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
+        Logger.recordOutput("arm/FeedForward", feedForward);
+    }    
+}
