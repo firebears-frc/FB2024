@@ -40,7 +40,7 @@ public class RobotContainer {
     private final Conductor m_conductor = new Conductor(m_robotDrive::getPose);
     private final Arm m_arm = new Arm(m_conductor::getArmAngle);
     private final Glissando m_climb = new Glissando();
-    private final Vision vision;
+    private Vision vision;
     private final UsbCamera usbcamera;
     private final CommandJoystick one = new CommandJoystick(0); //right
     private final CommandJoystick two = new CommandJoystick(1); //left
