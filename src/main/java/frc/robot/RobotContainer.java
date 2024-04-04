@@ -51,12 +51,12 @@ public class RobotContainer {
             "intake",Commands.parallel(
                     m_shooter.pauseUpBeat(),
                     m_arm.pickUp(),
-                    m_intake.intakeNote()),
+                    m_intake.autoIntake(),
             "armUp",Commands.parallel(
                     m_arm.straightShot(),
                     m_shooter.autoShoot()),
             "shoot",Commands.sequence(
-                    m_intake.autoIntake(),
+                    m_intake.shootNote(),
                     Commands.waitSeconds(0.25)),
             "firstShot",Commands.sequence(
                     Commands.parallel(
