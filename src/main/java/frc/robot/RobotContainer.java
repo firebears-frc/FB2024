@@ -18,6 +18,7 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -47,26 +48,44 @@ public class RobotContainer {
 
     private void configureAutoCommands(){
         NamedCommands.registerCommands(Map.of(
-            "armLow", 
-                m_arm.pickUp(),
-            "groundSlam",
-                m_arm.groundSlam(),
-            "shootSequence", Commands.sequence(
-                Commands.parallel(
-                m_arm.straightShot(),
-                m_shooter.straightAutoShot()),
-                m_intake.shootNote(),
-                Commands.waitSeconds(.25),
-                m_shooter.pauseUpBeat()            
-            ),
-            "shootSequence2", Commands.sequence(
-                Commands.parallel(
-                m_arm.sideShoot(),
-                m_shooter.straightAutoShot()),
-                m_intake.shootNote(),
-                Commands.waitSeconds(.25),
-                m_shooter.pauseUpBeat() 
-            )
+            "intake",Commands.parallel(
+                    m_shooter.pauseUpBeat(),
+                    m_arm.pickUp(),
+                    m_intake.autoIntake()),
+            "armUp",Commands.parallel(
+                    m_arm.straightShot(),
+                    m_shooter.autoShoot()),
+            "shoot",Commands.sequence(
+                    m_intake.shootNote(),
+                    Commands.waitSeconds(0.25)),
+            "firstShot",Commands.sequence(
+                    Commands.parallel(
+                    m_shooter.autoShoot(),
+                    Commands.sequence(
+                    m_arm.groundSlam(),
+                    m_arm.straightShot())),
+                    m_intake.shootNote(),
+                    Commands.waitSeconds(0.25)),
+            "lastShot",Commands.sequence(
+                    Commands.waitSeconds(.1),
+                    m_intake.shootNote(),
+                    Commands.waitSeconds(0.25),
+                    m_shooter.pauseUpBeat(),
+                    m_arm.pickUp(),
+                    m_intake.pauseDownBeat()),
+            "oneShot",Commands.sequence(
+                    Commands.parallel(
+                    Commands.sequence(
+                    m_arm.groundSlam(),
+                    m_arm.straightShot()),
+                    m_shooter.autoShoot()),
+                    m_intake.shootNote(),
+                    Commands.waitSeconds(.25),
+                    Commands.parallel(
+                    m_arm.ampShoot(),
+                    m_shooter.pauseUpBeat(),
+                    m_intake.pauseDownBeat())
+                   )
             ));
     }
 
@@ -108,12 +127,15 @@ public class RobotContainer {
 
         xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
-        xboxController.povLeft().onTrue(m_intake.shootNote()).onFalse(m_intake.pauseDownBeat());
         xboxController.y().toggleOnTrue(m_shooter.shootNote());
         xboxController.b().onTrue(m_arm.pickUp()); 
         xboxController.rightBumper().onTrue(m_arm.speakerShoot());
         xboxController.leftBumper().onTrue(m_arm.ampShoot());
-        
+        xboxController.povLeft().onTrue(m_climb.climbLeftUp()).onFalse(m_climb.pauseClimb());
+        xboxController.povRight().onTrue(m_climb.climbRightUp()).onFalse(m_climb.pauseClimb());
+        xboxController.start().onTrue(m_climb.climbRightDown()).onFalse(m_climb.pauseClimb());
+        xboxController.back().onTrue(m_climb.climbLeftDown()).onFalse(m_climb.pauseClimb());
+
         xboxController.leftTrigger().onTrue(Commands.parallel(
             m_arm.ampShoot(),
             m_shooter.ampSpeed()

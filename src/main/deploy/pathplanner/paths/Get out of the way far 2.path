@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3962770782684422,
-        "y": 5.541202510976451
+        "x": 0.5087399265707623,
+        "y": 2.220241531392155
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.094415617402664,
-        "y": 6.152073732718894
+        "x": 1.5087399265707622,
+        "y": 2.220241531392155
       },
       "isLocked": false,
-      "linkedName": "5PNV1 start"
+      "linkedName": "get out of the way far1e"
     },
     {
       "anchor": {
-        "x": 2.3371741288937122,
-        "y": 6.744683307548434
+        "x": 3.1860900085436534,
+        "y": 2.2668852610432495
       },
       "prevControl": {
-        "x": 2.0149563416009952,
-        "y": 6.496307096510297
+        "x": 2.1860900085436534,
+        "y": 2.2668852610432495
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "5PNV5 end"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -39,11 +39,11 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 43.898293884793645,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4-5 piece center auto",
+  "folder": "Test and other pathplaner",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

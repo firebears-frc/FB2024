@@ -89,6 +89,11 @@ public class DownBeat extends SubsystemBase {
         });
     }
 
+    public Command autoIntake() {
+        return Commands.sequence(runOnce(() -> setPoint = 7000),
+        run(()-> {}).until(()->hasNote).withTimeout(2.5));
+    }
+
     @Override
     public void periodic() {
         if(beamBreak() && !hasNote){

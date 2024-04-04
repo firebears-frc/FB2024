@@ -3,50 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.34,
-        "y": 5.5
+        "x": 0.695314845175145,
+        "y": 4.393839333133212
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3825586240580796,
-        "y": 5.4773711781897845
+        "x": 0.9285334934306233,
+        "y": 3.5449234534832708
       },
       "isLocked": false,
-      "linkedName": "end of 1.5"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.495762809707451,
-        "y": 5.5506038284794945
+        "x": 0.5087399265707623,
+        "y": 2.220241531392155
       },
       "prevControl": {
-        "x": 1.6281894381970583,
-        "y": 5.569261320340823
+        "x": 0.8072597963377744,
+        "y": 2.2295702773223733
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "get out of the way far1e"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.4,
+    "maxAcceleration": 1.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Test and other pathplaner",
   "previewStartingState": {
-    "rotation": -0.6478744793275347,
+    "rotation": -60.46121774044193,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

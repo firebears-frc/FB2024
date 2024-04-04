@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.708089344106616,
-      "y": 6.683920394867817
+      "x": 0.695314845175145,
+      "y": 4.393839333133212
     },
-    "rotation": 61.0490047925332
+    "rotation": -59.47029410006591
   },
   "command": {
     "type": "sequential",
@@ -14,25 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "shootSequence"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "armHigh"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopPickUp"
+            "name": "oneShot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "finals match 1 1v8 1"
+            "pathName": "Get out of the way far 1"
           }
         },
         {
@@ -44,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "finals match 1 1v8 2"
+            "pathName": "Get out of the way far 2"
           }
         }
       ]
