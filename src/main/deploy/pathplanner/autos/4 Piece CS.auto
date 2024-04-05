@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6802782416343689,
-      "y": 6.741951942443848
+      "x": 0.6694499850273132,
+      "y": 6.752779960632324
     },
-    "rotation": 60.94539962011735
+    "rotation": 60.068481634225144
   },
   "command": {
     "type": "sequential",
@@ -15,6 +15,44 @@
           "type": "named",
           "data": {
             "name": "firstShot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "close side.3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeFar"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "close side.4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armUp"
+                }
+              }
+            ]
           }
         },
         {
@@ -59,44 +97,6 @@
           "type": "named",
           "data": {
             "name": "shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "close side.3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeFar"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "close side.4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "armUp"
-                }
-              }
-            ]
           }
         },
         {

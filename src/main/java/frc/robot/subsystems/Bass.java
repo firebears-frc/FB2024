@@ -114,6 +114,7 @@ public class Bass extends SubsystemBase {
                 getModulePositions()
                 );
         Logger.recordOutput("Chassis/Pose", getPose());
+        Logger.recordOutput("chassis/gyo", m_gyro.isConnected());
     }
 
     /**
