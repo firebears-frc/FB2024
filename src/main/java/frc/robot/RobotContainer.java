@@ -54,43 +54,41 @@ public class RobotContainer {
                     m_intake.autoIntake(2.5)),
             "intakeFar",Commands.parallel(
                     m_shooter.pauseUpBeat(),
-                     m_arm.pickUp(),
-                    m_intake.autoIntake(4)),
+                    m_arm.pickUp(),
+                    m_intake.autoIntake(7)),
             "armUp",Commands.parallel(
                     m_arm.straightShot(),
                     m_shooter.autoShoot()),
             "shoot",Commands.sequence(
                     m_intake.shootNote(),
-                    Commands.waitSeconds(0.25)),
+                    Commands.waitSeconds(0.35)),
             "firstShot",Commands.sequence(
                     Commands.parallel(
-                    m_shooter.autoShoot(),
-                    Commands.sequence(
-                    m_arm.groundSlam(),
-                    m_arm.straightShot())),
+                        m_shooter.autoShoot(),
+                        Commands.sequence(
+                            m_arm.groundSlam(),
+                            m_arm.straightShot())),
                     m_intake.shootNote(),
-                    Commands.waitSeconds(0.25)),
+                    Commands.waitSeconds(0.35)),
             "lastShot",Commands.sequence(
                     Commands.waitSeconds(.1),
                     m_intake.shootNote(),
-                    Commands.waitSeconds(0.25),
+                    Commands.waitSeconds(0.35),
                     m_shooter.pauseUpBeat(),
                     m_arm.pickUp(),
                     m_intake.pauseDownBeat()),
             "oneShot",Commands.sequence(
                     Commands.parallel(
-                    Commands.sequence(
-                    m_arm.groundSlam(),
-                    m_arm.straightShot()),
-                    m_shooter.autoShoot()),
+                        Commands.sequence(
+                            m_arm.groundSlam(),
+                            m_arm.straightShot()),
+                            m_shooter.autoShoot()),
                     m_intake.shootNote(),
-                    Commands.waitSeconds(.25),
+                    Commands.waitSeconds(.35),
                     Commands.parallel(
-                    m_arm.ampShoot(),
-                    m_shooter.pauseUpBeat(),
-                    m_intake.pauseDownBeat())
-                   )
-            ));
+                        m_arm.ampShoot(),
+                        m_shooter.pauseUpBeat(),
+                        m_intake.pauseDownBeat()))));
     }
 
     public RobotContainer() {
@@ -154,9 +152,9 @@ public class RobotContainer {
         xboxController.rightTrigger().onTrue(Commands.parallel(
             m_arm.speakerShoot(),
             m_shooter.autoShoot()
-        )).onFalse(Commands.sequence(  
+        )).onFalse(Commands.sequence(
             m_intake.shootNote(),
-            Commands.waitSeconds(.25),
+            Commands.waitSeconds(.35),
             m_shooter.pauseUpBeat(),
             m_intake.pauseDownBeat(),
             m_arm.pickUp()
