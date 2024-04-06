@@ -69,11 +69,11 @@ public class RobotContainer {
                             m_arm.groundSlam(),
                             m_arm.straightShot())),
                     m_intake.shootNote(),
-                    Commands.waitSeconds(0.35)),
+                    Commands.waitSeconds(0.5)),
             "lastShot",Commands.sequence(
                     Commands.waitSeconds(.1),
                     m_intake.shootNote(),
-                    Commands.waitSeconds(0.35),
+                    Commands.waitSeconds(0.5),
                     m_shooter.pauseUpBeat(),
                     m_arm.pickUp(),
                     m_intake.pauseDownBeat()),
@@ -84,7 +84,7 @@ public class RobotContainer {
                             m_arm.straightShot()),
                             m_shooter.autoShoot()),
                     m_intake.shootNote(),
-                    Commands.waitSeconds(.35),
+                    Commands.waitSeconds(.5),
                     Commands.parallel(
                         m_arm.ampShoot(),
                         m_shooter.pauseUpBeat(),
