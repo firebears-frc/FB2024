@@ -48,7 +48,7 @@ public class Vision extends SubsystemBase {
 
         List<PhotonTrackedTarget> badTargets = new ArrayList<>();
         for(PhotonTrackedTarget target : pipelineResult.targets){
-            if(target.getPoseAmbiguity()>0.5){
+            if(target.getPoseAmbiguity()>.1 || target.getPoseAmbiguity() == 0){
                 badTargets.add(target);
             }
         }
