@@ -61,7 +61,7 @@ public class RobotContainer {
                     m_shooter.autoShoot()),
             "shoot",Commands.sequence(
                     m_intake.shootNote(),
-                    Commands.waitSeconds(0.35)),
+                    Commands.waitSeconds(0.5)),
             "firstShot",Commands.sequence(
                     Commands.parallel(
                         m_shooter.autoShoot(),
