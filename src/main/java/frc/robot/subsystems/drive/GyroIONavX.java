@@ -13,15 +13,23 @@
 
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import org.littletonrobotics.junction.AutoLog;
+import com.kauailabs.navx.frc.AHRS;
 
-public interface GyroIO {
-  @AutoLog
-  public static class GyroIOInputs {
-    public boolean connected = false;
-    public Rotation2d yawPosition = new Rotation2d();
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.SerialPort;
+
+/** IO implementation for NavX */
+public class GyroIONavX implements GyroIO {
+  public final AHRS gyro = new AHRS(SerialPort.Port.kMXP);
+  public static final boolean INVERTED = true;
+
+  public GyroIONavX() {
+    gyro.reset();
   }
 
-  public default void updateInputs(GyroIOInputs inputs) {}
+  @Override
+  public void updateInputs(GyroIOInputs inputs) {
+    inputs.connected = gyro.isConnected();
+    inputs.yawPosition = Rotation2d.fromDegrees(gyro.getYaw() * (INVERTED ? -1.0 : 1.0));
+  }
 }
