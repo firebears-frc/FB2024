@@ -8,24 +8,19 @@ import com.seiford.drive.Drive;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {
     // Constants
     private static final class Constants {
-        public static final int JOYSTICK_1_PORT = 0;
-        public static final int JOYSTICK_2_PORT = 1;
-        public static final int CONTROLLER_PORT = 2;
+        public static final int CONTROLLER_PORT = 0;
 
-        public static final double JOYSTICK_DEADBAND = 0.05;
+        public static final double CONTROLLER_DEADBAND = 0.1;
     }
 
     // Objects
     private final Drive bass;
 
-    private final CommandJoystick one;
-    private final CommandJoystick two;
     private final CommandXboxController controller;
     private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -35,8 +30,6 @@ public class RobotContainer {
         bass = new Drive();
 
         // Create control interfaces
-        one = new CommandJoystick(Constants.JOYSTICK_1_PORT);
-        two = new CommandJoystick(Constants.JOYSTICK_2_PORT);
         controller = new CommandXboxController(Constants.CONTROLLER_PORT);
 
         // Set up for autos
@@ -45,18 +38,16 @@ public class RobotContainer {
         // Set up default commands
         bass.setDefaultCommand(bass.defaultCommand(this::getChassisSpeeds, false));
 
-        // Set up joystick one bindings
-        one.trigger().toggleOnTrue(bass.turtle());
-        one.button(2).toggleOnTrue(bass.defaultCommand(this::getChassisSpeeds, true));
-
-        // Set up joystick two bindings
-        two.trigger().onTrue(bass.zeroHeading());
+        // Set up controller bindings
+        controller.rightStick().toggleOnTrue(bass.turtle());
+        controller.leftStick().toggleOnTrue(bass.defaultCommand(this::getChassisSpeeds, true));
+        controller.start().onTrue(bass.zeroHeading());
     }
 
     private ChassisSpeeds getChassisSpeeds() {
-        double x = MathUtil.applyDeadband(one.getY(), Constants.JOYSTICK_DEADBAND);
-        double z = MathUtil.applyDeadband(one.getX(), Constants.JOYSTICK_DEADBAND);
-        double omega = -MathUtil.applyDeadband(two.getX(), Constants.JOYSTICK_DEADBAND);
+        double x = MathUtil.applyDeadband(controller.getLeftY(), Constants.CONTROLLER_DEADBAND);
+        double z = MathUtil.applyDeadband(controller.getLeftX(), Constants.CONTROLLER_DEADBAND);
+        double omega = -MathUtil.applyDeadband(controller.getRightX(), Constants.CONTROLLER_DEADBAND);
 
         if (Util.isRedAlliance()) {
             x *= -1.0;
