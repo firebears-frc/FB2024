@@ -116,10 +116,8 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    controller
-        .b()
-        .onTrue(
+    controller.leftStick().toggleOnTrue(Commands.startEnd(drive::stopWithX, () -> {}, drive));
+    controller.rightStick().onTrue(
             Commands.runOnce(
                     () ->
                         drive.setPose(
