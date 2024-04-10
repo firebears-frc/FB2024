@@ -32,9 +32,12 @@ import frc.robot.subsystems.drive.ModuleIOMAXSwerve;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
@@ -47,13 +50,14 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
+        drive = new Drive(
             new GyroIONavX(),
             new ModuleIOMAXSwerve(0),
             new ModuleIOMAXSwerve(1),
@@ -63,9 +67,9 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-            new GyroIO() {},
+        drive = new Drive(
+            new GyroIO() {
+            },
             new ModuleIOSim(),
             new ModuleIOSim(),
             new ModuleIOSim(),
@@ -74,13 +78,17 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-            new GyroIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {},
-            new ModuleIO() {});
+        drive = new Drive(
+            new GyroIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            },
+            new ModuleIO() {
+            });
         break;
     }
 
@@ -104,9 +112,11 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be created by
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+   * it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
@@ -116,18 +126,19 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    controller.leftStick().toggleOnTrue(Commands.startEnd(drive::stopWithX, () -> {}, drive));
+    controller.leftStick().toggleOnTrue(Commands.startEnd(drive::stopWithX, () -> {
+    }, drive));
     controller.rightStick().onTrue(
-        Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-                    drive)
+        Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())), drive)
             .ignoringDisable(true));
-    controller.a().toggleOnTrue(
+
+    controller.leftBumper().toggleOnTrue(
         DriveCommands.speakerRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.b().toggleOnTrue(
-        DriveCommands.ampRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.rightBumper()
+        .toggleOnTrue(DriveCommands.ampRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.povUp().whileTrue(DriveCommands.pathfindSource());
+    controller.povLeft().whileTrue(DriveCommands.pathfindAmp());
+    controller.povRight().whileTrue(DriveCommands.pathfindSpeaker());
   }
 
   /**
