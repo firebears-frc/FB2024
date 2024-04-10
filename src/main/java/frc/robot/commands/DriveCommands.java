@@ -31,8 +31,11 @@ import java.util.function.Supplier;
 
 public class DriveCommands {
   private static final class Constants {
-    public static final Translation2d BLUE_SPEAKER = new Translation2d(0.0, 5.550);
-    public static final Translation2d RED_SPEAKER = new Translation2d(16.541, 5.550);
+    public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00, 5.55);
+    public static final Translation2d RED_SPEAKER = new Translation2d(16.58, 5.55);
+
+    public static final Translation2d BLUE_AMP = new Translation2d(1.84, 8.20);
+    public static final Translation2d RED_AMP = new Translation2d(14.70, 8.20);
 
     private static final double DEADBAND = 0.1;
   }
@@ -118,5 +121,13 @@ public class DriveCommands {
       DoubleSupplier ySupplier) {
     return targetLock(drive, xSupplier, ySupplier,
         () -> isRedAlliance() ? Constants.RED_SPEAKER : Constants.BLUE_SPEAKER);
+  }
+
+  public static Command ampLock(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier) {
+    return targetLock(drive, xSupplier, ySupplier,
+        () -> isRedAlliance() ? Constants.RED_AMP : Constants.BLUE_AMP);
   }
 }
