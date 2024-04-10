@@ -54,33 +54,33 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
-                new GyroIONavX(),
-                new ModuleIOMAXSwerve(0),
-                new ModuleIOMAXSwerve(1),
-                new ModuleIOMAXSwerve(2),
-                new ModuleIOMAXSwerve(3));
+            new GyroIONavX(),
+            new ModuleIOMAXSwerve(0),
+            new ModuleIOMAXSwerve(1),
+            new ModuleIOMAXSwerve(2),
+            new ModuleIOMAXSwerve(3));
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         drive =
             new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
+            new GyroIO() {},
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim());
         break;
 
       default:
         // Replayed robot, disable IO implementations
         drive =
             new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
+            new GyroIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {});
         break;
     }
 
@@ -118,12 +118,14 @@ public class RobotContainer {
             () -> -controller.getRightX()));
     controller.leftStick().toggleOnTrue(Commands.startEnd(drive::stopWithX, () -> {}, drive));
     controller.rightStick().onTrue(
-            Commands.runOnce(
+        Commands.runOnce(
                     () ->
                         drive.setPose(
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
-                .ignoringDisable(true));
+            .ignoringDisable(true));
+    controller.a().toggleOnTrue(
+        DriveCommands.speakerLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
   }
 
   /**
