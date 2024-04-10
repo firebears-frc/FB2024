@@ -125,9 +125,9 @@ public class RobotContainer {
                     drive)
             .ignoringDisable(true));
     controller.a().toggleOnTrue(
-        DriveCommands.speakerLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+        DriveCommands.speakerRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
     controller.b().toggleOnTrue(
-        DriveCommands.ampLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+        DriveCommands.ampRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
   }
 
   /**

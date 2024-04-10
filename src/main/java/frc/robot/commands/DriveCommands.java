@@ -21,11 +21,11 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.Util;
+
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -67,10 +67,6 @@ public class DriveCommands {
     return omega * rotationSpeed;
   }
 
-  private static boolean isRedAlliance() {
-    return DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-  }
-
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
@@ -81,53 +77,56 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), drive.getMaxLinearSpeedMetersPerSec());
-          double rotationSpeed = calculateRotationSpeed(omegaSupplier.getAsDouble(), drive.getMaxAngularSpeedRadPerSec());
+          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), Drive.Constants.MAX_LINEAR_SPEED);
+          double rotationSpeed = calculateRotationSpeed(omegaSupplier.getAsDouble(), Drive.Constants.MAX_ANGULAR_SPEED);
 
-          // Convert to field relative speeds & send command
-          drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed,
-              isRedAlliance() ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
+          drive.runFieldVelocity(new ChassisSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed));
         },
         drive);
   }
 
-  private static Command targetLock(
+  /**
+   * Field relative drive command using one joysticks (controlling linear velocities) and pointed at the target.
+   */
+  private static Command targetRotationLock(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       Supplier<Translation2d> target) {
 
       ProfiledPIDController pid = new ProfiledPIDController(10.0, 0, 0,
-          new TrapezoidProfile.Constraints(drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec() / 2));
+          new TrapezoidProfile.Constraints(Drive.Constants.MAX_ANGULAR_SPEED, Drive.Constants.MAX_ANGULAR_SPEED / 2));
       pid.enableContinuousInput(-Math.PI, Math.PI);
       return Commands.run(
           () -> {
-            Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), drive.getMaxLinearSpeedMetersPerSec());
+            Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), Drive.Constants.MAX_LINEAR_SPEED);
 
             Translation2d targetTranslation = drive.getPose().getTranslation().minus(target.get());
             Rotation2d delta = drive.getPose().getRotation().minus(targetTranslation.getAngle());
             double rotationSpeed = pid.calculate(delta.getRadians());
 
-            // Convert to field relative speeds & send command
-            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed,
-                isRedAlliance() ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
+            drive.runFieldVelocity(new ChassisSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed));
           },
           drive);
   }
 
-  public static Command speakerLock(
+  /**
+   * Field relative drive command using one joysticks (controlling linear velocities) and pointed at the speaker.
+   */
+  public static Command speakerRotationLock(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier) {
-    return targetLock(drive, xSupplier, ySupplier,
-        () -> isRedAlliance() ? Constants.RED_SPEAKER : Constants.BLUE_SPEAKER);
+    return targetRotationLock(drive, xSupplier, ySupplier, () -> Util.isRedAlliance() ? Constants.RED_SPEAKER : Constants.BLUE_SPEAKER);
   }
 
-  public static Command ampLock(
+  /**
+   * Field relative drive command using one joysticks (controlling linear velocities) and pointed at the amp.
+   */
+  public static Command ampRotationLock(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier) {
-    return targetLock(drive, xSupplier, ySupplier,
-        () -> isRedAlliance() ? Constants.RED_AMP : Constants.BLUE_AMP);
+    return targetRotationLock(drive, xSupplier, ySupplier, () -> Util.isRedAlliance() ? Constants.RED_AMP : Constants.BLUE_AMP);
   }
 }
