@@ -29,11 +29,11 @@ import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.drive.ModuleIOMAXSwerve;
-import frc.robot.subsystems.flywheel.Flywheel;
-import frc.robot.subsystems.flywheel.FlywheelIO;
-import frc.robot.subsystems.flywheel.FlywheelIOSim;
-import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -47,138 +47,124 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // Subsystems
-  private final Drive drive;
-  private final Flywheel flywheel;
+    // Subsystems
+    private final Drive drive;
+    private final Shooter shooter;
 
-  // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+    // Controller
+    private final CommandXboxController controller = new CommandXboxController(0);
 
-  // Dashboard inputs
-  private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+    // Dashboard inputs
+    private final LoggedDashboardChooser<Command> autoChooser;
+    private final LoggedDashboardNumber shooterSpeedInput = new LoggedDashboardNumber("Shooter Speed", 2400.0);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive = new Drive(
-            new GyroIONavX(),
-            new ModuleIOMAXSwerve(0),
-            new ModuleIOMAXSwerve(1),
-            new ModuleIOMAXSwerve(2),
-            new ModuleIOMAXSwerve(3));
-        flywheel = new Flywheel(new FlywheelIOSparkMax());
-        break;
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
+        switch (Constants.currentMode) {
+            case REAL:
+                // Real robot, instantiate hardware IO implementations
+                drive = new Drive(
+                        new GyroIONavX(),
+                        new ModuleIOMAXSwerve(0),
+                        new ModuleIOMAXSwerve(1),
+                        new ModuleIOMAXSwerve(2),
+                        new ModuleIOMAXSwerve(3));
+                shooter = new Shooter(new ShooterIOSparkMax());
+                break;
 
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim(),
-            new ModuleIOSim());
-        flywheel = new Flywheel(new FlywheelIOSim());
-        break;
+            case SIM:
+                // Sim robot, instantiate physics sim IO implementations
+                drive = new Drive(
+                        new GyroIO() {
+                        },
+                        new ModuleIOSim(),
+                        new ModuleIOSim(),
+                        new ModuleIOSim(),
+                        new ModuleIOSim());
+                shooter = new Shooter(new ShooterIOSim());
+                break;
 
-      default:
-        // Replayed robot, disable IO implementations
-        drive = new Drive(
-            new GyroIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            },
-            new ModuleIO() {
-            });
-        flywheel = new Flywheel(new FlywheelIO() {});
-        break;
+            default:
+                // Replayed robot, disable IO implementations
+                drive = new Drive(
+                        new GyroIO() {
+                        },
+                        new ModuleIO() {
+                        },
+                        new ModuleIO() {
+                        },
+                        new ModuleIO() {
+                        },
+                        new ModuleIO() {
+                        });
+                shooter = new Shooter(new ShooterIO() {
+                });
+                break;
+        }
+
+        // Set up auto routines
+        NamedCommands.registerCommand(
+                "Run Shooter",
+                Commands.startEnd(() -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter)
+                        .withTimeout(5.0));
+        autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+
+        // Set up SysId routines
+        autoChooser.addOption("Drive SysId (QF)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        autoChooser.addOption("Drive SysId (QR)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        autoChooser.addOption("Drive SysId (DF)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        autoChooser.addOption("Drive SysId (DR)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        autoChooser.addOption("Shooter SysId (QF)", shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        autoChooser.addOption("Shooter SysId (QR)", shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        autoChooser.addOption("Shooter SysId (DF)", shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        autoChooser.addOption("Shooter SysId (DR)", shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+        // Configure the button bindings
+        configureButtonBindings();
     }
 
-    // Set up auto routines
-    NamedCommands.registerCommand(
-        "Run Flywheel",
-        Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
-            .withTimeout(5.0));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+     * it to a {@link
+     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        drive.setDefaultCommand(
+                DriveCommands.joystickDrive(
+                        drive,
+                        () -> -controller.getLeftY(),
+                        () -> -controller.getLeftX(),
+                        () -> -controller.getRightX()));
+        controller.leftStick().toggleOnTrue(Commands.startEnd(drive::stopWithX, () -> {
+        }, drive));
+        controller.rightStick().onTrue(
+                Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                        drive)
+                        .ignoringDisable(true));
 
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Flywheel SysId (Quasistatic Forward)",
-        flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Flywheel SysId (Quasistatic Reverse)",
-        flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Flywheel SysId (Dynamic Forward)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Flywheel SysId (Dynamic Reverse)", flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        controller.leftBumper().toggleOnTrue(
+                DriveCommands.speakerRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+        controller.rightBumper()
+                .toggleOnTrue(DriveCommands.ampRotationLock(drive, () -> -controller.getLeftY(),
+                        () -> -controller.getLeftX()));
+        controller.povUp().whileTrue(DriveCommands.pathfindSource());
+        controller.povLeft().whileTrue(DriveCommands.pathfindAmp());
+        controller.povRight().whileTrue(DriveCommands.pathfindSpeaker());
+        controller.a().whileTrue(
+                Commands.startEnd(() -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter));
+    }
 
-    // Configure the button bindings
-    configureButtonBindings();
-  }
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
-   * it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
-    controller.leftStick().toggleOnTrue(Commands.startEnd(drive::stopWithX, () -> {
-    }, drive));
-    controller.rightStick().onTrue(
-        Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())), drive)
-            .ignoringDisable(true));
-
-    controller.leftBumper().toggleOnTrue(
-        DriveCommands.speakerRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.rightBumper()
-        .toggleOnTrue(DriveCommands.ampRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.povUp().whileTrue(DriveCommands.pathfindSource());
-    controller.povLeft().whileTrue(DriveCommands.pathfindAmp());
-    controller.povRight().whileTrue(DriveCommands.pathfindSpeaker());
-    controller
-        .a()
-        .whileTrue(
-            Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
-  }
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        return autoChooser.get();
+    }
 }

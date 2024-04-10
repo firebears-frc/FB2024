@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.flywheel;
+package frc.robot.subsystems.shooter;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -22,10 +22,11 @@ import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
 
 /**
- * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
+ * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of
+ * "CANSparkMax" with
  * "CANSparkFlex".
  */
-public class FlywheelIOSparkMax implements FlywheelIO {
+public class ShooterIOSparkMax implements ShooterIO {
   private static final double GEAR_RATIO = 1.5;
 
   private final CANSparkMax leader = new CANSparkMax(0, MotorType.kBrushless);
@@ -33,7 +34,7 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   private final RelativeEncoder encoder = leader.getEncoder();
   private final SparkPIDController pid = leader.getPIDController();
 
-  public FlywheelIOSparkMax() {
+  public ShooterIOSparkMax() {
     leader.restoreFactoryDefaults();
     follower.restoreFactoryDefaults();
 
@@ -51,11 +52,10 @@ public class FlywheelIOSparkMax implements FlywheelIO {
   }
 
   @Override
-  public void updateInputs(FlywheelIOInputs inputs) {
-    inputs.velocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
+  public void updateInputs(ShooterIOInputs inputs) {
+    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
+    inputs.currentAmps = new double[] { leader.getOutputCurrent(), follower.getOutputCurrent() };
   }
 
   @Override
