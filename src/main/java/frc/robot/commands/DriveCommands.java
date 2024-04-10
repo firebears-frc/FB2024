@@ -34,17 +34,17 @@ import com.pathplanner.lib.path.PathConstraints;
 
 public class DriveCommands {
   private static final class Constants {
+    // Orbit positions
     public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00, 5.55);
     public static final Translation2d RED_SPEAKER = new Translation2d(16.58, 5.55);
-
     public static final Translation2d BLUE_AMP = new Translation2d(1.84, 8.20);
     public static final Translation2d RED_AMP = new Translation2d(14.70, 8.20);
 
+    // Pathfind positions
     public static final Pose2d BLUE_SUBWOOFER = new Pose2d(1.45, 5.55, Rotation2d.fromDegrees(0.0));
-
     public static final Pose2d BLUE_AMP_PLACEMENT = new Pose2d(1.84, 7.75, Rotation2d.fromDegrees(90.0));
-
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.08, 1.00, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d BLUE_STAGE = new Pose2d(5.85, 4.10, Rotation2d.fromDegrees(0.0));
 
     private static final double DEADBAND = 0.1;
   }
@@ -101,7 +101,7 @@ public class DriveCommands {
    * Field relative drive command using one joysticks (controlling linear
    * velocities) and pointed at the target.
    */
-  private static Command targetRotationLock(
+  private static Command orbit(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
@@ -128,11 +128,11 @@ public class DriveCommands {
    * Field relative drive command using one joysticks (controlling linear
    * velocities) and pointed at the speaker.
    */
-  public static Command speakerRotationLock(
+  public static Command orbitSpeaker(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier) {
-    return targetRotationLock(drive, xSupplier, ySupplier,
+    return orbit(drive, xSupplier, ySupplier,
         () -> Util.isRedAlliance() ? Constants.RED_SPEAKER : Constants.BLUE_SPEAKER);
   }
 
@@ -140,15 +140,18 @@ public class DriveCommands {
    * Field relative drive command using one joysticks (controlling linear
    * velocities) and pointed at the amp.
    */
-  public static Command ampRotationLock(
+  public static Command orbitAmp(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier) {
-    return targetRotationLock(drive, xSupplier, ySupplier,
+    return orbit(drive, xSupplier, ySupplier,
         () -> Util.isRedAlliance() ? Constants.RED_AMP : Constants.BLUE_AMP);
   }
 
-  private static Command followPath(Pose2d endPose) {
+  /**
+   * Pathfind to the specified end pose
+   */
+  private static Command pathfind(Pose2d endPose) {
     return AutoBuilder.pathfindToPoseFlipped(
         endPose,
         new PathConstraints(
@@ -156,15 +159,31 @@ public class DriveCommands {
             Drive.Constants.MAX_ANGULAR_SPEED, Drive.Constants.MAX_ANGULAR_ACCELERATION));
   }
 
+  /**
+   * Pathfind to the speaker
+   */
   public static Command pathfindSpeaker() {
-    return followPath(Constants.BLUE_SUBWOOFER);
+    return pathfind(Constants.BLUE_SUBWOOFER);
   }
 
+  /**
+   * Pathfind to the amp
+   */
   public static Command pathfindAmp() {
-    return followPath(Constants.BLUE_AMP_PLACEMENT);
+    return pathfind(Constants.BLUE_AMP_PLACEMENT);
   }
 
+  /**
+   * Pathfind to the source
+   */
   public static Command pathfindSource() {
-    return followPath(Constants.BLUE_SOURCE);
+    return pathfind(Constants.BLUE_SOURCE);
+  }
+
+  /**
+   * Pathfind to the stage
+   */
+  public static Command pathfindStage() {
+    return pathfind(Constants.BLUE_STAGE);
   }
 }

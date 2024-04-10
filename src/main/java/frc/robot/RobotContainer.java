@@ -140,6 +140,7 @@ public class RobotContainer {
                         () -> -controller.getLeftY(),
                         () -> -controller.getLeftX(),
                         () -> -controller.getRightX()));
+
         controller.leftStick().toggleOnTrue(Commands.startEnd(drive::stopWithX, () -> {
         }, drive));
         controller.rightStick().onTrue(
@@ -148,13 +149,16 @@ public class RobotContainer {
                         .ignoringDisable(true));
 
         controller.leftBumper().toggleOnTrue(
-                DriveCommands.speakerRotationLock(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+                DriveCommands.orbitSpeaker(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
         controller.rightBumper()
-                .toggleOnTrue(DriveCommands.ampRotationLock(drive, () -> -controller.getLeftY(),
+                .toggleOnTrue(DriveCommands.orbitAmp(drive, () -> -controller.getLeftY(),
                         () -> -controller.getLeftX()));
+
         controller.povUp().whileTrue(DriveCommands.pathfindSource());
         controller.povLeft().whileTrue(DriveCommands.pathfindAmp());
         controller.povRight().whileTrue(DriveCommands.pathfindSpeaker());
+        controller.povDown().whileTrue(DriveCommands.pathfindStage());
+
         controller.a().whileTrue(
                 Commands.startEnd(() -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter));
     }
