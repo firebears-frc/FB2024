@@ -14,12 +14,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,8 +28,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final class Constants {
@@ -40,23 +39,29 @@ public class DriveCommands {
 
   private DriveCommands() {}
 
-  private static ChassisSpeeds calculateSpeeds(double x, double y, double omega, double linearSpeed,
-      double rotationSpeed) {
+  private static Translation2d calculateLinearSpeeds(double x, double y, double linearSpeed) {
     // Apply deadband
     double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), Constants.DEADBAND);
     Rotation2d linearDirection = new Rotation2d(x, y);
-    omega = MathUtil.applyDeadband(omega, Constants.DEADBAND);
 
     // Square values
     linearMagnitude = linearMagnitude * linearMagnitude;
-    omega = Math.copySign(omega * omega, omega);
 
     // Calcaulate new linear velocity
     Translation2d linearVelocity = new Pose2d(new Translation2d(), linearDirection)
         .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d())).getTranslation();
 
-    return new ChassisSpeeds(linearVelocity.getX() * linearSpeed, linearVelocity.getY() * linearSpeed,
-        omega * rotationSpeed);
+    return linearVelocity.times(linearSpeed);
+  }
+
+  private static double calculateRotationSpeed(double omega, double rotationSpeed) {
+    // Apply deadband
+    omega = MathUtil.applyDeadband(omega, Constants.DEADBAND);
+
+    // Square values
+    omega = Math.copySign(omega * omega, omega);
+
+    return omega * rotationSpeed;
   }
 
   private static boolean isRedAlliance() {
@@ -73,11 +78,11 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-          ChassisSpeeds commanded = calculateSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(),
-              omegaSupplier.getAsDouble(), drive.getMaxLinearSpeedMetersPerSec(), drive.getMaxAngularSpeedRadPerSec());
+          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), drive.getMaxLinearSpeedMetersPerSec());
+          double rotationSpeed = calculateRotationSpeed(omegaSupplier.getAsDouble(), drive.getMaxAngularSpeedRadPerSec());
 
           // Convert to field relative speeds & send command
-          drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(commanded,
+          drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed,
               isRedAlliance() ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
         },
         drive);
@@ -88,23 +93,23 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       Supplier<Translation2d> target) {
-    try (PIDController pid = new PIDController(1.0, 0, 0)) {
+
+      ProfiledPIDController pid = new ProfiledPIDController(10.0, 0, 0,
+          new TrapezoidProfile.Constraints(drive.getMaxAngularSpeedRadPerSec(), drive.getMaxAngularSpeedRadPerSec() / 2));
       pid.enableContinuousInput(-Math.PI, Math.PI);
-      return joystickDrive(drive, xSupplier, ySupplier, () -> {
-        Translation2d targetTranslation = drive.getPose().getTranslation().minus(target.get());
-        Logger.recordOutput("targetLock/targetAngle", targetTranslation.getAngle().getRadians());
+      return Commands.run(
+          () -> {
+            Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), drive.getMaxLinearSpeedMetersPerSec());
 
-        Logger.recordOutput("targetLock/driveAngle", drive.getPose().getRotation().getRadians());
+            Translation2d targetTranslation = drive.getPose().getTranslation().minus(target.get());
+            Rotation2d delta = drive.getPose().getRotation().minus(targetTranslation.getAngle());
+            double rotationSpeed = pid.calculate(delta.getRadians());
 
-        Rotation2d delta = drive.getPose().getRotation().minus(targetTranslation.getAngle());
-        Logger.recordOutput("targetLock/deltaAngle", delta);
-
-        double feedback = pid.calculate(delta.getRadians());
-        Logger.recordOutput("targetLock/feedback", feedback);
-
-        return feedback;
-      });
-    }
+            // Convert to field relative speeds & send command
+            drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed,
+                isRedAlliance() ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation()));
+          },
+          drive);
   }
 
   public static Command speakerLock(
