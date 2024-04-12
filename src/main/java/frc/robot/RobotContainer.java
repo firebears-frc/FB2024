@@ -117,10 +117,10 @@ public class RobotContainer {
 
     // Set up auto routines
     NamedCommands.registerCommands(Map.of(
-        "Run Shooter",
-        Commands.startEnd(() -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter).withTimeout(5.0),
-        "Run Intake",
-        Commands.startEnd(() -> intake.runVelocity(intakeSpeedInput.get()), intake::stop, intake).withTimeout(5.0)));
+        "Shoot",
+        Commands.startEnd(() -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter).withTimeout(0.1),
+        "Intake",
+        Commands.startEnd(() -> intake.runVelocity(intakeSpeedInput.get()), intake::stop, intake).withTimeout(0.2)));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
