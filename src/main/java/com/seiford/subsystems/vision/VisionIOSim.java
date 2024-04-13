@@ -22,9 +22,9 @@ public class VisionIOSim implements VisionIO {
         var properties = new SimCameraProperties();
         properties.setCalibration(1280, 800, Rotation2d.fromDegrees(75));
         properties.setCalibError(0.35, 0.10);
-        properties.setFPS(15);
-        properties.setAvgLatencyMs(50);
-        properties.setLatencyStdDevMs(15);
+        properties.setFPS(25);
+        properties.setAvgLatencyMs(25);
+        properties.setLatencyStdDevMs(10);
 
         cameraSim = new PhotonCameraSim(visionSystem, properties);
 

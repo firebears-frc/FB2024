@@ -15,7 +15,6 @@ package com.seiford;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.seiford.commands.DriveCommands;
 import com.seiford.subsystems.drive.Drive;
 import com.seiford.subsystems.drive.GyroIO;
 import com.seiford.subsystems.drive.GyroIONavX;
@@ -35,12 +34,9 @@ import com.seiford.subsystems.vision.VisionIO;
 import com.seiford.subsystems.vision.VisionIOPhotonVision;
 import com.seiford.subsystems.vision.VisionIOSim;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -153,28 +149,21 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
+    drive.setDefaultCommand(drive.joystickDrive(
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
-    controller.leftStick().toggleOnTrue(Commands.startEnd(drive::stopWithX, () -> {
-    }, drive));
-    controller.rightStick().onTrue(
-        Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())), drive)
-            .ignoringDisable(true));
+    controller.leftStick().toggleOnTrue(drive.turtle());
+    controller.rightStick().onTrue(drive.zeroHeading());
 
-    controller.rightBumper()
-        .toggleOnTrue(DriveCommands.orbitSpeaker(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.leftBumper()
-        .toggleOnTrue(DriveCommands.orbitAmp(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.rightBumper().toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.leftBumper().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
-    controller.povUp().whileTrue(DriveCommands.pathfindSource());
-    controller.povLeft().whileTrue(DriveCommands.pathfindAmp());
-    controller.povRight().whileTrue(DriveCommands.pathfindSpeaker());
-    controller.povDown().whileTrue(DriveCommands.pathfindStage());
+    controller.povUp().whileTrue(drive.pathfindSource());
+    controller.povLeft().whileTrue(drive.pathfindAmp());
+    controller.povRight().whileTrue(drive.pathfindSpeaker());
+    controller.povDown().whileTrue(drive.pathfindStage());
 
     controller.a().whileTrue(shooter.runStop());
     controller.b().onTrue(intake.intake()).onFalse(intake.stop());
