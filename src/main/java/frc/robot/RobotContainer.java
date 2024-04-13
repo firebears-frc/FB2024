@@ -37,6 +37,10 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIO;
 import frc.robot.subsystems.shooter.ShooterIOSim;
 import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.drive.ModuleIOMAXSwerve;
 import java.util.Map;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -54,6 +58,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Vision vision;
   private final Shooter shooter;
   private final Intake intake;
 
@@ -78,6 +83,7 @@ public class RobotContainer {
             new ModuleIOMAXSwerve(1),
             new ModuleIOMAXSwerve(2),
             new ModuleIOMAXSwerve(3));
+        vision = new Vision(new VisionIOPhotonVision());
         shooter = new Shooter(new ShooterIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
         break;
@@ -91,6 +97,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new ModuleIOSim());
+        vision = new Vision(new VisionIOSim(drive::getPose));
         shooter = new Shooter(new ShooterIOSim());
         intake = new Intake(new IntakeIOSim());
         break;
@@ -108,6 +115,8 @@ public class RobotContainer {
             },
             new ModuleIO() {
             });
+        vision = new Vision(new VisionIO() {
+        });
         shooter = new Shooter(new ShooterIO() {
         });
         intake = new Intake(new IntakeIO() {
