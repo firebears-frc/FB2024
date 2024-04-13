@@ -20,7 +20,7 @@ public class VisionIOSim implements VisionIO {
         this.poseSupplier = poseSupplier;
 
         var properties = new SimCameraProperties();
-        properties.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+        properties.setCalibration(1280, 800, Rotation2d.fromDegrees(75));
         properties.setCalibError(0.35, 0.10);
         properties.setFPS(15);
         properties.setAvgLatencyMs(50);
