@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import com.seiford.subsystems.shooter.ShooterIOInputsAutoLogged;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -92,12 +91,6 @@ public class Shooter extends SubsystemBase {
   /** Stops the shooter. */
   private void stop() {
     io.stop();
-  }
-
-  /** Returns the current velocity in RPM. */
-  @AutoLogOutput
-  private double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
   }
 
   /** Returns a command to run and stop the shooter. */

@@ -39,8 +39,8 @@ public class Vision extends SubsystemBase {
             Rotation2d.fromDegrees(-30.0).getRadians(),
             Rotation2d.fromDegrees(180.0).getRadians()));
     public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
-    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4.00, 4.00, 8.00);
-    public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.50, 0.50, 1.00);
+    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(1.50, 1.50, 2 * Math.PI);
+    public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.30, 0.30, Math.PI);
     public static final Matrix<N3, N1> INVALID_STD_DEVS = VecBuilder.fill(0.0, 0.0, 0.0);
   }
 
