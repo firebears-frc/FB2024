@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -35,6 +36,7 @@ public class Vision extends SubsystemBase {
 
   public Vision(VisionIO io) {
     this.io = io;
+    LogTable.disableProtobufWarning(); // TODO: This may cause loop overruns
   }
 
   @Override
