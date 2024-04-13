@@ -1,0 +1,316 @@
+{
+  "hubs": [
+    {
+      "x": 3447,
+      "y": 0,
+      "width": 1667,
+      "height": 1392,
+      "state": {
+        "sidebar": {
+          "width": 300,
+          "expanded": [
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/Flywheel",
+            "/AdvantageKit/Drive/Module0/DriveCurrentAmps",
+            "/AdvantageKit/Drive/Module0/TurnCurrentAmps",
+            "/AdvantageKit/RealOutputs/targetLock",
+            "/AdvantageKit/RealOutputs/targetLock/translation",
+            "/AdvantageKit/RealOutputs/targetLock/deltaAngle",
+            "/AdvantageKit/RealOutputs/Odometry/Robot/translation",
+            "/AdvantageKit/Flywheel",
+            "/AdvantageKit/RealOutputs/SwerveStates/Measured/0",
+            "/SmartDashboard/Auto Choices",
+            "/AdvantageKit/RealOutputs/Odometry",
+            "/AdvantageKit/RealOutputs"
+          ]
+        },
+        "tabs": {
+          "selected": 3,
+          "tabs": [
+            {
+              "type": 0,
+              "path": "../docs/tabs/3D-FIELD.md"
+            },
+            {
+              "type": 9,
+              "uuid": "4s9s85egcc595lejfvcdws06o4e3a6iy",
+              "fields": [
+                {
+                  "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/SetpointsOptimized",
+                  "sourceTypeIndex": 1,
+                  "sourceType": "SwerveModuleState[]"
+                },
+                {
+                  "key": "NT:/AdvantageKit/RealOutputs/SwerveStates/Measured",
+                  "sourceTypeIndex": 1,
+                  "sourceType": "SwerveModuleState[]"
+                },
+                {
+                  "key": "NT:/AdvantageKit/RealOutputs/Odometry/Robot/rotation",
+                  "sourceTypeIndex": 1,
+                  "sourceType": "Rotation2d"
+                }
+              ],
+              "listFields": [],
+              "options": {
+                "maxSpeed": 7.8,
+                "rotationUnits": "radians",
+                "arrangement": "0,1,2,3",
+                "sizeLeftRight": 0.4699,
+                "sizeFrontBack": 0.6223,
+                "forwardDirection": "up"
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Swerve"
+            },
+            {
+              "type": 8,
+              "uuid": "nhae2l3q3vvbr3yprreyvnqcoxsl9iu6",
+              "fields": [],
+              "listFields": [],
+              "options": {
+                "ids": [
+                  0,
+                  1,
+                  2
+                ],
+                "layouts": [
+                  "Xbox Controller (Blue)",
+                  "None",
+                  "None"
+                ]
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "Joysticks"
+            },
+            {
+              "type": 5,
+              "uuid": "elfjewinf4hc9mw8cx01crh2ti2krlzl",
+              "fields": [],
+              "listFields": [
+                [
+                  {
+                    "type": "Robot",
+                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Robot",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  },
+                  {
+                    "type": "Trajectory",
+                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Trajectory",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose2d[]"
+                  }
+                ]
+              ],
+              "options": {
+                "game": "2024 Field",
+                "unitDistance": "meters",
+                "unitRotation": "radians",
+                "origin": "right",
+                "size": 0.6223,
+                "allianceBumpers": "auto",
+                "allianceOrigin": "blue",
+                "orientation": "blue left, red right"
+              },
+              "configHidden": false,
+              "visualizer": null,
+              "title": "2D Field"
+            },
+            {
+              "type": 6,
+              "uuid": "reeuyebrs2w9jmtxcbirauyn8ijtkwk3",
+              "fields": [],
+              "listFields": [
+                [
+                  {
+                    "type": "Green Ghost",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/Pose",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose3d"
+                  },
+                  {
+                    "type": "Vision Target",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose3d[]"
+                  }
+                ],
+                [
+                  {
+                    "type": "Robot",
+                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Robot",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  },
+                  {
+                    "type": "Blue Ghost",
+                    "key": "NT:/AdvantageKit/RealOutputs/Localization/TrajectorySetpoint",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  },
+                  {
+                    "type": "Yellow Ghost",
+                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Odometry",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  },
+                  {
+                    "type": "Red Ghost",
+                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Vision",
+                    "sourceTypeIndex": 1,
+                    "sourceType": "Pose2d"
+                  },
+                  {
+                    "type": "Trajectory",
+                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Trajectory",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose2d[]"
+                  }
+                ]
+              ],
+              "options": {
+                "field": "2024 Field",
+                "alliance": "blue",
+                "robot": "2024 KitBot",
+                "unitDistance": "meters",
+                "unitRotation": "radians"
+              },
+              "configHidden": false,
+              "visualizer": {
+                "cameraIndex": -5,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  9.769259244062383,
+                  1.574799999999999,
+                  -0.3071351152909587
+                ],
+                "cameraTarget": [
+                  0,
+                  0.5,
+                  0
+                ]
+              },
+              "title": "3D Field"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/SetpointRPM",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/VelocityRPM",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/AppliedVolts",
+                      "color": "#af2437",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Shooter"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Intake/SetpointRPM",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Intake/VelocityRPM",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": []
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Intake/AppliedVolts",
+                      "color": "#af2437",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Intake"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [
+    {
+      "x": 2559,
+      "y": 0,
+      "width": 900,
+      "height": 1392,
+      "state": {
+        "type": 6,
+        "visualizer": {
+          "cameraIndex": -1,
+          "orbitFov": 50,
+          "cameraPosition": [
+            13.205363913350622,
+            15.669565043898897,
+            0.24066052707604718
+          ],
+          "cameraTarget": [
+            1.7093106298766376,
+            -1.8374432018418554,
+            0.08104056174653039
+          ]
+        }
+      },
+      "uuid": "reeuyebrs2w9jmtxcbirauyn8ijtkwk3"
+    }
+  ],
+  "version": "3.2.1"
+}

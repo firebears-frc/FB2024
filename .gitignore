@@ -168,8 +168,11 @@ out/
 # Fleet
 .fleet
 
-# Simulation GUI and other tools window save file
-*-window.json
+# Simulation files
+networktables.json
+simgui-window.json
+simgui-ds.json
+simgui.json
 
 # Simulation data log directory
 logs/
@@ -179,6 +182,3 @@ ctre_sim/
 
 # gversion build data
 src/main/java/frc/robot/BuildConstants.java
-
-# Sim files
-*.json
