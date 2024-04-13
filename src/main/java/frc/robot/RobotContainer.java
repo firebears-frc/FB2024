@@ -69,7 +69,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    switch (Constants.currentMode) {
+    switch (Configuration.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         drive = new Drive(
@@ -159,9 +159,9 @@ public class RobotContainer {
         Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d())), drive)
             .ignoringDisable(true));
 
-    controller.leftBumper()
-        .toggleOnTrue(DriveCommands.orbitSpeaker(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
     controller.rightBumper()
+        .toggleOnTrue(DriveCommands.orbitSpeaker(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.leftBumper()
         .toggleOnTrue(DriveCommands.orbitAmp(drive, () -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
     controller.povUp().whileTrue(DriveCommands.pathfindSource());

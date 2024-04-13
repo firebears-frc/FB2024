@@ -27,8 +27,6 @@ import edu.wpi.first.math.util.Units;
  * "CANSparkFlex".
  */
 public class ShooterIOSparkMax implements ShooterIO {
-  private static final double GEAR_RATIO = 1.5;
-
   private final CANSparkMax leader = new CANSparkMax(0, MotorType.kBrushless);
   private final CANSparkMax follower = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
@@ -53,7 +51,7 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
+    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / Shooter.Constants.GEAR_RATIO);
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
     inputs.currentAmps = new double[] { leader.getOutputCurrent(), follower.getOutputCurrent() };
   }
@@ -66,7 +64,7 @@ public class ShooterIOSparkMax implements ShooterIO {
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
     pid.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * Shooter.Constants.GEAR_RATIO,
         ControlType.kVelocity,
         0,
         ffVolts,

@@ -44,13 +44,13 @@ import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
   public static final class Constants {
-    private static final double ROBOT_WIDTH = Units.inchesToMeters(22.0);
-    private static final double ROBOT_LENGTH = Units.inchesToMeters(28.0);
-    private static final double WHEEL_OFFSET = Units.inchesToMeters(1.75);
-    private static final double TRACK_WIDTH_X = ROBOT_WIDTH - (2 * WHEEL_OFFSET);
-    private static final double TRACK_WIDTH_Y = ROBOT_LENGTH - (2 * WHEEL_OFFSET);
-    private static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-    private static final Translation2d[] MODULE_TRANSLATIONS = new Translation2d[] {
+    public static final double ROBOT_WIDTH = Units.inchesToMeters(22.0);
+    public static final double ROBOT_LENGTH = Units.inchesToMeters(28.0);
+    public static final double WHEEL_OFFSET = Units.inchesToMeters(1.75);
+    public static final double TRACK_WIDTH_X = ROBOT_WIDTH - (2 * WHEEL_OFFSET);
+    public static final double TRACK_WIDTH_Y = ROBOT_LENGTH - (2 * WHEEL_OFFSET);
+    public static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
+    public static final Translation2d[] MODULE_TRANSLATIONS = new Translation2d[] {
         new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
         new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
         new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),

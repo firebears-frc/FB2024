@@ -19,7 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants;
+import frc.robot.Configuration;
 import org.littletonrobotics.junction.Logger;
 
 public class Module {
@@ -44,7 +44,7 @@ public class Module {
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
-    switch (Constants.currentMode) {
+    switch (Configuration.currentMode) {
       case REAL:
       case REPLAY:
         driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
