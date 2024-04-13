@@ -23,10 +23,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Configuration;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Intake extends SubsystemBase {
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private final LoggedDashboardNumber speedInput = new LoggedDashboardNumber("Intake Speed", 2400.0);
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
 
@@ -68,12 +70,12 @@ public class Intake extends SubsystemBase {
   }
 
   /** Run open loop at the specified voltage. */
-  public void runVolts(double volts) {
+  private void runVolts(double volts) {
     io.setVoltage(volts);
   }
 
   /** Run closed loop at the specified velocity. */
-  public void runVelocity(double velocityRPM) {
+  private void runVelocity(double velocityRPM) {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
 
@@ -81,9 +83,20 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/SetpointRPM", velocityRPM);
   }
 
-  /** Stops the Intake. */
-  public void stop() {
+  /** Stops the intake. */
+  private void stop() {
     io.stop();
+  }
+
+  /** Returns the current velocity in RPM. */
+  @AutoLogOutput
+  private double getVelocityRPM() {
+    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
+  }
+
+  /** Returns a command to run and stop the intake. */
+  public Command runStop() {
+    return startEnd(() -> runVelocity(speedInput.get()), this::stop);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
@@ -94,16 +107,5 @@ public class Intake extends SubsystemBase {
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return sysId.dynamic(direction);
-  }
-
-  /** Returns the current velocity in RPM. */
-  @AutoLogOutput
-  public double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
-  }
-
-  /** Returns the current velocity in radians per second. */
-  public double getCharacterizationVelocity() {
-    return inputs.velocityRadPerSec;
   }
 }

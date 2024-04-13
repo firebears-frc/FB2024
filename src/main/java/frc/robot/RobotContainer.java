@@ -44,7 +44,6 @@ import frc.robot.subsystems.vision.VisionIOSim;
 import frc.robot.subsystems.drive.ModuleIOMAXSwerve;
 import java.util.Map;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -67,7 +66,6 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber intakeSpeedInput = new LoggedDashboardNumber("Intake Speed", 2400.0);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -126,9 +124,8 @@ public class RobotContainer {
     // Set up auto routines
     NamedCommands.registerCommands(Map.of(
         "Shoot", shooter.runStop().withTimeout(0.1),
-        "Intake",
-        Commands.startEnd(() -> intake.runVelocity(intakeSpeedInput.get()), intake::stop, intake).withTimeout(0.2)));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        "Intake", intake.runStop().withTimeout(0.2)));
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser("7 Center Close3 Top3"));
 
     // Set up SysId routines
     autoChooser.addOption("Drive SysId (QF)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -177,8 +174,7 @@ public class RobotContainer {
     controller.povDown().whileTrue(DriveCommands.pathfindStage());
 
     controller.a().whileTrue(shooter.runStop());
-    controller.b()
-        .whileTrue(Commands.startEnd(() -> intake.runVelocity(intakeSpeedInput.get()), intake::stop, intake));
+    controller.b().whileTrue(intake.runStop());
   }
 
   /**
