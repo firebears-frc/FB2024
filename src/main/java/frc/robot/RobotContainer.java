@@ -83,7 +83,7 @@ public class RobotContainer {
             new ModuleIOMAXSwerve(1),
             new ModuleIOMAXSwerve(2),
             new ModuleIOMAXSwerve(3));
-        vision = new Vision(new VisionIOPhotonVision());
+        vision = new Vision(new VisionIOPhotonVision(), drive::addVisionMeasurement);
         shooter = new Shooter(new ShooterIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
         break;
@@ -97,7 +97,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new ModuleIOSim());
-        vision = new Vision(new VisionIOSim(drive::getPose));
+        vision = new Vision(new VisionIOSim(drive::getPose), drive::addVisionMeasurement);
         shooter = new Shooter(new ShooterIOSim());
         intake = new Intake(new IntakeIOSim());
         break;
@@ -116,7 +116,7 @@ public class RobotContainer {
             new ModuleIO() {
             });
         vision = new Vision(new VisionIO() {
-        });
+        }, drive::addVisionMeasurement);
         shooter = new Shooter(new ShooterIO() {
         });
         intake = new Intake(new IntakeIO() {

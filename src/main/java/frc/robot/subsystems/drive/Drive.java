@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.Util;
+import frc.robot.util.VisionData;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -323,11 +324,11 @@ public class Drive extends SubsystemBase {
   /**
    * Adds a vision measurement to the pose estimator.
    *
-   * @param visionPose The pose of the robot as measured by the vision camera.
-   * @param timestamp  The timestamp of the vision measurement in seconds.
-   * @param stdDevs The standard deviations to use for this vision pose.
+   * @param data.pose The pose of the robot as measured by the vision camera.
+   * @param data.timestamp  The timestamp of the vision measurement in seconds.
+   * @param data.stdDevs The standard deviations to use for this vision pose.
    */
-  public void addVisionMeasurement(Pose3d visionPose, double timestamp, Matrix<N3, N1> stdDevs) {
-    fusedVision.addVisionMeasurement(visionPose.toPose2d(), timestamp, stdDevs);
+  public void addVisionMeasurement(VisionData data) {
+    fusedVision.addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdDevs);
   }
 }
