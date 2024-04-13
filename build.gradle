@@ -20,7 +20,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-def ROBOT_MAIN_CLASS = "frc.robot.Main"
+def ROBOT_MAIN_CLASS = "com.seiford.Main"
 
 configurations.all {
     exclude group: "edu.wpi.first.wpilibj"
@@ -127,7 +127,7 @@ tasks.withType(JavaCompile) {
 project.compileJava.dependsOn(createVersionFile)
 gversion {
     srcDir       = "src/main/java/"
-    classPackage = "frc.robot"
+    classPackage = "com.seiford"
     className    = "BuildConstants"
     dateFormat   = "yyyy-MM-dd HH:mm:ss z"
     timeZone     = "America/Chicago" // Use preferred time zone

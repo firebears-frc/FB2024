@@ -181,4 +181,4 @@ logs/
 ctre_sim/
 
 # gversion build data
-src/main/java/frc/robot/BuildConstants.java
+src/main/java/com/seiford/BuildConstants.java
