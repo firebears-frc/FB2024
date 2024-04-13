@@ -1,28 +1,52 @@
 package frc.robot.subsystems.vision;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.simulation.PhotonCameraSim;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 
-public class VisionIOPhotonVision implements VisionIO {
-    public static final class Constants {
-        public static final String CAMERA_NAME = "Arducam_OV2311_USB_Camera";
-    }
+public class VisionIOSim implements VisionIO {
+    private final Supplier<Pose2d> poseSupplier;
+    private final PhotonCameraSim cameraSim;
+    private final VisionSystemSim visionSim = new VisionSystemSim("");
 
-    private final PhotonCamera visionSystem = new PhotonCamera(Constants.CAMERA_NAME);
+    private final PhotonCamera visionSystem = new PhotonCamera("");
     private final PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(Vision.Constants.FIELD_LAYOUT, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Vision.Constants.CAMERA_OFFSET);
 
-    public VisionIOPhotonVision() {
+    public VisionIOSim(Supplier<Pose2d> poseSupplier) {
+        this.poseSupplier = poseSupplier;
+
+        var properties = new SimCameraProperties();
+        properties.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+        properties.setCalibError(0.35, 0.10);
+        properties.setFPS(15);
+        properties.setAvgLatencyMs(50);
+        properties.setLatencyStdDevMs(15);
+
+        cameraSim = new PhotonCameraSim(visionSystem, properties);
+
+        visionSim.addAprilTags(Vision.Constants.FIELD_LAYOUT);
+        visionSim.addCamera(cameraSim, Vision.Constants.CAMERA_OFFSET);
+
         poseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     @Override
     public void updateInputs(VisionIOInputs inputs) {
+        Pose2d pose = poseSupplier.get();
+        visionSim.update(pose);
+
         // Initialize inputs
+        inputs.connected = true;
         inputs.hasTargets = false;
         inputs.targetIDs = new int[0];
         inputs.targetAmbiguities = new double[0];
@@ -32,11 +56,6 @@ public class VisionIOPhotonVision implements VisionIO {
         inputs.timestamp = 0;
         inputs.strategy = PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY;
         inputs.usedTargetIDs = new int[0];
-
-        // Check if the system is connected
-        inputs.connected = visionSystem.isConnected();
-        if (!inputs.connected)
-            return;
 
         // Get the result of the vision system
         PhotonPipelineResult pipelineResult = visionSystem.getLatestResult();
@@ -61,5 +80,6 @@ public class VisionIOPhotonVision implements VisionIO {
         inputs.timestamp = result.timestampSeconds;
         inputs.strategy = result.strategy;
         inputs.usedTargetIDs = result.targetsUsed.stream().mapToInt(target -> target.getFiducialId()).toArray();
+    }
     }
 }

@@ -8,18 +8,18 @@ import edu.wpi.first.math.geometry.Transform3d;
 public interface VisionIO {
   @AutoLog
   public static class VisionIOInputs {
-    public boolean connected;
+    public boolean connected = false;
 
-    public boolean hasTargets;
-    public int[] targetIDs;
-    public double[] targetAmbiguities;
-    public Transform3d[] targetTransforms;
+    public boolean hasTargets = false;
+    public int[] targetIDs = new int[0];
+    public double[] targetAmbiguities = new double[0];
+    public Transform3d[] targetTransforms = new Transform3d[0];
 
-    public boolean hasPose;
-    public Pose3d pose;
-    public double timestamp;
-    public PhotonPoseEstimator.PoseStrategy strategy;
-    public int[] usedTargetIDs;
+    public boolean hasPose = false;
+    public Pose3d pose = new Pose3d();
+    public double timestamp = 0.0;
+    public PhotonPoseEstimator.PoseStrategy strategy = PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY;
+    public int[] usedTargetIDs = new int[0];
   }
 
   /** Updates the set of loggable inputs. */
