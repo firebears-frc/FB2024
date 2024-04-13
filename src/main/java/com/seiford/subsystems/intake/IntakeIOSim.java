@@ -40,7 +40,7 @@ public class IntakeIOSim implements IntakeIO {
 
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = new double[] { sim.getCurrentDrawAmps() };
+    inputs.currentAmps = sim.getCurrentDrawAmps();
     inputs.beamBrake = beakBrakeSim.get();
   }
 

@@ -28,43 +28,36 @@ import edu.wpi.first.wpilibj.DigitalInput;
  * "CANSparkFlex".
  */
 public class IntakeIOSparkMax implements IntakeIO {
-  private final CANSparkMax leader = new CANSparkMax(0, MotorType.kBrushless);
-  private final CANSparkMax follower = new CANSparkMax(1, MotorType.kBrushless);
-  private final RelativeEncoder encoder = leader.getEncoder();
-  private final SparkPIDController pid = leader.getPIDController();
+  private final CANSparkMax motor = new CANSparkMax(9, MotorType.kBrushless);
+  private final RelativeEncoder encoder = motor.getEncoder();
+  private final SparkPIDController pid = motor.getPIDController();
   private final DigitalInput sensor = new DigitalInput(0);
 
   public IntakeIOSparkMax() {
-    leader.restoreFactoryDefaults();
-    follower.restoreFactoryDefaults();
+    motor.restoreFactoryDefaults();
 
-    leader.setCANTimeout(250);
-    follower.setCANTimeout(250);
+    motor.setCANTimeout(250);
 
-    leader.setInverted(false);
-    follower.follow(leader, false);
+    motor.setInverted(false);
 
-    leader.enableVoltageCompensation(12.0);
-    leader.setSmartCurrentLimit(20, 10);
-    leader.setSecondaryCurrentLimit(25.0);
-    follower.setSmartCurrentLimit(20, 10);
-    follower.setSecondaryCurrentLimit(25.0);
+    motor.enableVoltageCompensation(12.0);
+    motor.setSmartCurrentLimit(20, 10);
+    motor.setSecondaryCurrentLimit(25.0);
 
-    leader.burnFlash();
-    follower.burnFlash();
+    motor.burnFlash();
   }
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / Intake.Constants.GEAR_RATIO);
-    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.currentAmps = new double[] { leader.getOutputCurrent(), follower.getOutputCurrent() };
+    inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
+    inputs.currentAmps = motor.getOutputCurrent();
     inputs.beamBrake = sensor.get();
   }
 
   @Override
   public void setVoltage(double volts) {
-    leader.setVoltage(volts);
+    motor.setVoltage(volts);
   }
 
   @Override
@@ -79,7 +72,7 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void stop() {
-    leader.stopMotor();
+    motor.stopMotor();
   }
 
   @Override
