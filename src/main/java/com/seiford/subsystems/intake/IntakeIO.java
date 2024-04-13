@@ -21,6 +21,7 @@ public interface IntakeIO {
     public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
+    public boolean beamBrake = false;
   }
 
   /** Updates the set of loggable inputs. */

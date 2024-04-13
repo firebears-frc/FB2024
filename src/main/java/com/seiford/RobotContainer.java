@@ -126,7 +126,8 @@ public class RobotContainer {
     // Set up auto routines
     NamedCommands.registerCommands(Map.of(
         "Shoot", shooter.runStop().withTimeout(0.1),
-        "Intake", intake.runStop().withTimeout(0.2)));
+        "Intake", intake.autoIntake()
+    ));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser("7 Center Close3 Top3"));
 
     // Set up SysId routines
@@ -176,7 +177,7 @@ public class RobotContainer {
     controller.povDown().whileTrue(DriveCommands.pathfindStage());
 
     controller.a().whileTrue(shooter.runStop());
-    controller.b().whileTrue(intake.runStop());
+    controller.b().onTrue(intake.intake()).onFalse(intake.stop());
   }
 
   /**

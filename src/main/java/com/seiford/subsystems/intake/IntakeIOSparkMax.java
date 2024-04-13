@@ -20,6 +20,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of
@@ -27,12 +28,11 @@ import edu.wpi.first.math.util.Units;
  * "CANSparkFlex".
  */
 public class IntakeIOSparkMax implements IntakeIO {
-  private static final double GEAR_RATIO = 3.0;
-
   private final CANSparkMax leader = new CANSparkMax(0, MotorType.kBrushless);
   private final CANSparkMax follower = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder encoder = leader.getEncoder();
   private final SparkPIDController pid = leader.getPIDController();
+  private final DigitalInput sensor = new DigitalInput(0);
 
   public IntakeIOSparkMax() {
     leader.restoreFactoryDefaults();
@@ -53,9 +53,10 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / GEAR_RATIO);
+    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / Intake.Constants.GEAR_RATIO);
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
     inputs.currentAmps = new double[] { leader.getOutputCurrent(), follower.getOutputCurrent() };
+    inputs.beamBrake = sensor.get();
   }
 
   @Override
@@ -66,7 +67,7 @@ public class IntakeIOSparkMax implements IntakeIO {
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
     pid.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * GEAR_RATIO,
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * Intake.Constants.GEAR_RATIO,
         ControlType.kVelocity,
         0,
         ffVolts,

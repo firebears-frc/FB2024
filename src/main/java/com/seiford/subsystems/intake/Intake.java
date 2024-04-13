@@ -18,6 +18,7 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import com.seiford.subsystems.intake.IntakeIOInputsAutoLogged;
@@ -29,11 +30,18 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import com.seiford.Configuration;
 
 public class Intake extends SubsystemBase {
+  public final class Constants {
+    public static final double GEAR_RATIO = 3.0;
+  }
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-  private final LoggedDashboardNumber speedInput = new LoggedDashboardNumber("Intake Speed", 2400.0);
+  private final LoggedDashboardNumber intakeSpeedInput = new LoggedDashboardNumber("Intake Intake Speed", 2000.0);
+  private final LoggedDashboardNumber shootSpeedInput = new LoggedDashboardNumber("Intake Shoot Speed", 2625.0);
+  private final LoggedDashboardNumber ejectSpeedInput = new LoggedDashboardNumber("Intake Eject Speed", -1375.0);
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
+  @AutoLogOutput(key = "Intake/HasNote")
+  private boolean hasNote;
 
   /** Creates a new Intake. */
   public Intake(IntakeIO io) {
@@ -70,6 +78,15 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Intake", inputs);
+
+    // Stop the intake if we have a note
+    if (inputs.beamBrake && !hasNote) {
+      stopIntake();
+      hasNote = true;
+    }
+    else if (!inputs.beamBrake) {
+      hasNote = false;
+    }
   }
 
   /** Run open loop at the specified voltage. */
@@ -87,7 +104,7 @@ public class Intake extends SubsystemBase {
   }
 
   /** Stops the intake. */
-  private void stop() {
+  private void stopIntake() {
     io.stop();
   }
 
@@ -97,9 +114,33 @@ public class Intake extends SubsystemBase {
     return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
   }
 
-  /** Returns a command to run and stop the intake. */
-  public Command runStop() {
-    return startEnd(() -> runVelocity(speedInput.get()), this::stop);
+  /** Returns a command to run the intake at intake speed. */
+  public Command intake() {
+    return runOnce(() -> runVelocity(intakeSpeedInput.get()));
+  }
+
+  /** Returns a command to run the intake at shoot speed. */
+  public Command shoot() {
+    return runOnce(() -> runVelocity(shootSpeedInput.get()));
+  }
+
+  /** Returns a command to run the intake at eject speed. */
+  public Command eject() {
+    return runOnce(() -> runVelocity(ejectSpeedInput.get()));
+  }
+
+  /** Returns a command to stop the intake. */
+  public Command stop() {
+    return runOnce(this::stopIntake);
+  }
+
+  /** Returns a command to run the intake at intake speed until it has a note. */
+  public Command autoIntake() {
+    return Commands.sequence(
+      intake(),
+      Commands.waitSeconds(0.05),
+      run(() -> {}).until(() -> hasNote)
+    );
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
