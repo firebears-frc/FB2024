@@ -1,4 +1,4 @@
-package com.seiford.subsystems;
+package com.seiford.subsystems.arm;
 
 import java.util.function.Supplier;
 

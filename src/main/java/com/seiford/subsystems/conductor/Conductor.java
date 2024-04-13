@@ -1,10 +1,10 @@
-package com.seiford.subsystems;
+package com.seiford.subsystems.conductor;
 
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
-import com.seiford.Util;
+import com.seiford.util.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

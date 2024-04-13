@@ -1,4 +1,4 @@
-package com.seiford.drive;
+package com.seiford.subsystems.drive;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LoggedRobot;

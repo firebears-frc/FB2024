@@ -4,12 +4,13 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.seiford.drive.Drive;
-import com.seiford.subsystems.Intake;
-import com.seiford.subsystems.Climber;
-import com.seiford.subsystems.Arm;
-import com.seiford.subsystems.Shooter;
-import com.seiford.subsystems.Conductor;
+import com.seiford.subsystems.arm.Arm;
+import com.seiford.subsystems.climber.Climber;
+import com.seiford.subsystems.conductor.Conductor;
+import com.seiford.subsystems.drive.Drive;
+import com.seiford.subsystems.intake.Intake;
+import com.seiford.subsystems.shooter.Shooter;
+import com.seiford.util.Util;
 
 import java.util.Map;
 import edu.wpi.first.math.MathUtil;

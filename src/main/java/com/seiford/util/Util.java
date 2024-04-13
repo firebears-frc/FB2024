@@ -1,4 +1,4 @@
-package com.seiford;
+package com.seiford.util;
 
 import java.util.Optional;
 

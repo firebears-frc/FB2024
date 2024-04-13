@@ -1,4 +1,4 @@
-package com.seiford.subsystems;
+package com.seiford.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;

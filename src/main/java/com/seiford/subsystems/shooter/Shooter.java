@@ -1,4 +1,4 @@
-package com.seiford.subsystems;
+package com.seiford.subsystems.shooter;
 
 import java.util.function.Supplier;
 

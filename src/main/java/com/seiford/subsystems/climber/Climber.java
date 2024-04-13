@@ -1,4 +1,4 @@
-package com.seiford.subsystems;
+package com.seiford.subsystems.climber;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
