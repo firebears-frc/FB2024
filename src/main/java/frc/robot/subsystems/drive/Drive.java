@@ -20,8 +20,11 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -29,6 +32,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,6 +46,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 public class Drive extends SubsystemBase {
   public static final class Constants {
@@ -78,8 +84,9 @@ public class Drive extends SubsystemBase {
           new SwerveModulePosition(),
           new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
-      lastModulePositions, new Pose2d());
+  private SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+  private SwerveDrivePoseEstimator fusedVision = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+  private final LoggedDashboardBoolean useVision = new LoggedDashboardBoolean("UseVision", true);
 
   public Drive(
       GyroIO gyroIO,
@@ -110,11 +117,11 @@ public class Drive extends SubsystemBase {
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
-              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+              "Localization/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
-          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+          Logger.recordOutput("Localization/TrajectorySetpoint", targetPose);
         });
 
     // Configure SysId
@@ -185,7 +192,8 @@ public class Drive extends SubsystemBase {
       }
 
       // Apply update
-      poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+      odometry.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+      fusedVision.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
   }
 
@@ -278,10 +286,22 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
-  /** Returns the current odometry pose. */
-  @AutoLogOutput(key = "Odometry/Robot")
+  /** Returns the current robot pose. */
+  @AutoLogOutput(key = "Localization/Robot")
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    return useVision.get() ? fusedVision.getEstimatedPosition() : odometry.getEstimatedPosition();
+  }
+
+  /** Returns the current odometry pose. */
+  @AutoLogOutput(key = "Localization/Odometry")
+  public Pose2d getOdometryPose() {
+    return odometry.getEstimatedPosition();
+  }
+
+  /** Returns the current odometry pose. */
+  @AutoLogOutput(key = "Localization/Vision")
+  public Pose2d getVisionPose() {
+    return fusedVision.getEstimatedPosition();
   }
 
   /** Returns the current odometry rotation. */
@@ -291,7 +311,8 @@ public class Drive extends SubsystemBase {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
-    poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    odometry.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    fusedVision.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
   /** Returns the current robot velocities. */
@@ -304,8 +325,9 @@ public class Drive extends SubsystemBase {
    *
    * @param visionPose The pose of the robot as measured by the vision camera.
    * @param timestamp  The timestamp of the vision measurement in seconds.
+   * @param stdDevs The standard deviations to use for this vision pose.
    */
-  public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-    poseEstimator.addVisionMeasurement(visionPose, timestamp);
+  public void addVisionMeasurement(Pose3d visionPose, double timestamp, Matrix<N3, N1> stdDevs) {
+    fusedVision.addVisionMeasurement(visionPose.toPose2d(), timestamp, stdDevs);
   }
 }
