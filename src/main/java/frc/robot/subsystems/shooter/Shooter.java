@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Configuration;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Shooter extends SubsystemBase {
   public static final class Constants {
@@ -30,6 +31,7 @@ public class Shooter extends SubsystemBase {
   }
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+  private final LoggedDashboardNumber speedInput = new LoggedDashboardNumber("Shooter Speed", 2400.0);
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
 
@@ -71,22 +73,33 @@ public class Shooter extends SubsystemBase {
   }
 
   /** Run open loop at the specified voltage. */
-  public void runVolts(double volts) {
+  private void runVolts(double volts) {
     io.setVoltage(volts);
   }
 
   /** Run closed loop at the specified velocity. */
-  public void runVelocity(double velocityRPM) {
-    var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
+  private void runVelocity(double velocityRPM) {
+    double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
     io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
 
     // Log Shooter setpoint
     Logger.recordOutput("Shooter/SetpointRPM", velocityRPM);
   }
 
-  /** Stops the Shooter. */
-  public void stop() {
+  /** Stops the shooter. */
+  private void stop() {
     io.stop();
+  }
+
+  /** Returns the current velocity in RPM. */
+  @AutoLogOutput
+  private double getVelocityRPM() {
+    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
+  }
+
+  /** Returns a command to run and stop the shooter. */
+  public Command runStop() {
+    return startEnd(() -> runVelocity(speedInput.get()), this::stop);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
@@ -97,16 +110,5 @@ public class Shooter extends SubsystemBase {
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return sysId.dynamic(direction);
-  }
-
-  /** Returns the current velocity in RPM. */
-  @AutoLogOutput
-  public double getVelocityRPM() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
-  }
-
-  /** Returns the current velocity in radians per second. */
-  public double getCharacterizationVelocity() {
-    return inputs.velocityRadPerSec;
   }
 }

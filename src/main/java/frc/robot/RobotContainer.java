@@ -67,7 +67,6 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber shooterSpeedInput = new LoggedDashboardNumber("Shooter Speed", 2400.0);
   private final LoggedDashboardNumber intakeSpeedInput = new LoggedDashboardNumber("Intake Speed", 2400.0);
 
   /**
@@ -126,8 +125,7 @@ public class RobotContainer {
 
     // Set up auto routines
     NamedCommands.registerCommands(Map.of(
-        "Shoot",
-        Commands.startEnd(() -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter).withTimeout(0.1),
+        "Shoot", shooter.runStop().withTimeout(0.1),
         "Intake",
         Commands.startEnd(() -> intake.runVelocity(intakeSpeedInput.get()), intake::stop, intake).withTimeout(0.2)));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -178,8 +176,7 @@ public class RobotContainer {
     controller.povRight().whileTrue(DriveCommands.pathfindSpeaker());
     controller.povDown().whileTrue(DriveCommands.pathfindStage());
 
-    controller.a()
-        .whileTrue(Commands.startEnd(() -> shooter.runVelocity(shooterSpeedInput.get()), shooter::stop, shooter));
+    controller.a().whileTrue(shooter.runStop());
     controller.b()
         .whileTrue(Commands.startEnd(() -> intake.runVelocity(intakeSpeedInput.get()), intake::stop, intake));
   }
