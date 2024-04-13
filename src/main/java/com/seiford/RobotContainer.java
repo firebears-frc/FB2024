@@ -15,6 +15,10 @@ package com.seiford;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.seiford.subsystems.climber.Climber;
+import com.seiford.subsystems.climber.ClimberIO;
+import com.seiford.subsystems.climber.ClimberIOSim;
+import com.seiford.subsystems.climber.ClimberIOSparkMax;
 import com.seiford.subsystems.drive.Drive;
 import com.seiford.subsystems.drive.GyroIO;
 import com.seiford.subsystems.drive.GyroIONavX;
@@ -58,6 +62,7 @@ public class RobotContainer {
   private final Vision vision;
   private final Shooter shooter;
   private final Intake intake;
+  private final Climber climber;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -81,6 +86,7 @@ public class RobotContainer {
         vision = new Vision(new VisionIOPhotonVision(), drive::addVisionMeasurement);
         shooter = new Shooter(new ShooterIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
+        climber = new Climber(new ClimberIOSparkMax());
         break;
 
       case SIM:
@@ -95,6 +101,7 @@ public class RobotContainer {
         vision = new Vision(new VisionIOSim(drive::getPose), drive::addVisionMeasurement);
         shooter = new Shooter(new ShooterIOSim());
         intake = new Intake(new IntakeIOSim());
+        climber = new Climber(new ClimberIOSim());
         break;
 
       default:
@@ -115,6 +122,8 @@ public class RobotContainer {
         shooter = new Shooter(new ShooterIO() {
         });
         intake = new Intake(new IntakeIO() {
+        });
+        climber = new Climber(new ClimberIO() {
         });
         break;
     }
@@ -165,8 +174,8 @@ public class RobotContainer {
     controller.povRight().whileTrue(drive.pathfindSpeaker());
     controller.povDown().whileTrue(drive.pathfindStage());
 
-    controller.a().whileTrue(shooter.runStop());
-    controller.b().onTrue(intake.intake()).onFalse(intake.stop());
+    controller.y().onTrue(climber.climb()).onFalse(climber.stop());
+    controller.a().onTrue(climber.reverse()).onFalse(climber.stop());
   }
 
   /**
