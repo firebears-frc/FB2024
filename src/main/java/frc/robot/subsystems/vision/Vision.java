@@ -115,6 +115,7 @@ public class Vision extends SubsystemBase {
 
     Matrix<N3, N1> stdDevs = getStdDevs(inputs.pipelineResult.targets, result.estimatedPose);
     Logger.recordOutput("Vision/StdDevs", stdDevs.transpose().getData());
+    Logger.recordOutput("Vision/UsedTargetPoses", result.targetsUsed.stream().map(target -> result.estimatedPose.transformBy(Constants.CAMERA_OFFSET).transformBy(target.getBestCameraToTarget())).toArray(Pose3d[]::new));
 
     consumer.accept(new VisionData(result.estimatedPose, result.timestampSeconds, stdDevs));
   }
