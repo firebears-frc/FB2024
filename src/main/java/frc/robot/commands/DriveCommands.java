@@ -42,7 +42,7 @@ public class DriveCommands {
 
     // Pathfind positions
     public static final Pose2d BLUE_SUBWOOFER = new Pose2d(1.45, 5.55, Rotation2d.fromDegrees(0.0));
-    public static final Pose2d BLUE_AMP_PLACEMENT = new Pose2d(1.84, 7.75, Rotation2d.fromDegrees(90.0));
+    public static final Pose2d BLUE_AMP_PLACEMENT = new Pose2d(1.84, 7.75, Rotation2d.fromDegrees(-90.0));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.08, 1.00, Rotation2d.fromDegrees(0.0));
     public static final Pose2d BLUE_STAGE = new Pose2d(5.85, 4.10, Rotation2d.fromDegrees(0.0));
 
