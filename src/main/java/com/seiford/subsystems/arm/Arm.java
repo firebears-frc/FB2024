@@ -20,9 +20,9 @@ public class Arm extends SubsystemBase {
   }
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
-  private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Intake Angle", 0.0);
-  private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Amp Angle", 90.0);
-  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Speaker Angle", 13.5);
+  private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Arm Intake Angle", 0.0);
+  private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Arm Amp Angle", 90.0);
+  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Arm Speaker Angle", 13.5);
   private final ArmFeedforward ffModel;
   @AutoLogOutput(key = "Arm/Setpoint")
   private Rotation2d setpoint;

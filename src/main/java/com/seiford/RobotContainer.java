@@ -45,6 +45,7 @@ import com.seiford.subsystems.vision.VisionIOSim;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -139,7 +140,7 @@ public class RobotContainer {
 
     // Set up auto routines
     NamedCommands.registerCommands(Map.of(
-        "Shoot", shooter.runStop().withTimeout(0.1),
+        "Shoot", shooter.speaker(),
         "Intake", intake.autoIntake()
     ));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser("7 Center Close3 Top3"));
@@ -175,9 +176,21 @@ public class RobotContainer {
     controller.leftStick().toggleOnTrue(drive.turtle());
     controller.rightStick().onTrue(drive.zeroHeading());
 
-    controller.rightTrigger().onTrue(arm.speaker()).onFalse(arm.intake());
+    controller.rightTrigger()
+      .onTrue(Commands.parallel(
+        arm.speaker(),
+        shooter.speaker()))
+      .onFalse(Commands.parallel(
+        arm.intake(),
+        shooter.eject()));
     controller.rightBumper().toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.leftTrigger().onTrue(arm.amp()).onFalse(arm.intake());
+    controller.leftTrigger()
+      .onTrue(Commands.parallel(
+        arm.amp(),
+        shooter.amp()))
+      .onFalse(Commands.parallel(
+        arm.intake(),
+        shooter.eject()));
     controller.leftBumper().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
     controller.y().whileTrue(drive.pathfindSource());
