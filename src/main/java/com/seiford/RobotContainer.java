@@ -140,8 +140,16 @@ public class RobotContainer {
 
     // Set up auto routines
     NamedCommands.registerCommands(Map.of(
-        "Shoot", shooter.speaker(),
-        "Intake", intake.autoIntake()));
+        "PrepareShoot", Commands.parallel(
+            arm.speaker(),
+            shooter.speaker()),
+        "Shoot", Commands.sequence(
+            intake.shoot(),
+            Commands.waitSeconds(0.35)),
+        "Intake", Commands.parallel(
+            arm.intake(),
+            shooter.stop(),
+            intake.autoIntake())));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser("7 Center Close3 Top3"));
 
     // Set up SysId routines
@@ -182,6 +190,29 @@ public class RobotContainer {
 
     controller.leftStick().toggleOnTrue(drive.turtle());
     controller.rightStick().onTrue(drive.zeroHeading());
+
+    controller.leftTrigger()
+        .onTrue(Commands.parallel(
+            arm.amp(),
+            shooter.amp()))
+        .onFalse(Commands.sequence(
+            intake.intake(),
+            Commands.waitSeconds(1.0),
+            shooter.stop(),
+            intake.stop(),
+            arm.intake(),
+            intake.intake()));
+    controller.rightTrigger()
+        .onTrue(Commands.parallel(
+            arm.speaker(),
+            shooter.speaker()))
+        .onFalse(Commands.sequence(
+            intake.shoot(),
+            Commands.waitSeconds(0.35),
+            shooter.stop(),
+            intake.stop(),
+            arm.intake(),
+            intake.intake()));
 
     controller.x().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
     controller.b().toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
