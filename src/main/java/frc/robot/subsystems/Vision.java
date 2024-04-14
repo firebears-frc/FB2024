@@ -48,7 +48,7 @@ public class Vision extends SubsystemBase {
 
         List<PhotonTrackedTarget> badTargets = new ArrayList<>();
         for(PhotonTrackedTarget target : pipelineResult.targets){
-            if(target.getPoseAmbiguity()>0.5){
+            if(target.getPoseAmbiguity()>.1 || target.getPoseAmbiguity() == 0){
                 badTargets.add(target);
             }
         }
@@ -67,6 +67,7 @@ public class Vision extends SubsystemBase {
         Logger.recordOutput("Vision/Timestamp", estimatedPose.timestampSeconds);
         Logger.recordOutput("Vision/Targets", estimatedPose.targetsUsed.size());
         Logger.recordOutput("Vision/Strategy", estimatedPose.strategy);
+        Logger.recordOutput("Vision/ambiguity", estimatedPose.targetsUsed.get(0).getPoseAmbiguity());
 
         consumer.accept(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
     }

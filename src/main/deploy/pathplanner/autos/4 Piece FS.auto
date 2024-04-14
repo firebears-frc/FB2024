@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6586217284202576,
+      "x": 0.636965274810791,
       "y": 4.392223358154297
     },
-    "rotation": -64.0934928337424
+    "rotation": -63.43494882292201
   },
   "command": {
     "type": "sequential",
@@ -24,57 +24,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "far side.2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "far side.3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "armUp"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
                   "pathName": "far side.4"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "intake"
+                  "name": "intakeFar"
                 }
               }
             ]
@@ -118,7 +74,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "intake"
+                  "name": "intakeFar"
                 }
               }
             ]
@@ -132,6 +88,50 @@
                 "type": "path",
                 "data": {
                   "pathName": "far side.7"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armUp"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "far side.2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakeFar"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "far side.3"
                 }
               },
               {

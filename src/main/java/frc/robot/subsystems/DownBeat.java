@@ -89,9 +89,9 @@ public class DownBeat extends SubsystemBase {
         });
     }
 
-    public Command autoIntake() {
+    public Command autoIntake(double timeOut) {
         return Commands.sequence(runOnce(() -> setPoint = 7000),
-        run(()-> {}).until(()->hasNote).withTimeout(2.5));
+        run(()-> {}).until(()->hasNote).withTimeout(timeOut));
     }
 
     @Override
