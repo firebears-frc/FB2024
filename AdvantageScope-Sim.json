@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 3454,
+      "x": 3406,
       "y": 0,
-      "width": 1667,
-      "height": 1392,
+      "width": 1721,
+      "height": 1399,
       "state": {
         "sidebar": {
           "width": 300,
@@ -22,11 +22,11 @@
             "/SmartDashboard/Auto Choices",
             "/AdvantageKit/RealOutputs/Odometry",
             "/AdvantageKit/RealOutputs",
-            "/AdvantageKit/RealOutputs/Localization"
+            "/AdvantageKit/Arm"
           ]
         },
         "tabs": {
-          "selected": 11,
+          "selected": 12,
           "tabs": [
             {
               "type": 0,
@@ -282,26 +282,42 @@
               "legendHeight": 0.3,
               "legends": {
                 "left": {
-                  "lockedRange": null,
+                  "lockedRange": [
+                    -5,
+                    100
+                  ],
                   "unitConversion": {
-                    "type": null,
-                    "factor": 1
+                    "type": "angle",
+                    "factor": 1,
+                    "from": "radians",
+                    "to": "degrees"
                   },
                   "fields": [
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/SetpointRPM",
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/Setpoint/value",
                       "color": "#2b66a2",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/VelocityRPM",
+                      "key": "NT:/AdvantageKit/Arm/Position/value",
                       "color": "#e5b31b",
                       "show": true
                     }
                   ]
                 },
                 "discrete": {
-                  "fields": []
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/AtPosition",
+                      "color": "#e48b32",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/OnTarget",
+                      "color": "#aacaee",
+                      "show": true
+                    }
+                  ]
                 },
                 "right": {
                   "lockedRange": null,
@@ -311,8 +327,67 @@
                   },
                   "fields": [
                     {
-                      "key": "NT:/AdvantageKit/Shooter/AppliedVolts",
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/ffVolts",
                       "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Arm/AppliedVolts/0",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Arm"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/Setpoint",
+                      "color": "#2b66a2",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/Speed",
+                      "color": "#e5b31b",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/OnTarget",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/AtSpeed",
+                      "color": "#80588e",
+                      "show": true
+                    }
+                  ]
+                },
+                "right": {
+                  "lockedRange": null,
+                  "unitConversion": {
+                    "type": null,
+                    "factor": 1
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/AppliedVolts/0",
+                      "color": "#e48b32",
                       "show": true
                     }
                   ]
@@ -410,8 +485,8 @@
                 "orbitFov": 100,
                 "cameraPosition": [
                   5.979618368045092,
-                  0.4999999999999995,
-                  -1.1049211581472056
+                  0.4999999999999991,
+                  -1.1049211581472058
                 ],
                 "cameraTarget": [
                   0.10982047666013262,
@@ -468,7 +543,7 @@
                 "orbitFov": 100,
                 "cameraPosition": [
                   7.1701079147310836,
-                  0.5000000000000013,
+                  0.5000000000000004,
                   3.0820755442937786
                 ],
                 "cameraTarget": [

@@ -176,21 +176,18 @@ public class RobotContainer {
     controller.leftStick().toggleOnTrue(drive.turtle());
     controller.rightStick().onTrue(drive.zeroHeading());
 
-    controller.rightTrigger()
-      .onTrue(Commands.parallel(
-        arm.speaker(),
-        shooter.speaker()))
-      .onFalse(Commands.parallel(
-        arm.intake(),
-        shooter.eject()));
+    controller.leftTrigger().onTrue(Commands.sequence(
+      arm.amp(),
+      shooter.amp(),
+      arm.intake(),
+      shooter.eject(),
+      arm.speaker(),
+      shooter.speaker(),
+      arm.intake(),
+      shooter.eject()
+    ));
+
     controller.rightBumper().toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.leftTrigger()
-      .onTrue(Commands.parallel(
-        arm.amp(),
-        shooter.amp()))
-      .onFalse(Commands.parallel(
-        arm.intake(),
-        shooter.eject()));
     controller.leftBumper().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
     controller.y().whileTrue(drive.pathfindSource());

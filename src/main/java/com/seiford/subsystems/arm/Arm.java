@@ -7,8 +7,10 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 import com.seiford.Configuration;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Arm extends SubsystemBase {
@@ -24,6 +26,7 @@ public class Arm extends SubsystemBase {
   private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Arm Amp Angle", 90.0);
   private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Arm Speaker Angle", 13.5);
   private final ArmFeedforward ffModel;
+  private final Debouncer debouncer = new Debouncer(0.2);
   @AutoLogOutput(key = "Arm/Setpoint")
   private Rotation2d setpoint;
 
@@ -64,6 +67,21 @@ public class Arm extends SubsystemBase {
     io.setPosition(setpoint, ffVolts);
   }
 
+  @AutoLogOutput(key = "Arm/Error")
+  private Rotation2d getError() {
+    return inputs.position.minus(setpoint);
+  }
+
+  @AutoLogOutput(key = "Arm/AtPosition")
+  private boolean atSpeed() {
+    return Math.abs(getError().getDegrees()) < 1.0;
+  }
+
+  @AutoLogOutput(key = "Arm/OnTarget")
+  private boolean onTarget() {
+    return debouncer.calculate(atSpeed());
+  }
+
   /** Run closed loop at the specified position. */
   private void runPosition(Rotation2d angle) {
     if (angle.getDegrees() > Constants.MAXIMUM.getDegrees())
@@ -76,7 +94,11 @@ public class Arm extends SubsystemBase {
 
   /** Returns a command to move the arm to the specified position. */
   private Command positionCommand(Rotation2d angle) {
-    return runOnce(() -> runPosition(angle)); // TODO
+    return Commands.sequence(
+      runOnce(() -> runPosition(angle)),
+      Commands.waitSeconds(0.25),
+      run(()-> {}).until(this::onTarget)
+    );
   }
 
   /** Returns a command to move the arm to intake position. */
