@@ -40,8 +40,8 @@ public class ArmIOSparkMax implements ArmIO {
   public void updateInputs(ArmIOInputs inputs) {
     inputs.position = Rotation2d.fromRotations(encoder.getPosition());
     inputs.appliedVolts = new double[] {
-      leader.getAppliedOutput() * leader.getBusVoltage(),
-      follower.getAppliedOutput() * follower.getBusVoltage()
+        leader.getAppliedOutput() * leader.getBusVoltage(),
+        follower.getAppliedOutput() * follower.getBusVoltage()
     };
     inputs.currentAmps = new double[] { leader.getOutputCurrent(), follower.getOutputCurrent() };
   }
@@ -49,14 +49,13 @@ public class ArmIOSparkMax implements ArmIO {
   @Override
   public void setPosition(Rotation2d angle, double ffVolts) {
     pid.setReference(
-      angle.getRotations(),
-      ControlType.kPosition,
-      0,
-      ffVolts,
-      ArbFFUnits.kVoltage
-    );
+        angle.getRotations(),
+        ControlType.kPosition,
+        0,
+        ffVolts,
+        ArbFFUnits.kVoltage);
   }
-  
+
   @Override
   public void configurePID(double kP, double kI, double kD) {
     pid.setP(kP, 0);

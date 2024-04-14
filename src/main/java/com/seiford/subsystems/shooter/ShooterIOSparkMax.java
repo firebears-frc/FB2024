@@ -57,13 +57,13 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.velocitiesRadPerSec = new double[] { 
-      Units.rotationsPerMinuteToRadiansPerSecond(topEncoder.getVelocity() / Shooter.Constants.GEAR_RATIO),
-      Units.rotationsPerMinuteToRadiansPerSecond(bottomEncoder.getVelocity() / Shooter.Constants.GEAR_RATIO)
+    inputs.velocitiesRadPerSec = new double[] {
+        Units.rotationsPerMinuteToRadiansPerSecond(topEncoder.getVelocity() / Shooter.Constants.GEAR_RATIO),
+        Units.rotationsPerMinuteToRadiansPerSecond(bottomEncoder.getVelocity() / Shooter.Constants.GEAR_RATIO)
     };
-    inputs.appliedVolts = new double[] { 
-      topMotor.getAppliedOutput() * topMotor.getBusVoltage(),
-      bottomMotor.getAppliedOutput() * bottomMotor.getBusVoltage()
+    inputs.appliedVolts = new double[] {
+        topMotor.getAppliedOutput() * topMotor.getBusVoltage(),
+        bottomMotor.getAppliedOutput() * bottomMotor.getBusVoltage()
     };
     inputs.currentAmps = new double[] { topMotor.getOutputCurrent(), bottomMotor.getOutputCurrent() };
   }

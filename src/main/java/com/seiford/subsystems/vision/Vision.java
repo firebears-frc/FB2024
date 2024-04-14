@@ -124,7 +124,8 @@ public class Vision extends SubsystemBase {
       return;
     }
 
-    Logger.recordOutput("Vision/TargetIDs", inputs.pipelineResult.targets.stream().mapToInt(target -> target.getFiducialId()).toArray());
+    Logger.recordOutput("Vision/TargetIDs",
+        inputs.pipelineResult.targets.stream().mapToInt(target -> target.getFiducialId()).toArray());
 
     Optional<EstimatedRobotPose> poseResult = poseEstimator.update(inputs.pipelineResult);
     Logger.recordOutput("Vision/HasPose", poseResult.isPresent());

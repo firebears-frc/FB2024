@@ -20,6 +20,7 @@ public class Arm extends SubsystemBase {
     public static final Rotation2d MINIMUM = Rotation2d.fromDegrees(-5.0);
     public static final Rotation2d MAXIMUM = Rotation2d.fromDegrees(100.0);
   }
+
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Arm Intake Angle", 0.0);
@@ -95,10 +96,10 @@ public class Arm extends SubsystemBase {
   /** Returns a command to move the arm to the specified position. */
   private Command positionCommand(Rotation2d angle) {
     return Commands.sequence(
-      runOnce(() -> runPosition(angle)),
-      Commands.waitSeconds(0.25),
-      run(()-> {}).until(this::onTarget)
-    );
+        runOnce(() -> runPosition(angle)),
+        Commands.waitSeconds(0.25),
+        run(() -> {
+        }).until(this::onTarget));
   }
 
   /** Returns a command to move the arm to intake position. */

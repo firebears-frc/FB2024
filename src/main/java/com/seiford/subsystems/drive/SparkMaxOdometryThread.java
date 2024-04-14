@@ -23,10 +23,14 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
+ * Provides an interface for asynchronously reading high-frequency measurements
+ * to a set of queues.
  *
- * <p>This version is intended for devices like the SparkMax that require polling rather than a
- * blocking thread. A Notifier thread is used to gather samples with consistent timing.
+ * <p>
+ * This version is intended for devices like the SparkMax that require polling
+ * rather than a
+ * blocking thread. A Notifier thread is used to gather samples with consistent
+ * timing.
  */
 public class SparkMaxOdometryThread {
   private List<Supplier<OptionalDouble>> signals = new ArrayList<>();

@@ -107,8 +107,10 @@ public class Drive extends SubsystemBase {
           new SwerveModulePosition(),
           new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
-  private SwerveDrivePoseEstimator fusedVision = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+  private SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
+      lastModulePositions, new Pose2d());
+  private SwerveDrivePoseEstimator fusedVision = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
+      lastModulePositions, new Pose2d());
   private final LoggedDashboardBoolean useVision = new LoggedDashboardBoolean("UseVision", true);
 
   public Drive(
@@ -336,9 +338,9 @@ public class Drive extends SubsystemBase {
   /**
    * Adds a vision measurement to the pose estimator.
    *
-   * @param data.pose The pose of the robot as measured by the vision camera.
-   * @param data.timestamp  The timestamp of the vision measurement in seconds.
-   * @param data.stdDevs The standard deviations to use for this vision pose.
+   * @param data.pose      The pose of the robot as measured by the vision camera.
+   * @param data.timestamp The timestamp of the vision measurement in seconds.
+   * @param data.stdDevs   The standard deviations to use for this vision pose.
    */
   public void addVisionMeasurement(VisionData data) {
     fusedVision.addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdDevs);
@@ -379,7 +381,8 @@ public class Drive extends SubsystemBase {
       DoubleSupplier omegaSupplier) {
     return run(
         () -> {
-          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), Constants.MAX_LINEAR_SPEED);
+          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(),
+              Constants.MAX_LINEAR_SPEED);
           double rotationSpeed = calculateRotationSpeed(omegaSupplier.getAsDouble(), Constants.MAX_ANGULAR_SPEED);
 
           runFieldVelocity(new ChassisSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed));
@@ -403,11 +406,13 @@ public class Drive extends SubsystemBase {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       Supplier<Translation2d> target) {
-    ProfiledPIDController pid = new ProfiledPIDController(10.0, 0, 0, new TrapezoidProfile.Constraints(Constants.MAX_ANGULAR_SPEED, Constants.MAX_ANGULAR_ACCELERATION));
+    ProfiledPIDController pid = new ProfiledPIDController(10.0, 0, 0,
+        new TrapezoidProfile.Constraints(Constants.MAX_ANGULAR_SPEED, Constants.MAX_ANGULAR_ACCELERATION));
     pid.enableContinuousInput(-Math.PI, Math.PI);
     return run(
         () -> {
-          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(), Constants.MAX_LINEAR_SPEED);
+          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(),
+              Constants.MAX_LINEAR_SPEED);
 
           Translation2d targetTranslation = getPose().getTranslation().minus(target.get());
           Rotation2d delta = getPose().getRotation().minus(targetTranslation.getAngle());

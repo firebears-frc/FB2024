@@ -141,8 +141,7 @@ public class RobotContainer {
     // Set up auto routines
     NamedCommands.registerCommands(Map.of(
         "Shoot", shooter.speaker(),
-        "Intake", intake.autoIntake()
-    ));
+        "Intake", intake.autoIntake()));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser("7 Center Close3 Top3"));
 
     // Set up SysId routines
@@ -169,25 +168,25 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     drive.setDefaultCommand(drive.joystickDrive(
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+        () -> -controller.getLeftY(),
+        () -> -controller.getLeftX(),
+        () -> -controller.getRightX()));
 
     controller.leftStick().toggleOnTrue(drive.turtle());
     controller.rightStick().onTrue(drive.zeroHeading());
 
     controller.leftTrigger().onTrue(Commands.sequence(
-      arm.amp(),
-      shooter.amp(),
-      arm.intake(),
-      shooter.eject(),
-      arm.speaker(),
-      shooter.speaker(),
-      arm.intake(),
-      shooter.eject()
-    ));
+        arm.amp(),
+        shooter.amp(),
+        arm.intake(),
+        shooter.eject(),
+        arm.speaker(),
+        shooter.speaker(),
+        arm.intake(),
+        shooter.eject()));
 
-    controller.rightBumper().toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.rightBumper()
+        .toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
     controller.leftBumper().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
     controller.y().whileTrue(drive.pathfindSource());

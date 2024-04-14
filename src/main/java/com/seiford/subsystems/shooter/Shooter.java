@@ -34,6 +34,7 @@ public class Shooter extends SubsystemBase {
   public static final class Constants {
     public static final double GEAR_RATIO = 1.5;
   }
+
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Shooter Speaker Speed", 2400.0);
@@ -128,10 +129,10 @@ public class Shooter extends SubsystemBase {
   /** Returns a command to run the shooter at a set speed. */
   private Command speedCommand(double velocityRPM) {
     return Commands.sequence(
-      runOnce(() -> runVelocity(velocityRPM)),
-      Commands.waitSeconds(0.25),
-      run(() -> {}).until(this::onTarget)
-    );
+        runOnce(() -> runVelocity(velocityRPM)),
+        Commands.waitSeconds(0.25),
+        run(() -> {
+        }).until(this::onTarget));
   }
 
   /** Returns a command to run the shooter at speaker speed. */

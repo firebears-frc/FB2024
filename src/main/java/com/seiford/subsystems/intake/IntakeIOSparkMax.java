@@ -49,7 +49,8 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / Intake.Constants.GEAR_RATIO);
+    inputs.velocityRadPerSec = Units
+        .rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / Intake.Constants.GEAR_RATIO);
     inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
     inputs.currentAmps = motor.getOutputCurrent();
     inputs.beamBrake = sensor.get();

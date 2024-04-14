@@ -33,6 +33,7 @@ public class Intake extends SubsystemBase {
   public final class Constants {
     public static final double GEAR_RATIO = 3.0;
   }
+
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private final LoggedDashboardNumber intakeSpeedInput = new LoggedDashboardNumber("Intake Intake Speed", 2000.0);
@@ -83,8 +84,7 @@ public class Intake extends SubsystemBase {
     if (inputs.beamBrake && !hasNote) {
       stopIntake();
       hasNote = true;
-    }
-    else if (!inputs.beamBrake) {
+    } else if (!inputs.beamBrake) {
       hasNote = false;
     }
   }
@@ -137,10 +137,10 @@ public class Intake extends SubsystemBase {
   /** Returns a command to run the intake at intake speed until it has a note. */
   public Command autoIntake() {
     return Commands.sequence(
-      intake(),
-      Commands.waitSeconds(0.05),
-      run(() -> {}).until(() -> hasNote)
-    );
+        intake(),
+        Commands.waitSeconds(0.05),
+        run(() -> {
+        }).until(() -> hasNote));
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
