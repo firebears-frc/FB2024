@@ -60,7 +60,7 @@ public class Intake extends SubsystemBase {
         break;
       case SIM:
         ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-        io.configurePID(0.5, 0.0, 0.0);
+        io.configurePID(0.1, 0.0, 0.0);
         break;
       default:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);

@@ -152,6 +152,7 @@ public class Shooter extends SubsystemBase {
 
   /** Stops the shooter. */
   private void stopShooter() {
+    state = State.STOPPED;
     io.stop();
   }
 

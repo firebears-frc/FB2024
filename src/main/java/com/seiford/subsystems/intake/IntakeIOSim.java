@@ -21,7 +21,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class IntakeIOSim implements IntakeIO {
-  private final FlywheelSim sim = new FlywheelSim(DCMotor.getNeo550(1), Intake.Constants.GEAR_RATIO, 0.004);
+  private final FlywheelSim sim = new FlywheelSim(DCMotor.getNeo550(1), Intake.Constants.GEAR_RATIO, 0.001);
   private final PIDController pid = new PIDController(0.0, 0.0, 0.0);
   private final LoggedDashboardBoolean beakBrakeSim = new LoggedDashboardBoolean("Intake/Beam Brake Simulation", true);
 
