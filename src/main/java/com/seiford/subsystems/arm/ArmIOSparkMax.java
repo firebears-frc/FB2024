@@ -38,7 +38,7 @@ public class ArmIOSparkMax implements ArmIO {
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.positionRadians = Rotation2d.fromRotations(encoder.getPosition());
+    inputs.position = Rotation2d.fromRotations(encoder.getPosition());
     inputs.appliedVolts = new double[] {
       leader.getAppliedOutput() * leader.getBusVoltage(),
       follower.getAppliedOutput() * follower.getBusVoltage()

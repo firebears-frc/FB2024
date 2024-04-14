@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public interface ArmIO {
   @AutoLog
   public static class ArmIOInputs {
-    public Rotation2d positionRadians = new Rotation2d();
+    public Rotation2d position = new Rotation2d();
     public double[] appliedVolts = new double[] {};
     public double[] currentAmps = new double[] {};
   }
