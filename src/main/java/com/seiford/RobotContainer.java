@@ -15,6 +15,10 @@ package com.seiford;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.seiford.subsystems.arm.Arm;
+import com.seiford.subsystems.arm.ArmIO;
+import com.seiford.subsystems.arm.ArmIOSim;
+import com.seiford.subsystems.arm.ArmIOSparkMax;
 import com.seiford.subsystems.climber.Climber;
 import com.seiford.subsystems.climber.ClimberIO;
 import com.seiford.subsystems.climber.ClimberIOSim;
@@ -60,6 +64,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final Arm arm;
   private final Shooter shooter;
   private final Intake intake;
   private final Climber climber;
@@ -84,6 +89,7 @@ public class RobotContainer {
             new ModuleIOMAXSwerve(2),
             new ModuleIOMAXSwerve(3));
         vision = new Vision(new VisionIOPhotonVision(), drive::addVisionMeasurement);
+        arm = new Arm(new ArmIOSparkMax());
         shooter = new Shooter(new ShooterIOSparkMax());
         intake = new Intake(new IntakeIOSparkMax());
         climber = new Climber(new ClimberIOSparkMax());
@@ -99,6 +105,7 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim());
         vision = new Vision(new VisionIOSim(drive::getPose), drive::addVisionMeasurement);
+        arm = new Arm(new ArmIOSim());
         shooter = new Shooter(new ShooterIOSim());
         intake = new Intake(new IntakeIOSim());
         climber = new Climber(new ClimberIOSim());
@@ -119,6 +126,8 @@ public class RobotContainer {
             });
         vision = new Vision(new VisionIO() {
         }, drive::addVisionMeasurement);
+        arm = new Arm(new ArmIO() {
+        });
         shooter = new Shooter(new ShooterIO() {
         });
         intake = new Intake(new IntakeIO() {
@@ -166,16 +175,18 @@ public class RobotContainer {
     controller.leftStick().toggleOnTrue(drive.turtle());
     controller.rightStick().onTrue(drive.zeroHeading());
 
+    controller.rightTrigger().onTrue(arm.speaker()).onFalse(arm.intake());
     controller.rightBumper().toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.leftTrigger().onTrue(arm.amp()).onFalse(arm.intake());
     controller.leftBumper().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
-    controller.povUp().whileTrue(drive.pathfindSource());
-    controller.povLeft().whileTrue(drive.pathfindAmp());
-    controller.povRight().whileTrue(drive.pathfindSpeaker());
-    controller.povDown().whileTrue(drive.pathfindStage());
+    controller.y().whileTrue(drive.pathfindSource());
+    controller.x().whileTrue(drive.pathfindAmp());
+    controller.b().whileTrue(drive.pathfindSpeaker());
+    controller.a().whileTrue(drive.pathfindStage());
 
-    controller.y().onTrue(climber.climb()).onFalse(climber.stop());
-    controller.a().onTrue(climber.reverse()).onFalse(climber.stop());
+    controller.povUp().onTrue(climber.climb()).onFalse(climber.stop());
+    controller.povDown().onTrue(climber.reverse()).onFalse(climber.stop());
   }
 
   /**

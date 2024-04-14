@@ -22,7 +22,7 @@ public class Arm extends SubsystemBase {
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Intake Angle", 0.0);
   private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Amp Angle", 90.0);
-  private final LoggedDashboardNumber shootInput = new LoggedDashboardNumber("Shoot Angle", 13.5);
+  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Speaker Angle", 13.5);
   private final ArmFeedforward ffModel;
   @AutoLogOutput(key = "Arm/Setpoint")
   private Rotation2d setpoint;
@@ -54,7 +54,14 @@ public class Arm extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
-    io.setPosition(setpoint, ffModel.calculate(inputs.position.getRadians(), 0.0));
+    if (setpoint == null) {
+      // On init, set the setpoint to the current position
+      setpoint = inputs.position;
+    }
+
+    double ffVolts = ffModel.calculate(inputs.position.getRadians(), 0.0);
+    Logger.recordOutput("Arm/ffVolts", ffVolts);
+    io.setPosition(setpoint, ffVolts);
   }
 
   /** Run closed loop at the specified position. */
@@ -77,9 +84,9 @@ public class Arm extends SubsystemBase {
     return positionCommand(Rotation2d.fromDegrees(intakeInput.get()));
   }
 
-  /** Returns a command to move the arm to shooting position. */
-  public Command shoot() {
-    return positionCommand(Rotation2d.fromDegrees(shootInput.get()));
+  /** Returns a command to move the arm to speaker position. */
+  public Command speaker() {
+    return positionCommand(Rotation2d.fromDegrees(speakerInput.get()));
   }
 
   /** Returns a command to move the arm to amp position. */
