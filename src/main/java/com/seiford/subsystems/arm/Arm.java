@@ -41,7 +41,7 @@ public class Arm extends SubsystemBase {
         break;
       case SIM:
         ffModel = new ArmFeedforward(0.0, 0.35, 3.74, 0.02);
-        io.configurePID(0.5, 0.0, 0.0);
+        io.configurePID(25.0, 0.0, 0.0);
         break;
       default:
         ffModel = new ArmFeedforward(0.0, 0.0, 0.0);
