@@ -32,10 +32,10 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 public class ModuleIOSim implements ModuleIO {
   private static final double LOOP_PERIOD_SECS = 0.02;
 
-  private DCMotorSim driveSim = new DCMotorSim(DCMotor.getNeoVortex(1), (20.0 / 16.0) * (45.0 / 15.0), 0.025);
-  private DCMotorSim turnSim = new DCMotorSim(DCMotor.getNeo550(1), (9424.0 / 203.0), 0.004);
-
+  private final DCMotorSim driveSim = new DCMotorSim(DCMotor.getNeoVortex(1), (20.0 / 16.0) * (45.0 / 15.0), 0.025);
+  private final DCMotorSim turnSim = new DCMotorSim(DCMotor.getNeo550(1), (9424.0 / 203.0), 0.004);
   private final Rotation2d turnAbsoluteInitPosition = new Rotation2d(Math.random() * 2.0 * Math.PI);
+
   private double driveAppliedVolts = 0.0;
   private double turnAppliedVolts = 0.0;
 

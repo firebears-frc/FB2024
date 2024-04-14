@@ -20,6 +20,10 @@ public interface ArmIO {
   public default void setPosition(Rotation2d angle, double ffVolts) {
   }
 
+  /** Run open loop at the specified voltage. */
+  public default void setVoltage(double volts) {
+  }
+
   /** Set velocity PID constants. */
   public default void configurePID(double kP, double kI, double kD) {
   }

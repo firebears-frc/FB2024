@@ -35,14 +35,26 @@ public class Shooter extends SubsystemBase {
     public static final double GEAR_RATIO = 1.5;
   }
 
+  private static enum State {
+    STOPPED,
+    SPEAKER,
+    AMP,
+    EJECT,
+    SYSID
+  }
+
+  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Shooter/Speaker Speed", 2400.0);
+  private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Shooter/Amp Speed", 625.0);
+  private final LoggedDashboardNumber ejectInput = new LoggedDashboardNumber("Shooter/Eject Speed", -625.0);
+
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
-  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Shooter Speaker Speed", 2400.0);
-  private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Shooter Amp Speed", 625.0);
-  private final LoggedDashboardNumber ejectInput = new LoggedDashboardNumber("Shooter Eject Speed", -625.0);
   private final SimpleMotorFeedforward ffModel;
   private final Debouncer debouncer = new Debouncer(0.2);
   private final SysIdRoutine sysId;
+
+  @AutoLogOutput(key = "Shooter/State")
+  private State state = State.STOPPED;
   @AutoLogOutput(key = "Shooter/Setpoint")
   private double setpoint = 0.0;
 
@@ -81,6 +93,23 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Shooter", inputs);
+
+    switch (state) {
+      case AMP:
+        runVelocity(ampInput.get());
+        break;
+      case EJECT:
+        runVelocity(ejectInput.get());
+        break;
+      case SPEAKER:
+        runVelocity(speakerInput.get());
+        break;
+      case STOPPED:
+        stopShooter();
+        break;
+      case SYSID:
+        break;
+    }
   }
 
   @AutoLogOutput(key = "Shooter/Speed")
@@ -122,41 +151,54 @@ public class Shooter extends SubsystemBase {
   }
 
   /** Stops the shooter. */
-  private void stop() {
+  private void stopShooter() {
     io.stop();
   }
 
-  /** Returns a command to run the shooter at a set speed. */
-  private Command speedCommand(double velocityRPM) {
+  /** Returns a command to run the shooter at a set state. */
+  private Command stateCommand(State state) {
     return Commands.sequence(
-        runOnce(() -> runVelocity(velocityRPM)),
+        runOnce(() -> this.state = state),
         Commands.waitSeconds(0.25),
         run(() -> {
         }).until(this::onTarget));
   }
 
-  /** Returns a command to run the shooter at speaker speed. */
+  /** Returns a command to run the shooter at speaker state. */
   public Command speaker() {
-    return speedCommand(speakerInput.get());
+    return stateCommand(State.SPEAKER);
   }
 
-  /** Returns a command to run the shooter at amp speed. */
+  /** Returns a command to run the shooter at amp state. */
   public Command amp() {
-    return speedCommand(ampInput.get());
+    return stateCommand(State.AMP);
   }
 
-  /** Returns a command to run the shooter at eject speed. */
+  /** Returns a command to run the shooter at eject state. */
   public Command eject() {
-    return speedCommand(ejectInput.get());
+    return stateCommand(State.EJECT);
+  }
+
+  /** Returns a command to stop the shooter. */
+  public Command stop() {
+    return runOnce(this::stopShooter);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysId.quasistatic(direction);
+    return Commands.sequence(
+      runOnce(() -> state = State.SYSID),
+      sysId.quasistatic(direction),
+      stop()
+    );
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysId.dynamic(direction);
+    return Commands.sequence(
+      runOnce(() -> state = State.SYSID),
+      sysId.dynamic(direction),
+      stop()
+    );
   }
 }

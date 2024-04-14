@@ -71,6 +71,7 @@ public class ShooterIOSparkMax implements ShooterIO {
   @Override
   public void setVoltage(double volts) {
     topMotor.setVoltage(volts);
+    bottomMotor.setVoltage(volts);
   }
 
   @Override

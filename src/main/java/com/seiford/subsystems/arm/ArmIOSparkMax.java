@@ -57,6 +57,11 @@ public class ArmIOSparkMax implements ArmIO {
   }
 
   @Override
+  public void setVoltage(double volts) {
+    leader.stopMotor();
+  }
+
+  @Override
   public void configurePID(double kP, double kI, double kD) {
     pid.setP(kP, 0);
     pid.setI(kI, 0);

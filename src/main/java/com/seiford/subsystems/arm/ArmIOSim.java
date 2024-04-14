@@ -19,12 +19,16 @@ public class ArmIOSim implements ArmIO {
       Rotation2d.fromDegrees(80.0).getRadians());
   private final PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
+  private boolean closedLoop = false;
   private double ffVolts = 0.0;
+  private double appliedVolts = 0.0;
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    double appliedVolts = MathUtil.clamp(pid.calculate(sim.getAngleRads()) + ffVolts, -12.0, 12.0);
-    sim.setInputVoltage(appliedVolts);
+    if (closedLoop) {
+      appliedVolts = MathUtil.clamp(pid.calculate(sim.getAngleRads()) + ffVolts, -12.0, 12.0);
+      sim.setInputVoltage(appliedVolts);
+    }
 
     sim.update(0.02);
 
@@ -34,7 +38,15 @@ public class ArmIOSim implements ArmIO {
   }
 
   @Override
+  public void setVoltage(double volts) {
+    closedLoop = false;
+    appliedVolts = volts;
+    sim.setInputVoltage(volts);
+  }
+
+  @Override
   public void setPosition(Rotation2d angle, double ffVolts) {
+    closedLoop = true;
     pid.setSetpoint(angle.getRadians());
     this.ffVolts = ffVolts;
   }

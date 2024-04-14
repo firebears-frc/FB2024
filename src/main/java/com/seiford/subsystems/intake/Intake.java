@@ -34,13 +34,15 @@ public class Intake extends SubsystemBase {
     public static final double GEAR_RATIO = 3.0;
   }
 
+  private final LoggedDashboardNumber intakeSpeedInput = new LoggedDashboardNumber("Intake/Intake Speed", 2000.0);
+  private final LoggedDashboardNumber shootSpeedInput = new LoggedDashboardNumber("Intake/Shoot Speed", 2625.0);
+  private final LoggedDashboardNumber ejectSpeedInput = new LoggedDashboardNumber("Intake/Eject Speed", -1375.0);
+
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
-  private final LoggedDashboardNumber intakeSpeedInput = new LoggedDashboardNumber("Intake Intake Speed", 2000.0);
-  private final LoggedDashboardNumber shootSpeedInput = new LoggedDashboardNumber("Intake Shoot Speed", 2625.0);
-  private final LoggedDashboardNumber ejectSpeedInput = new LoggedDashboardNumber("Intake Eject Speed", -1375.0);
   private final SimpleMotorFeedforward ffModel;
   private final SysIdRoutine sysId;
+
   @AutoLogOutput(key = "Intake/HasNote")
   private boolean hasNote;
 

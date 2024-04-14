@@ -149,10 +149,18 @@ public class RobotContainer {
     autoChooser.addOption("Drive SysId (QR)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption("Drive SysId (DF)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption("Drive SysId (DR)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption("Arm SysId (QF)", arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption("Arm SysId (QR)", arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption("Arm SysId (DF)", arm.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption("Arm SysId (DR)", arm.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption("Shooter SysId (QF)", shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption("Shooter SysId (QR)", shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption("Shooter SysId (DF)", shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption("Shooter SysId (DR)", shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption("Intake SysId (QF)", intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption("Intake SysId (QR)", intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption("Intake SysId (DF)", intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption("Intake SysId (DR)", intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -175,27 +183,16 @@ public class RobotContainer {
     controller.leftStick().toggleOnTrue(drive.turtle());
     controller.rightStick().onTrue(drive.zeroHeading());
 
-    controller.leftTrigger().onTrue(Commands.sequence(
-        arm.amp(),
-        shooter.amp(),
-        arm.intake(),
-        shooter.eject(),
-        arm.speaker(),
-        shooter.speaker(),
-        arm.intake(),
-        shooter.eject()));
+    controller.x().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.b().toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
 
-    controller.rightBumper()
-        .toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.leftBumper().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    controller.povUp().whileTrue(drive.pathfindSource());
+    controller.povLeft().whileTrue(drive.pathfindAmp());
+    controller.povRight().whileTrue(drive.pathfindSpeaker());
+    controller.povDown().whileTrue(drive.pathfindStage());
 
-    controller.y().whileTrue(drive.pathfindSource());
-    controller.x().whileTrue(drive.pathfindAmp());
-    controller.b().whileTrue(drive.pathfindSpeaker());
-    controller.a().whileTrue(drive.pathfindStage());
-
-    controller.povUp().onTrue(climber.climb()).onFalse(climber.stop());
-    controller.povDown().onTrue(climber.reverse()).onFalse(climber.stop());
+    controller.y().onTrue(climber.climb()).onFalse(climber.stop());
+    controller.a().onTrue(climber.reverse()).onFalse(climber.stop());
   }
 
   /**

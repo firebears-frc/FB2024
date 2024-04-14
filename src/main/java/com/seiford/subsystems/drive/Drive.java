@@ -111,7 +111,7 @@ public class Drive extends SubsystemBase {
       lastModulePositions, new Pose2d());
   private SwerveDrivePoseEstimator fusedVision = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
       lastModulePositions, new Pose2d());
-  private final LoggedDashboardBoolean useVision = new LoggedDashboardBoolean("UseVision", true);
+  private final LoggedDashboardBoolean useVision = new LoggedDashboardBoolean("Localization/UseVision", true);
 
   public Drive(
       GyroIO gyroIO,

@@ -1,5 +1,7 @@
 package com.seiford.subsystems.arm;
 
+import static edu.wpi.first.units.Units.*;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -12,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class Arm extends SubsystemBase {
   public static final class Constants {
@@ -21,13 +24,26 @@ public class Arm extends SubsystemBase {
     public static final Rotation2d MAXIMUM = Rotation2d.fromDegrees(100.0);
   }
 
+  private static enum State {
+    STARTUP,
+    INTAKE,
+    SPEAKER,
+    AMP,
+    SYSID
+  }
+  
+  private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Arm/Intake Angle", 0.0);
+  private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Arm/Amp Angle", 90.0);
+  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Arm/Speaker Angle", 13.5);
+
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
-  private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Arm Intake Angle", 0.0);
-  private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Arm Amp Angle", 90.0);
-  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Arm Speaker Angle", 13.5);
   private final ArmFeedforward ffModel;
   private final Debouncer debouncer = new Debouncer(0.2);
+  private final SysIdRoutine sysId;
+
+  @AutoLogOutput(key = "Arm/State")
+  private State state = State.STARTUP;
   @AutoLogOutput(key = "Arm/Setpoint")
   private Rotation2d setpoint;
 
@@ -51,6 +67,15 @@ public class Arm extends SubsystemBase {
         ffModel = new ArmFeedforward(0.0, 0.0, 0.0);
         break;
     }
+
+    // Configure SysId
+    sysId = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            null,
+            null,
+            null,
+            (state) -> Logger.recordOutput("Arm/SysIdState", state.toString())),
+        new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -58,9 +83,24 @@ public class Arm extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
-    if (setpoint == null) {
-      // On init, set the setpoint to the current position
-      setpoint = inputs.position;
+    switch (state) {
+      case STARTUP:
+        // On init, set the setpoint to the current position
+        if (setpoint == null)
+          setAngle(inputs.position);
+        break;
+      case AMP:
+        setAngle(Rotation2d.fromDegrees(ampInput.get()));
+        break;
+      case INTAKE:
+        setAngle(Rotation2d.fromDegrees(intakeInput.get()));
+        break;
+      case SPEAKER:
+        setAngle(Rotation2d.fromDegrees(speakerInput.get()));
+        break;
+      case SYSID:
+        // TODO
+        break;
     }
 
     double ffVolts = ffModel.calculate(inputs.position.getRadians(), 0.0);
@@ -83,8 +123,12 @@ public class Arm extends SubsystemBase {
     return debouncer.calculate(atSpeed());
   }
 
-  /** Run closed loop at the specified position. */
-  private void runPosition(Rotation2d angle) {
+  /** Run open loop at the specified voltage. */
+  private void runVolts(double volts) {
+    io.setVoltage(volts);
+  }
+
+  private void setAngle(Rotation2d angle) {
     if (angle.getDegrees() > Constants.MAXIMUM.getDegrees())
       setpoint = Constants.MAXIMUM;
     else if (angle.getDegrees() < Constants.MINIMUM.getDegrees())
@@ -93,27 +137,45 @@ public class Arm extends SubsystemBase {
       setpoint = angle;
   }
 
-  /** Returns a command to move the arm to the specified position. */
-  private Command positionCommand(Rotation2d angle) {
+  /** Returns a command to move the arm to the specified state. */
+  private Command stateCommand(State state) {
     return Commands.sequence(
-        runOnce(() -> runPosition(angle)),
+        runOnce(() -> this.state = state),
         Commands.waitSeconds(0.25),
         run(() -> {
         }).until(this::onTarget));
   }
 
-  /** Returns a command to move the arm to intake position. */
+  /** Returns a command to move the arm to intake state. */
   public Command intake() {
-    return positionCommand(Rotation2d.fromDegrees(intakeInput.get()));
+    return stateCommand(State.INTAKE);
   }
 
-  /** Returns a command to move the arm to speaker position. */
+  /** Returns a command to move the arm to speaker state. */
   public Command speaker() {
-    return positionCommand(Rotation2d.fromDegrees(speakerInput.get()));
+    return stateCommand(State.SPEAKER);
   }
 
-  /** Returns a command to move the arm to amp position. */
+  /** Returns a command to move the arm to amp state. */
   public Command amp() {
-    return positionCommand(Rotation2d.fromDegrees(ampInput.get()));
+    return stateCommand(State.AMP);
+  }
+
+  /** Returns a command to run a quasistatic test in the specified direction. */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return Commands.sequence(
+      runOnce(() -> state = State.SYSID),
+      sysId.quasistatic(direction),
+      amp()
+    );
+  }
+
+  /** Returns a command to run a dynamic test in the specified direction. */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return Commands.sequence(
+      runOnce(() -> state = State.SYSID),
+      sysId.dynamic(direction),
+      amp()
+    );
   }
 }
