@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -9,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase.ControlType;
@@ -34,7 +38,9 @@ public class Arm extends SubsystemBase {
     private Rotation2d shoulderSetpoint = new Rotation2d();
     private Debouncer debounce = new Debouncer(0.2);
 
-    public Arm() {
+    private final Supplier<Rotation2d> angleSupplier;
+
+    public Arm(Supplier<Rotation2d> angSupplier) {
         shoulderMotorRight = new CANSparkMax(13, MotorType.kBrushless);
 
         shoulderMotorRight.restoreFactoryDefaults();
@@ -61,6 +67,7 @@ public class Arm extends SubsystemBase {
         shoulderMotorLeft.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
         shoulderMotorLeft.burnFlash();
 
+        this.angleSupplier = angSupplier;
 
         shoulderPID = shoulderMotorRight.getPIDController();
         shoulderEncoder = shoulderMotorRight.getAbsoluteEncoder(Type.kDutyCycle);
@@ -79,6 +86,7 @@ public class Arm extends SubsystemBase {
         setShoulderSetpoint(getShoulderAngle());
     }
 
+    
     private final static class Constants{     // arm setpoints
         private static final Rotation2d pickUp = Rotation2d.fromDegrees(0);
         private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(13.5);
