@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 3406,
+      "x": 3450,
       "y": 0,
-      "width": 1721,
-      "height": 1399,
+      "width": 1677,
+      "height": 1392,
       "state": {
         "sidebar": {
           "width": 300,
@@ -22,11 +22,12 @@
             "/SmartDashboard/Auto Choices",
             "/AdvantageKit/RealOutputs/Odometry",
             "/AdvantageKit/RealOutputs",
-            "/AdvantageKit/Arm"
+            "/AdvantageKit/RealOutputs/Localization",
+            "/AdvantageKit/RealOutputs/Localization/Velocity"
           ]
         },
         "tabs": {
-          "selected": 12,
+          "selected": 9,
           "tabs": [
             {
               "type": 0,
@@ -309,12 +310,12 @@
                   "fields": [
                     {
                       "key": "NT:/AdvantageKit/RealOutputs/Arm/AtPosition",
-                      "color": "#e48b32",
+                      "color": "#af2437",
                       "show": true
                     },
                     {
                       "key": "NT:/AdvantageKit/RealOutputs/Arm/OnTarget",
-                      "color": "#aacaee",
+                      "color": "#80588e",
                       "show": true
                     }
                   ]
@@ -328,12 +329,12 @@
                   "fields": [
                     {
                       "key": "NT:/AdvantageKit/RealOutputs/Arm/ffVolts",
-                      "color": "#af2437",
+                      "color": "#e48b32",
                       "show": true
                     },
                     {
                       "key": "NT:/AdvantageKit/Arm/AppliedVolts/0",
-                      "color": "#80588e",
+                      "color": "#aacaee",
                       "show": true
                     }
                   ]
@@ -437,6 +438,80 @@
                 }
               },
               "title": "Intake"
+            },
+            {
+              "type": 1,
+              "legendHeight": 0.3,
+              "legends": {
+                "left": {
+                  "lockedRange": [
+                    -5,
+                    100
+                  ],
+                  "unitConversion": {
+                    "type": "angle",
+                    "factor": 1,
+                    "from": "radians",
+                    "to": "degrees"
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Arm/Position/value",
+                      "color": "#2b66a2",
+                      "show": true
+                    }
+                  ]
+                },
+                "discrete": {
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/DriverStation/Enabled",
+                      "color": "#e5b31b",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Arm/AtPosition",
+                      "color": "#af2437",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Intake/HasNote",
+                      "color": "#80588e",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Shooter/AtSpeed",
+                      "color": "#e48b32",
+                      "show": true
+                    }
+                  ]
+                },
+                "right": {
+                  "lockedRange": [
+                    -5000,
+                    5000
+                  ],
+                  "unitConversion": {
+                    "type": "angular velocity",
+                    "factor": 1,
+                    "from": "radians/second",
+                    "to": "rotations/minute"
+                  },
+                  "fields": [
+                    {
+                      "key": "NT:/AdvantageKit/Intake/VelocityRadPerSec",
+                      "color": "#aacaee",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/Shooter/VelocitiesRadPerSec/0",
+                      "color": "#c0b487",
+                      "show": true
+                    }
+                  ]
+                }
+              },
+              "title": "Sequence"
             },
             {
               "type": 6,

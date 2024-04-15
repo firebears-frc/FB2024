@@ -145,11 +145,13 @@ public class RobotContainer {
             shooter.speaker()),
         "Shoot", Commands.sequence(
             intake.shoot(),
-            Commands.waitSeconds(0.35)),
-        "Intake", Commands.parallel(
-            arm.intake(),
-            shooter.stop(),
-            intake.autoIntake())));
+            Commands.waitSeconds(0.15)),
+        "Intake", Commands.sequence(
+            Commands.waitSeconds(0.20),
+            Commands.parallel(
+              arm.intake(),
+              shooter.stop(),
+              intake.autoIntake()))));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser("7 Center Close3 Top3"));
 
     // Set up SysId routines

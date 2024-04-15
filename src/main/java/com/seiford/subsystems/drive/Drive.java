@@ -271,6 +271,7 @@ public class Drive extends SubsystemBase {
   }
 
   /** Returns the current robot velocities. */
+  @AutoLogOutput(key = "Localization/Velocity")
   private ChassisSpeeds getRobotVelocity() {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
