@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5,
-      "y": 2.7
+      "x": 1.4000000000000004,
+      "y": 7.399999999999999
     },
-    "rotation": -90.0
+    "rotation": -3.925711244288026e-21
   },
   "command": {
     "type": "sequential",
@@ -18,7 +18,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Glue - 4 Bottom.1"
+                  "pathName": "Glue - 4 Top.1"
                 }
               },
               {
@@ -47,7 +47,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Bottom - Center.1"
+                        "pathName": "Top - Center.1"
                       }
                     },
                     {
@@ -75,7 +75,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Bottom - Center.2"
+                  "pathName": "Top - Center.2"
                 }
               },
               {
@@ -104,7 +104,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Bottom - Center.3"
+                        "pathName": "Top - Center.3"
                       }
                     },
                     {
@@ -132,7 +132,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Bottom - Center.4"
+                  "pathName": "Top - Center.4"
                 }
               },
               {
@@ -161,7 +161,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Bottom - Center.5"
+                        "pathName": "Top - Center.5"
                       }
                     },
                     {
@@ -189,7 +189,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Bottom - Center.6"
+                  "pathName": "Top - Center.6"
                 }
               },
               {

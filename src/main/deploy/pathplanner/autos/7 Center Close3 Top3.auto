@@ -5,7 +5,7 @@
       "x": 1.35,
       "y": 5.55
     },
-    "rotation": 1.3130821761241637e-17
+    "rotation": 1.0724363448770938e-17
   },
   "command": {
     "type": "sequential",
@@ -166,7 +166,7 @@
                     {
                       "type": "path",
                       "data": {
-                        "pathName": "Glue.1"
+                        "pathName": "Glue - 7 Center.1"
                       }
                     },
                     {
