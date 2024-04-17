@@ -23,6 +23,7 @@ import com.seiford.subsystems.climber.Climber;
 import com.seiford.subsystems.climber.ClimberIO;
 import com.seiford.subsystems.climber.ClimberIOSim;
 import com.seiford.subsystems.climber.ClimberIOSparkMax;
+import com.seiford.subsystems.conductor.Conductor;
 import com.seiford.subsystems.drive.Drive;
 import com.seiford.subsystems.drive.GyroIO;
 import com.seiford.subsystems.drive.GyroIONavX;
@@ -65,6 +66,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final Conductor conductor;
   private final Arm arm;
   private final Shooter shooter;
   private final Intake intake;
@@ -90,8 +92,9 @@ public class RobotContainer {
             new ModuleIOMAXSwerve(2),
             new ModuleIOMAXSwerve(3));
         vision = new Vision(new VisionIOPhotonVision(), drive::addVisionMeasurement);
-        arm = new Arm(new ArmIOSparkMax());
-        shooter = new Shooter(new ShooterIOSparkMax());
+        conductor = new Conductor(drive::getPose);
+        arm = new Arm(new ArmIOSparkMax(), conductor::getArmAngle);
+        shooter = new Shooter(new ShooterIOSparkMax(), conductor::getShooterRPM);
         intake = new Intake(new IntakeIOSparkMax());
         climber = new Climber(new ClimberIOSparkMax());
         break;
@@ -106,8 +109,9 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim());
         vision = new Vision(new VisionIOSim(drive::getPose), drive::addVisionMeasurement);
-        arm = new Arm(new ArmIOSim());
-        shooter = new Shooter(new ShooterIOSim());
+        conductor = new Conductor(drive::getPose);
+        arm = new Arm(new ArmIOSim(), conductor::getArmAngle);
+        shooter = new Shooter(new ShooterIOSim(), conductor::getShooterRPM);
         intake = new Intake(new IntakeIOSim());
         climber = new Climber(new ClimberIOSim());
         break;
@@ -127,10 +131,11 @@ public class RobotContainer {
             });
         vision = new Vision(new VisionIO() {
         }, drive::addVisionMeasurement);
+        conductor = new Conductor(drive::getPose);
         arm = new Arm(new ArmIO() {
-        });
+        }, conductor::getArmAngle);
         shooter = new Shooter(new ShooterIO() {
-        });
+        }, conductor::getShooterRPM);
         intake = new Intake(new IntakeIO() {
         });
         climber = new Climber(new ClimberIO() {

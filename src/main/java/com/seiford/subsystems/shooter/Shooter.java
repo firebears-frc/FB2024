@@ -15,6 +15,8 @@ package com.seiford.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
@@ -43,7 +45,6 @@ public class Shooter extends SubsystemBase {
     SYSID
   }
 
-  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Shooter/Speaker Speed", 2400.0);
   private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Shooter/Amp Speed", 625.0);
   private final LoggedDashboardNumber ejectInput = new LoggedDashboardNumber("Shooter/Eject Speed", -625.0);
 
@@ -51,6 +52,7 @@ public class Shooter extends SubsystemBase {
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
   private final Debouncer debouncer = new Debouncer(0.2);
+  private final DoubleSupplier speedSupplier;
   private final SysIdRoutine sysId;
 
   @AutoLogOutput(key = "Shooter/State")
@@ -59,8 +61,9 @@ public class Shooter extends SubsystemBase {
   private double setpoint = 0.0;
 
   /** Creates a new Shooter. */
-  public Shooter(ShooterIO io) {
+  public Shooter(ShooterIO io, DoubleSupplier speedSupplier) {
     this.io = io;
+    this.speedSupplier = speedSupplier;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -102,7 +105,7 @@ public class Shooter extends SubsystemBase {
         runVelocity(ejectInput.get());
         break;
       case SPEAKER:
-        runVelocity(speakerInput.get());
+        runVelocity(speedSupplier.getAsDouble());
         break;
       case STOPPED:
         stopShooter();

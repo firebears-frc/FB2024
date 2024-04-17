@@ -2,6 +2,8 @@ package com.seiford.subsystems.arm;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -34,12 +36,12 @@ public class Arm extends SubsystemBase {
   
   private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Arm/Intake Angle", 0.0);
   private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Arm/Amp Angle", 90.0);
-  private final LoggedDashboardNumber speakerInput = new LoggedDashboardNumber("Arm/Speaker Angle", 13.5);
 
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   private final ArmFeedforward ffModel;
   private final Debouncer debouncer = new Debouncer(0.2);
+  private final Supplier<Rotation2d> angleSupplier;
   private final SysIdRoutine sysId;
 
   @AutoLogOutput(key = "Arm/State")
@@ -48,8 +50,9 @@ public class Arm extends SubsystemBase {
   private Rotation2d setpoint;
 
   /** Creates a new Arm. */
-  public Arm(ArmIO io) {
+  public Arm(ArmIO io, Supplier<Rotation2d> angleSupplier) {
     this.io = io;
+    this.angleSupplier = angleSupplier;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -96,7 +99,7 @@ public class Arm extends SubsystemBase {
         setAngle(Rotation2d.fromDegrees(intakeInput.get()));
         break;
       case SPEAKER:
-        setAngle(Rotation2d.fromDegrees(speakerInput.get()));
+        setAngle(angleSupplier.get());
         break;
       case SYSID:
         // TODO
