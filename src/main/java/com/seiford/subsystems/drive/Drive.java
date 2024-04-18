@@ -83,12 +83,21 @@ public class Drive extends SubsystemBase {
     public static final Translation2d RED_AMP = new Translation2d(14.70, 8.20);
 
     // Pathfind positions
-    public static final Pose2d BLUE_SUBWOOFER = new Pose2d(1.45, 5.55, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d BLUE_SUBWOOFER_CENTER = new Pose2d(1.45, 5.55, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d BLUE_SUBWOOFER_LEFT = new Pose2d(0.80, 6.65, Rotation2d.fromDegrees(60.0));
+    public static final Pose2d BLUE_SUBWOOFER_RIGHT = new Pose2d(0.80, 4.45, Rotation2d.fromDegrees(-60.0));
+    public static final Pose2d BLUE_PODIUM = new Pose2d(2.70, 4.10, Rotation2d.fromDegrees(-28.0));
+    public static final Pose2d BLUE_TOP_SHOOTING = new Pose2d(4.50, 6.50, Rotation2d.fromDegrees(11.25));
+    public static final Pose2d BLUE_BOTTOM_SHOOTING = new Pose2d(2.50, 2.70, Rotation2d.fromDegrees(-56.25));
+    public static final Pose2d BLUE_FAR_SHOOTING = new Pose2d(6.80,6.65, Rotation2d.fromDegrees(11.25));
+    public static final Pose2d BLUE_PASS_SHOOTING = new Pose2d(9.50, 1.75, Rotation2d.fromDegrees(-30.0));
     public static final Pose2d BLUE_AMP_PLACEMENT = new Pose2d(1.84, 7.75, Rotation2d.fromDegrees(-90.0));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.08, 1.00, Rotation2d.fromDegrees(0.0));
-    public static final Pose2d BLUE_STAGE = new Pose2d(5.85, 4.10, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d BLUE_STAGE_FAR = new Pose2d(5.85, 4.10, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d BLUE_STAGE_LEFT = new Pose2d(4.25, 5.00, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d BLUE_STAGE_RIGHT = new Pose2d(4.25, 3.20, Rotation2d.fromDegrees(-120.0));
 
-    // Gamepad deadband TODO
+    // Gamepad deadband
     private static final double DEADBAND = 0.1;
   };
 
@@ -452,9 +461,44 @@ public class Drive extends SubsystemBase {
             Constants.MAX_ANGULAR_SPEED, Constants.MAX_ANGULAR_ACCELERATION));
   }
 
-  /** Pathfind to the speaker */
-  public Command pathfindSpeaker() {
-    return pathfind(Constants.BLUE_SUBWOOFER);
+  /** Pathfind to the subwoofer's left side */
+  public Command pathfindSubwooferLeft() {
+    return pathfind(Constants.BLUE_SUBWOOFER_LEFT);
+  }
+
+  /** Pathfind to the subwoofer's center side */
+  public Command pathfindSubwooferCenter() {
+    return pathfind(Constants.BLUE_SUBWOOFER_CENTER);
+  }
+
+  /** Pathfind to the subwoofer's right side */
+  public Command pathfindSubwooferRight() {
+    return pathfind(Constants.BLUE_SUBWOOFER_RIGHT);
+  }
+
+  /** Pathfind to the podium */
+  public Command pathfindPodium() {
+    return pathfind(Constants.BLUE_PODIUM);
+  }
+
+  /** Pathfind to the top shooting position */
+  public Command pathfindTopShooting() {
+    return pathfind(Constants.BLUE_TOP_SHOOTING);
+  }
+
+  /** Pathfind to the bottom shooting position */
+  public Command pathfindBottomShooting() {
+    return pathfind(Constants.BLUE_BOTTOM_SHOOTING);
+  }
+
+  /** Pathfind to the far shooting position */
+  public Command pathfindFarShooting() {
+    return pathfind(Constants.BLUE_FAR_SHOOTING);
+  }
+
+  /** Pathfind to the pass shooting position */
+  public Command pathfindPassShooting() {
+    return pathfind(Constants.BLUE_PASS_SHOOTING);
   }
 
   /** Pathfind to the amp */
@@ -467,9 +511,19 @@ public class Drive extends SubsystemBase {
     return pathfind(Constants.BLUE_SOURCE);
   }
 
-  /** Pathfind to the stage */
-  public Command pathfindStage() {
-    return pathfind(Constants.BLUE_STAGE);
+  /** Pathfind to stage's far side */
+  public Command pathfindStageFar() {
+    return pathfind(Constants.BLUE_STAGE_FAR);
+  }
+
+  /** Pathfind to stage's left side */
+  public Command pathfindStageLeft() {
+    return pathfind(Constants.BLUE_STAGE_LEFT);
+  }
+
+  /** Pathfind to stage's right side */
+  public Command pathfindStageRight() {
+    return pathfind(Constants.BLUE_STAGE_RIGHT);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

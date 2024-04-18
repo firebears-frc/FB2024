@@ -77,6 +77,8 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private final LoggedDashboardChooser<Command> shootChooser;
+  private final LoggedDashboardChooser<Command> climbChooser;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -175,6 +177,21 @@ public class RobotContainer {
     autoChooser.addOption("Intake SysId (DF)", intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption("Intake SysId (DR)", intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+    shootChooser = new LoggedDashboardChooser<>("Shoot Choices");
+    shootChooser.addDefaultOption("Subwoofer Center", drive.pathfindSubwooferCenter());
+    shootChooser.addOption("Subwoofer Left", drive.pathfindSubwooferLeft());
+    shootChooser.addOption("Subwoofer Right", drive.pathfindSubwooferRight());
+    shootChooser.addOption("Top", drive.pathfindTopShooting());
+    shootChooser.addOption("Bottom", drive.pathfindBottomShooting());
+    shootChooser.addOption("Far", drive.pathfindFarShooting());
+    shootChooser.addOption("Pass", drive.pathfindPassShooting());
+    shootChooser.addOption("Podium", drive.pathfindPodium());
+
+    climbChooser = new LoggedDashboardChooser<>("Climb Choices");
+    climbChooser.addDefaultOption("Far", drive.pathfindStageFar());
+    climbChooser.addOption("Left", drive.pathfindStageLeft());
+    climbChooser.addOption("Right", drive.pathfindStageRight());
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -192,7 +209,7 @@ public class RobotContainer {
     controller.leftStick().toggleOnTrue(drive.turtle());
     controller.rightStick().onTrue(drive.zeroHeading());
 
-    controller.y().whileTrue(drive.pathfindStage());
+    controller.y().whileTrue(Commands.deferredProxy(climbChooser::get));
     controller.povUp().onTrue(climber.climb()).onFalse(climber.stop());
     controller.povDown().onTrue(climber.reverse()).onFalse(climber.stop());
 
@@ -260,7 +277,7 @@ public class RobotContainer {
             intake.stop()));
     controller.b()
         .whileTrue(Commands.parallel(
-            drive.pathfindSpeaker(),
+            Commands.deferredProxy(shootChooser::get),
             arm.speaker(),
             shooter.speaker()))
         .onFalse(Commands.sequence(
