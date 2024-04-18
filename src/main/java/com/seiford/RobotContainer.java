@@ -188,13 +188,19 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Universal commands
+    controller.leftStick().toggleOnTrue(drive.turtle());
+    controller.rightStick().onTrue(drive.zeroHeading());
+
+    controller.y().whileTrue(drive.pathfindStage());
+    controller.povUp().onTrue(climber.climb()).onFalse(climber.stop());
+    controller.povDown().onTrue(climber.reverse()).onFalse(climber.stop());
+
+    // Full manual commands
     drive.setDefaultCommand(drive.joystickDrive(
         () -> -controller.getLeftY(),
         () -> -controller.getLeftX(),
         () -> -controller.getRightX()));
-
-    controller.leftStick().toggleOnTrue(drive.turtle());
-    controller.rightStick().onTrue(drive.zeroHeading());
 
     controller.leftTrigger()
         .onTrue(Commands.parallel(
@@ -219,16 +225,57 @@ public class RobotContainer {
             arm.intake(),
             intake.intake()));
 
-    controller.x().toggleOnTrue(drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
-    controller.b().toggleOnTrue(drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()));
+    // Orbit commands
+    controller.leftBumper()
+        .whileTrue(Commands.parallel(
+            drive.orbitAmp(() -> -controller.getLeftY(), () -> -controller.getLeftX()),
+            arm.amp(),
+            shooter.amp()))
+        .onFalse(Commands.sequence(
+            intake.intake(),
+            Commands.waitSeconds(0.35),
+            shooter.stop(),
+            intake.stop()));
+    controller.rightBumper()
+        .whileTrue(Commands.parallel(
+            drive.orbitSpeaker(() -> -controller.getLeftY(), () -> -controller.getLeftX()),
+            arm.speaker(),
+            shooter.speaker()))
+        .onFalse(Commands.sequence(
+            intake.shoot(),
+            Commands.waitSeconds(0.35),
+            shooter.stop(),
+            intake.stop()));
 
-    controller.povUp().whileTrue(drive.pathfindSource());
-    controller.povLeft().whileTrue(drive.pathfindAmp());
-    controller.povRight().whileTrue(drive.pathfindSpeaker());
-    controller.povDown().whileTrue(drive.pathfindStage());
-
-    controller.y().onTrue(climber.climb()).onFalse(climber.stop());
-    controller.a().onTrue(climber.reverse()).onFalse(climber.stop());
+    // Full auto commands
+    controller.x()
+        .whileTrue(Commands.parallel(
+            drive.pathfindAmp(),
+            arm.amp(),
+            shooter.amp()))
+        .onFalse(Commands.sequence(
+            intake.intake(),
+            Commands.waitSeconds(0.35),
+            shooter.stop(),
+            intake.stop()));
+    controller.b()
+        .whileTrue(Commands.parallel(
+            drive.pathfindSpeaker(),
+            arm.speaker(),
+            shooter.speaker()))
+        .onFalse(Commands.sequence(
+            intake.shoot(),
+            Commands.waitSeconds(0.35),
+            shooter.stop(),
+            intake.stop()));
+    controller.a()
+        .whileTrue(Commands.parallel(
+            drive.pathfindSource(),
+            arm.intake(),
+            shooter.stop(),
+            intake.intake()))
+        .onFalse(Commands.sequence(
+            intake.stop()));
   }
 
   /**
