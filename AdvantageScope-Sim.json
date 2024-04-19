@@ -4,7 +4,7 @@
       "x": 3450,
       "y": 0,
       "width": 1677,
-      "height": 1392,
+      "height": 1399,
       "state": {
         "sidebar": {
           "width": 300,
@@ -21,13 +21,11 @@
             "/AdvantageKit/RealOutputs/SwerveStates/Measured/0",
             "/SmartDashboard/Auto Choices",
             "/AdvantageKit/RealOutputs/Odometry",
-            "/AdvantageKit/RealOutputs",
-            "/AdvantageKit/RealOutputs/Localization",
-            "/AdvantageKit/RealOutputs/Localization/Velocity"
+            "/AdvantageKit/RealOutputs"
           ]
         },
         "tabs": {
-          "selected": 9,
+          "selected": 5,
           "tabs": [
             {
               "type": 0,
@@ -96,19 +94,19 @@
                 [
                   {
                     "type": "Green Ghost",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/Pose",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/Pose",
                     "sourceTypeIndex": 1,
                     "sourceType": "Pose3d"
                   },
                   {
-                    "type": "Vision Target",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
+                    "type": "Axes",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/UsedTargetPoses",
                     "sourceTypeIndex": 2,
                     "sourceType": "Pose3d[]"
                   },
                   {
-                    "type": "Axes",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
+                    "type": "Vision Target",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/UsedTargetPoses",
                     "sourceTypeIndex": 2,
                     "sourceType": "Pose3d[]"
                   }
@@ -218,17 +216,17 @@
                   },
                   "fields": [
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/StdDevs/0",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/StdDevs/0",
                       "color": "#2b66a2",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/StdDevs/1",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/StdDevs/1",
                       "color": "#e5b31b",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/StdDevs/2",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/StdDevs/2",
                       "color": "#af2437",
                       "show": true
                     }
@@ -237,17 +235,17 @@
                 "discrete": {
                   "fields": [
                     {
-                      "key": "NT:/AdvantageKit/Vision/Connected",
+                      "key": "NT:/AdvantageKit/Vision/Front/Connected",
                       "color": "#80588e",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/HasPose",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/HasPose",
                       "color": "#e48b32",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Strategy",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/Strategy",
                       "color": "#aacaee",
                       "show": true
                     }
@@ -264,19 +262,19 @@
                   },
                   "fields": [
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/TargetIDsUsed/length",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/TargetIDsUsed/length",
                       "color": "#c0b487",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/TargetIDs/length",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/TargetIDs/length",
                       "color": "#858584",
                       "show": true
                     }
                   ]
                 }
               },
-              "title": "Vision"
+              "title": "Front Vision"
             },
             {
               "type": 1,

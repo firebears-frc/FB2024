@@ -29,7 +29,7 @@ import com.seiford.subsystems.vision.VisionIOInputsAutoLogged;
 
 public class Vision extends SubsystemBase {
   public static final class Constants {
-    public static final Transform3d CAMERA_OFFSET = new Transform3d(
+    public static final Transform3d FRONT_CAMERA_OFFSET = new Transform3d(
         new Translation3d(
             Units.inchesToMeters(-11.50),
             Units.inchesToMeters(0.00),
@@ -38,6 +38,7 @@ public class Vision extends SubsystemBase {
             Rotation2d.fromDegrees(180.0).getRadians(),
             Rotation2d.fromDegrees(-30.0).getRadians(),
             Rotation2d.fromDegrees(180.0).getRadians()));
+
     public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(1.50, 1.50, 2 * Math.PI);
     public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.30, 0.30, Math.PI);
@@ -46,15 +47,20 @@ public class Vision extends SubsystemBase {
 
   private final VisionIO io;
   private final VisionIOInputsAutoLogged inputs = new VisionIOInputsAutoLogged();
-  private final PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(Constants.FIELD_LAYOUT,
-      PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Vision.Constants.CAMERA_OFFSET);
+  private final PhotonPoseEstimator poseEstimator;
   private final Consumer<VisionData> consumer;
+  private final Transform3d cameraOffset;
+  private final String name;
 
-  public Vision(VisionIO io, Consumer<VisionData> consumer) {
+  public Vision(VisionIO io, Consumer<VisionData> consumer, Transform3d cameraOffset, String name) {
     this.io = io;
     this.consumer = consumer;
+    this.cameraOffset = cameraOffset;
+    this.name = name;
 
     LogTable.disableProtobufWarning(); // TODO: This may cause loop overruns
+    poseEstimator = new PhotonPoseEstimator(Constants.FIELD_LAYOUT,
+        PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
     poseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
   }
 
@@ -100,41 +106,41 @@ public class Vision extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Vision", inputs);
+    Logger.processInputs("Vision/" + name, inputs);
 
     if (!inputs.connected) {
-      Logger.recordOutput("Vision/TargetIDs", new int[0]);
-      Logger.recordOutput("Vision/HasPose", false);
-      Logger.recordOutput("Vision/Pose", new Pose3d());
-      Logger.recordOutput("Vision/Strategy", "No Connection");
-      Logger.recordOutput("Vision/StdDevs", new double[0]);
-      Logger.recordOutput("Vision/UsedTargetPoses", new Pose3d[0]);
-      Logger.recordOutput("Vision/TargetIDsUsed", new int[0]);
+      Logger.recordOutput("Vision/" + name + "/TargetIDs", new int[0]);
+      Logger.recordOutput("Vision/" + name + "/HasPose", false);
+      Logger.recordOutput("Vision/" + name + "/Pose", new Pose3d());
+      Logger.recordOutput("Vision/" + name + "/Strategy", "No Connection");
+      Logger.recordOutput("Vision/" + name + "/StdDevs", new double[0]);
+      Logger.recordOutput("Vision/" + name + "/UsedTargetPoses", new Pose3d[0]);
+      Logger.recordOutput("Vision/" + name + "/TargetIDsUsed", new int[0]);
       return;
     }
 
     if (!inputs.pipelineResult.hasTargets()) {
-      Logger.recordOutput("Vision/TargetIDs", new int[0]);
-      Logger.recordOutput("Vision/HasPose", false);
-      Logger.recordOutput("Vision/Pose", new Pose3d());
-      Logger.recordOutput("Vision/Strategy", "No Targets");
-      Logger.recordOutput("Vision/StdDevs", new double[0]);
-      Logger.recordOutput("Vision/UsedTargetPoses", new Pose3d[0]);
-      Logger.recordOutput("Vision/TargetIDsUsed", new int[0]);
+      Logger.recordOutput("Vision/" + name + "/TargetIDs", new int[0]);
+      Logger.recordOutput("Vision/" + name + "/HasPose", false);
+      Logger.recordOutput("Vision/" + name + "/Pose", new Pose3d());
+      Logger.recordOutput("Vision/" + name + "/Strategy", "No Targets");
+      Logger.recordOutput("Vision/" + name + "/StdDevs", new double[0]);
+      Logger.recordOutput("Vision/" + name + "/UsedTargetPoses", new Pose3d[0]);
+      Logger.recordOutput("Vision/" + name + "/TargetIDsUsed", new int[0]);
       return;
     }
 
-    Logger.recordOutput("Vision/TargetIDs",
+    Logger.recordOutput("Vision/" + name + "/TargetIDs",
         inputs.pipelineResult.targets.stream().mapToInt(target -> target.getFiducialId()).toArray());
 
     Optional<EstimatedRobotPose> poseResult = poseEstimator.update(inputs.pipelineResult);
-    Logger.recordOutput("Vision/HasPose", poseResult.isPresent());
+    Logger.recordOutput("Vision/" + name + "/HasPose", poseResult.isPresent());
     if (!poseResult.isPresent()) {
-      Logger.recordOutput("Vision/Pose", new Pose3d());
-      Logger.recordOutput("Vision/Strategy", "No Pose");
-      Logger.recordOutput("Vision/StdDevs", new double[0]);
-      Logger.recordOutput("Vision/UsedTargetPoses", new Pose3d[0]);
-      Logger.recordOutput("Vision/TargetIDsUsed", new int[0]);
+      Logger.recordOutput("Vision/" + name + "/Pose", new Pose3d());
+      Logger.recordOutput("Vision/" + name + "/Strategy", "No Pose");
+      Logger.recordOutput("Vision/" + name + "/StdDevs", new double[0]);
+      Logger.recordOutput("Vision/" + name + "/UsedTargetPoses", new Pose3d[0]);
+      Logger.recordOutput("Vision/" + name + "/TargetIDsUsed", new int[0]);
       return;
     }
 
@@ -142,21 +148,21 @@ public class Vision extends SubsystemBase {
 
     Matrix<N3, N1> stdDevs = getStdDevs(inputs.pipelineResult.targets, result.estimatedPose);
     if (stdDevs == null) {
-      Logger.recordOutput("Vision/Pose", new Pose3d());
-      Logger.recordOutput("Vision/Strategy", "Invalid Standard Deviations");
-      Logger.recordOutput("Vision/StdDevs", new double[0]);
-      Logger.recordOutput("Vision/UsedTargetPoses", new Pose3d[0]);
-      Logger.recordOutput("Vision/TargetIDsUsed", new int[0]);
+      Logger.recordOutput("Vision/" + name + "/Pose", new Pose3d());
+      Logger.recordOutput("Vision/" + name + "/Strategy", "Invalid Standard Deviations");
+      Logger.recordOutput("Vision/" + name + "/StdDevs", new double[0]);
+      Logger.recordOutput("Vision/" + name + "/UsedTargetPoses", new Pose3d[0]);
+      Logger.recordOutput("Vision/" + name + "/TargetIDsUsed", new int[0]);
       return;
     }
 
-    Logger.recordOutput("Vision/Pose", result.estimatedPose);
-    Logger.recordOutput("Vision/Strategy", result.strategy);
-    Logger.recordOutput("Vision/StdDevs", stdDevs.transpose().getData());
-    Logger.recordOutput("Vision/UsedTargetPoses", result.targetsUsed.stream().map(
-        target -> result.estimatedPose.transformBy(Constants.CAMERA_OFFSET).transformBy(target.getBestCameraToTarget()))
+    Logger.recordOutput("Vision/" + name + "/Pose", result.estimatedPose);
+    Logger.recordOutput("Vision/" + name + "/Strategy", result.strategy);
+    Logger.recordOutput("Vision/" + name + "/StdDevs", stdDevs.transpose().getData());
+    Logger.recordOutput("Vision/" + name + "/UsedTargetPoses", result.targetsUsed.stream().map(
+        target -> result.estimatedPose.transformBy(cameraOffset).transformBy(target.getBestCameraToTarget()))
         .toArray(Pose3d[]::new));
-    Logger.recordOutput("Vision/TargetIDsUsed",
+    Logger.recordOutput("Vision/" + name + "/TargetIDsUsed",
         result.targetsUsed.stream().mapToInt(target -> target.getFiducialId()).toArray());
 
     consumer.accept(new VisionData(result.estimatedPose, result.timestampSeconds, stdDevs));

@@ -93,7 +93,12 @@ public class RobotContainer {
             new ModuleIOMAXSwerve(1),
             new ModuleIOMAXSwerve(2),
             new ModuleIOMAXSwerve(3));
-        vision = new Vision(new VisionIOPhotonVision(), drive::addVisionMeasurement);
+        vision = new Vision(
+            new VisionIOPhotonVision("Arducam_OV2311_USB_Camera"),
+            drive::addVisionMeasurement,
+            Vision.Constants.FRONT_CAMERA_OFFSET,
+            "Front"
+        );
         conductor = new Conductor(drive::getPose);
         arm = new Arm(new ArmIOSparkMax(), conductor::getArmAngle);
         shooter = new Shooter(new ShooterIOSparkMax(), conductor::getShooterRPM);
@@ -110,7 +115,15 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new ModuleIOSim());
-        vision = new Vision(new VisionIOSim(drive::getPose), drive::addVisionMeasurement);
+        vision = new Vision(
+            new VisionIOSim(drive::getPose,
+                Vision.Constants.FRONT_CAMERA_OFFSET,
+                "Front",
+                VisionIOSim.arducamOV2311()),
+            drive::addVisionMeasurement,
+            Vision.Constants.FRONT_CAMERA_OFFSET,
+            "Front"
+        );
         conductor = new Conductor(drive::getPose);
         arm = new Arm(new ArmIOSim(), conductor::getArmAngle);
         shooter = new Shooter(new ShooterIOSim(), conductor::getShooterRPM);
@@ -131,8 +144,11 @@ public class RobotContainer {
             },
             new ModuleIO() {
             });
-        vision = new Vision(new VisionIO() {
-        }, drive::addVisionMeasurement);
+        vision = new Vision(
+            new VisionIO() {},
+            drive::addVisionMeasurement,
+            Vision.Constants.FRONT_CAMERA_OFFSET,
+            "Front");
         conductor = new Conductor(drive::getPose);
         arm = new Arm(new ArmIO() {
         }, conductor::getArmAngle);
