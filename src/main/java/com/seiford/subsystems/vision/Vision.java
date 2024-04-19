@@ -38,6 +38,24 @@ public class Vision extends SubsystemBase {
             Rotation2d.fromDegrees(180.0).getRadians(),
             Rotation2d.fromDegrees(-30.0).getRadians(),
             Rotation2d.fromDegrees(180.0).getRadians()));
+    public static final Transform3d REAR_LEFT_CAMERA_OFFSET = new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(6.00),
+            Units.inchesToMeters(10.00),
+            Units.inchesToMeters(13.00)),
+        new Rotation3d(
+            Rotation2d.fromDegrees(180.0).getRadians(),
+            Rotation2d.fromDegrees(-30.0).getRadians(),
+            Rotation2d.fromDegrees(-60.0).getRadians()));
+    public static final Transform3d REAR_RIGHT_CAMERA_OFFSET = new Transform3d(
+        new Translation3d(
+            Units.inchesToMeters(6.00),
+            Units.inchesToMeters(-10.00),
+            Units.inchesToMeters(13.00)),
+        new Rotation3d(
+            Rotation2d.fromDegrees(180.0).getRadians(),
+            Rotation2d.fromDegrees(-30.0).getRadians(),
+            Rotation2d.fromDegrees(60.0).getRadians()));
 
     public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
     public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(1.50, 1.50, 2 * Math.PI);

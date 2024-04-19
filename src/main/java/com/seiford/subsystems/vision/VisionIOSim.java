@@ -36,13 +36,13 @@ public class VisionIOSim implements VisionIO {
     inputs.pipelineResult = visionSystem.getLatestResult();
   }
 
-  public static SimCameraProperties arducamOV2311() {
+  public static SimCameraProperties arducamOV2311(Rotation2d fov) {
     var properties = new SimCameraProperties();
-    properties.setCalibration(1280, 800, Rotation2d.fromDegrees(75));
+    properties.setCalibration(1280, 800, fov);
     properties.setCalibError(0.35, 0.10);
-    properties.setFPS(25);
-    properties.setAvgLatencyMs(25);
-    properties.setLatencyStdDevMs(10);
+    properties.setFPS(60);
+    properties.setAvgLatencyMs(10);
+    properties.setLatencyStdDevMs(5);
     return properties;
   }
 }

@@ -43,6 +43,7 @@ import com.seiford.subsystems.vision.VisionIO;
 import com.seiford.subsystems.vision.VisionIOPhotonVision;
 import com.seiford.subsystems.vision.VisionIOSim;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
+import java.util.List;
 import java.util.Map;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -65,7 +67,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Vision vision;
+  private final List<Vision> visions;
   private final Conductor conductor;
   private final Arm arm;
   private final Shooter shooter;
@@ -93,12 +95,22 @@ public class RobotContainer {
             new ModuleIOMAXSwerve(1),
             new ModuleIOMAXSwerve(2),
             new ModuleIOMAXSwerve(3));
-        vision = new Vision(
-            new VisionIOPhotonVision("Arducam_OV2311_USB_Camera"),
-            drive::addVisionMeasurement,
-            Vision.Constants.FRONT_CAMERA_OFFSET,
-            "Front"
-        );
+        visions = List.of(
+            new Vision(
+                new VisionIOPhotonVision("Front"),
+                drive::addVisionMeasurement,
+                Vision.Constants.FRONT_CAMERA_OFFSET,
+                "Front"),
+            new Vision(
+                new VisionIOPhotonVision("RearLeft"),
+                drive::addVisionMeasurement,
+                Vision.Constants.REAR_LEFT_CAMERA_OFFSET,
+                "RearLeft"),
+            new Vision(
+                new VisionIOPhotonVision("RearLeft"),
+                drive::addVisionMeasurement,
+                Vision.Constants.REAR_RIGHT_CAMERA_OFFSET,
+                "RearRight"));
         conductor = new Conductor(drive::getPose);
         arm = new Arm(new ArmIOSparkMax(), conductor::getArmAngle);
         shooter = new Shooter(new ShooterIOSparkMax(), conductor::getShooterRPM);
@@ -115,15 +127,31 @@ public class RobotContainer {
             new ModuleIOSim(),
             new ModuleIOSim(),
             new ModuleIOSim());
-        vision = new Vision(
-            new VisionIOSim(drive::getPose,
+        visions = List.of(
+            new Vision(
+                new VisionIOSim(drive::getPose,
+                    Vision.Constants.FRONT_CAMERA_OFFSET,
+                    "Front",
+                    VisionIOSim.arducamOV2311(Rotation2d.fromDegrees(75))),
+                drive::addVisionMeasurement,
                 Vision.Constants.FRONT_CAMERA_OFFSET,
-                "Front",
-                VisionIOSim.arducamOV2311()),
-            drive::addVisionMeasurement,
-            Vision.Constants.FRONT_CAMERA_OFFSET,
-            "Front"
-        );
+                "Front"),
+            new Vision(
+                new VisionIOSim(drive::getPose,
+                    Vision.Constants.REAR_LEFT_CAMERA_OFFSET,
+                    "RearLeft",
+                    VisionIOSim.arducamOV2311(Rotation2d.fromDegrees(75))),
+                drive::addVisionMeasurement,
+                Vision.Constants.REAR_LEFT_CAMERA_OFFSET,
+                "RearLeft"),
+            new Vision(
+                new VisionIOSim(drive::getPose,
+                    Vision.Constants.REAR_RIGHT_CAMERA_OFFSET,
+                    "RearRight",
+                    VisionIOSim.arducamOV2311(Rotation2d.fromDegrees(75))),
+                drive::addVisionMeasurement,
+                Vision.Constants.REAR_RIGHT_CAMERA_OFFSET,
+                "RearRight"));
         conductor = new Conductor(drive::getPose);
         arm = new Arm(new ArmIOSim(), conductor::getArmAngle);
         shooter = new Shooter(new ShooterIOSim(), conductor::getShooterRPM);
@@ -144,11 +172,25 @@ public class RobotContainer {
             },
             new ModuleIO() {
             });
-        vision = new Vision(
-            new VisionIO() {},
-            drive::addVisionMeasurement,
-            Vision.Constants.FRONT_CAMERA_OFFSET,
-            "Front");
+        visions = List.of(
+            new Vision(
+                new VisionIO() {
+                },
+                drive::addVisionMeasurement,
+                Vision.Constants.FRONT_CAMERA_OFFSET,
+                "Front"),
+            new Vision(
+                new VisionIO() {
+                },
+                drive::addVisionMeasurement,
+                Vision.Constants.REAR_LEFT_CAMERA_OFFSET,
+                "RearLeft"),
+            new Vision(
+                new VisionIO() {
+                },
+                drive::addVisionMeasurement,
+                Vision.Constants.REAR_RIGHT_CAMERA_OFFSET,
+                "RearRight"));
         conductor = new Conductor(drive::getPose);
         arm = new Arm(new ArmIO() {
         }, conductor::getArmAngle);

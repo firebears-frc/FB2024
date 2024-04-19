@@ -93,12 +93,6 @@
               "listFields": [
                 [
                   {
-                    "type": "Green Ghost",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/Pose",
-                    "sourceTypeIndex": 1,
-                    "sourceType": "Pose3d"
-                  },
-                  {
                     "type": "Axes",
                     "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/UsedTargetPoses",
                     "sourceTypeIndex": 2,
@@ -109,30 +103,36 @@
                     "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/UsedTargetPoses",
                     "sourceTypeIndex": 2,
                     "sourceType": "Pose3d[]"
+                  },
+                  {
+                    "type": "Axes",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/RearLeft/UsedTargetPoses",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose3d[]"
+                  },
+                  {
+                    "type": "Vision Target",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/RearLeft/UsedTargetPoses",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose3d[]"
+                  },
+                  {
+                    "type": "Axes",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/RearRight/UsedTargetPoses",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose3d[]"
+                  },
+                  {
+                    "type": "Vision Target",
+                    "key": "NT:/AdvantageKit/RealOutputs/Vision/RearRight/UsedTargetPoses",
+                    "sourceTypeIndex": 2,
+                    "sourceType": "Pose3d[]"
                   }
                 ],
                 [
                   {
                     "type": "Robot",
                     "key": "NT:/AdvantageKit/RealOutputs/Localization/Robot",
-                    "sourceTypeIndex": 1,
-                    "sourceType": "Pose2d"
-                  },
-                  {
-                    "type": "Blue Ghost",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/TrajectorySetpoint",
-                    "sourceTypeIndex": 1,
-                    "sourceType": "Pose2d"
-                  },
-                  {
-                    "type": "Yellow Ghost",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Odometry",
-                    "sourceTypeIndex": 1,
-                    "sourceType": "Pose2d"
-                  },
-                  {
-                    "type": "Red Ghost",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Vision",
                     "sourceTypeIndex": 1,
                     "sourceType": "Pose2d"
                   },
@@ -216,17 +216,17 @@
                   },
                   "fields": [
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/StdDevs/0",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/StdDevs/2",
                       "color": "#2b66a2",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/StdDevs/1",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/RearLeft/StdDevs/2",
                       "color": "#e5b31b",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/StdDevs/2",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/RearRight/StdDevs/2",
                       "color": "#af2437",
                       "show": true
                     }
@@ -240,13 +240,28 @@
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/HasPose",
+                      "key": "NT:/AdvantageKit/Vision/RearLeft/Connected",
                       "color": "#e48b32",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/Strategy",
+                      "key": "NT:/AdvantageKit/Vision/RearRight/Connected",
                       "color": "#aacaee",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/Strategy",
+                      "color": "#c0b487",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/RearLeft/Strategy",
+                      "color": "#858584",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/RearRight/Strategy",
+                      "color": "#3b875a",
                       "show": true
                     }
                   ]
@@ -263,18 +278,23 @@
                   "fields": [
                     {
                       "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/TargetIDsUsed/length",
-                      "color": "#c0b487",
+                      "color": "#d993aa",
                       "show": true
                     },
                     {
-                      "key": "NT:/AdvantageKit/RealOutputs/Vision/Front/TargetIDs/length",
-                      "color": "#858584",
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/RearLeft/TargetIDsUsed/length",
+                      "color": "#eb987e",
+                      "show": true
+                    },
+                    {
+                      "key": "NT:/AdvantageKit/RealOutputs/Vision/RearRight/TargetIDsUsed/length",
+                      "color": "#5d4f92",
                       "show": true
                     }
                   ]
                 }
               },
-              "title": "Front Vision"
+              "title": "Vision"
             },
             {
               "type": 1,
@@ -510,238 +530,6 @@
                 }
               },
               "title": "Sequence"
-            },
-            {
-              "type": 6,
-              "uuid": "i6ugp1n27jiu02ikp6bowbho4vba4g0h",
-              "fields": [],
-              "listFields": [
-                [
-                  {
-                    "type": "Vision Target",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose3d[]"
-                  },
-                  {
-                    "type": "Axes",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose3d[]"
-                  }
-                ],
-                [
-                  {
-                    "type": "Robot",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Robot",
-                    "sourceTypeIndex": 1,
-                    "sourceType": "Pose2d"
-                  },
-                  {
-                    "type": "Trajectory",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Trajectory",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose2d[]"
-                  }
-                ]
-              ],
-              "options": {
-                "field": "2024 Field",
-                "alliance": "blue",
-                "robot": "2024 KitBot",
-                "unitDistance": "meters",
-                "unitRotation": "radians"
-              },
-              "configHidden": false,
-              "visualizer": {
-                "cameraIndex": 1,
-                "orbitFov": 100,
-                "cameraPosition": [
-                  5.979618368045092,
-                  0.4999999999999991,
-                  -1.1049211581472058
-                ],
-                "cameraTarget": [
-                  0.10982047666013262,
-                  0.4500830339173954,
-                  -0.022878609454527122
-                ]
-              },
-              "title": "Shooter View"
-            },
-            {
-              "type": 6,
-              "uuid": "h0m7klgxjnzj9p4pwdsv8wdgi9xiw5ws",
-              "fields": [],
-              "listFields": [
-                [
-                  {
-                    "type": "Vision Target",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose3d[]"
-                  },
-                  {
-                    "type": "Axes",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose3d[]"
-                  }
-                ],
-                [
-                  {
-                    "type": "Robot",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Robot",
-                    "sourceTypeIndex": 1,
-                    "sourceType": "Pose2d"
-                  },
-                  {
-                    "type": "Trajectory",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Trajectory",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose2d[]"
-                  }
-                ]
-              ],
-              "options": {
-                "field": "2024 Field",
-                "alliance": "blue",
-                "robot": "2024 KitBot",
-                "unitDistance": "meters",
-                "unitRotation": "radians"
-              },
-              "configHidden": false,
-              "visualizer": {
-                "cameraIndex": 0,
-                "orbitFov": 100,
-                "cameraPosition": [
-                  7.1701079147310836,
-                  0.5000000000000004,
-                  3.0820755442937786
-                ],
-                "cameraTarget": [
-                  0,
-                  0.5,
-                  0
-                ]
-              },
-              "title": "Intake View"
-            },
-            {
-              "type": 6,
-              "uuid": "rvtdr3e9mua47cwyd0b16akxasn4tikl",
-              "fields": [],
-              "listFields": [
-                [
-                  {
-                    "type": "Vision Target",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose3d[]"
-                  },
-                  {
-                    "type": "Axes",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose3d[]"
-                  }
-                ],
-                [
-                  {
-                    "type": "Robot",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Robot",
-                    "sourceTypeIndex": 1,
-                    "sourceType": "Pose2d"
-                  },
-                  {
-                    "type": "Trajectory",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Trajectory",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose2d[]"
-                  }
-                ]
-              ],
-              "options": {
-                "field": "2024 Field",
-                "alliance": "blue",
-                "robot": "2024 KitBot",
-                "unitDistance": "meters",
-                "unitRotation": "radians"
-              },
-              "configHidden": false,
-              "visualizer": {
-                "cameraIndex": -3,
-                "orbitFov": 50,
-                "cameraPosition": [
-                  9.672096541030845,
-                  1.5748000000000006,
-                  3.6770340417171683
-                ],
-                "cameraTarget": [
-                  0,
-                  0.5,
-                  0
-                ]
-              },
-              "title": "Driver View"
-            },
-            {
-              "type": 6,
-              "uuid": "f75no3r7sw56iyopo76zgm3uol9hudig",
-              "fields": [],
-              "listFields": [
-                [
-                  {
-                    "type": "Vision Target",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose3d[]"
-                  },
-                  {
-                    "type": "Axes",
-                    "key": "NT:/AdvantageKit/RealOutputs/Vision/UsedTargetPoses",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose3d[]"
-                  }
-                ],
-                [
-                  {
-                    "type": "Robot",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Robot",
-                    "sourceTypeIndex": 1,
-                    "sourceType": "Pose2d"
-                  },
-                  {
-                    "type": "Trajectory",
-                    "key": "NT:/AdvantageKit/RealOutputs/Localization/Trajectory",
-                    "sourceTypeIndex": 2,
-                    "sourceType": "Pose2d[]"
-                  }
-                ]
-              ],
-              "options": {
-                "field": "2024 Field",
-                "alliance": "blue",
-                "robot": "2024 KitBot",
-                "unitDistance": "meters",
-                "unitRotation": "radians"
-              },
-              "configHidden": false,
-              "visualizer": {
-                "cameraIndex": -2,
-                "orbitFov": 50,
-                "cameraPosition": [
-                  -2.4532598423510374,
-                  1.4409789624258953,
-                  -0.031792082542315636
-                ],
-                "cameraTarget": [
-                  0.010857017906801164,
-                  0.8311105605647399,
-                  0.010768027504445016
-                ]
-              },
-              "title": "Robot View"
             }
           ]
         }
