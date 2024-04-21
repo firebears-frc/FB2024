@@ -53,6 +53,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import java.util.List;
 import java.util.Map;
+
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -81,6 +83,7 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardChooser<Command> shootChooser;
   private final LoggedDashboardChooser<Command> climbChooser;
+  private final LoggedDashboardBoolean armMode;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -215,7 +218,7 @@ public class RobotContainer {
             arm.intake(),
             shooter.stop(),
             intake.autoIntake())));
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser("7 Center Close3 Top3"));
+    autoChooser = new LoggedDashboardChooser<>("Auto Modes", AutoBuilder.buildAutoChooser("7 Center Close3 Top3"));
 
     // Set up SysId routines
     autoChooser.addOption("Drive SysId (QF)", drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -235,7 +238,7 @@ public class RobotContainer {
     autoChooser.addOption("Intake SysId (DF)", intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption("Intake SysId (DR)", intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    shootChooser = new LoggedDashboardChooser<>("Shoot Choices");
+    shootChooser = new LoggedDashboardChooser<>("Shoot Modes");
     shootChooser.addDefaultOption("Subwoofer Center", drive.pathfindSubwooferCenter());
     shootChooser.addOption("Subwoofer Left", drive.pathfindSubwooferLeft());
     shootChooser.addOption("Subwoofer Right", drive.pathfindSubwooferRight());
@@ -245,10 +248,12 @@ public class RobotContainer {
     shootChooser.addOption("Pass", drive.pathfindPassShooting());
     shootChooser.addOption("Podium", drive.pathfindPodium());
 
-    climbChooser = new LoggedDashboardChooser<>("Climb Choices");
+    climbChooser = new LoggedDashboardChooser<>("Climb Modes");
     climbChooser.addDefaultOption("Far", drive.pathfindStageFar());
     climbChooser.addOption("Left", drive.pathfindStageLeft());
     climbChooser.addOption("Right", drive.pathfindStageRight());
+
+    armMode = new LoggedDashboardBoolean("Stow Arm", false);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -286,8 +291,12 @@ public class RobotContainer {
             Commands.waitSeconds(1.0),
             shooter.stop(),
             intake.stop(),
-            arm.intake(),
-            intake.intake()));
+            Commands.either(
+                arm.stow(),
+                Commands.sequence(
+                    arm.intake(),
+                    intake.intake()),
+                armMode::get)));
     controller.rightTrigger()
         .onTrue(Commands.parallel(
             arm.speaker(),
@@ -297,8 +306,12 @@ public class RobotContainer {
             Commands.waitSeconds(0.35),
             shooter.stop(),
             intake.stop(),
-            arm.intake(),
-            intake.intake()));
+            Commands.either(
+                arm.stow(),
+                Commands.sequence(
+                    arm.intake(),
+                    intake.intake()),
+                armMode::get)));
 
     // Orbit commands
     controller.leftBumper()
@@ -344,11 +357,20 @@ public class RobotContainer {
             shooter.stop(),
             intake.stop()));
     controller.a()
-        .whileTrue(Commands.parallel(
-            drive.pathfindSource(),
-            arm.intake(),
-            shooter.stop(),
-            intake.intake()))
+        .whileTrue(Commands.either(
+            Commands.sequence(
+                Commands.parallel(
+                    drive.pathfindSource(),
+                    shooter.stop(),
+                    arm.stow()),
+                intake.intake(),
+                arm.intake()),
+            Commands.parallel(
+                drive.pathfindSource(),
+                arm.intake(),
+                shooter.stop(),
+                intake.intake()),
+            armMode::get))
         .onFalse(Commands.sequence(
             intake.stop()));
   }

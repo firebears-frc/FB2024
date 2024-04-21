@@ -31,11 +31,13 @@ public class Arm extends SubsystemBase {
     INTAKE,
     SPEAKER,
     AMP,
+    STOW,
     SYSID
   }
   
   private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Arm/Intake Angle", 0.0);
   private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Arm/Amp Angle", 90.0);
+  private final LoggedDashboardNumber stowInput = new LoggedDashboardNumber("Arm/Stow Angle", 45.0);
 
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
@@ -92,14 +94,17 @@ public class Arm extends SubsystemBase {
         if (setpoint == null)
           setAngle(inputs.position);
         break;
-      case AMP:
-        setAngle(Rotation2d.fromDegrees(ampInput.get()));
-        break;
       case INTAKE:
         setAngle(Rotation2d.fromDegrees(intakeInput.get()));
         break;
       case SPEAKER:
         setAngle(angleSupplier.get());
+        break;
+      case AMP:
+        setAngle(Rotation2d.fromDegrees(ampInput.get()));
+        break;
+      case STOW:
+        setAngle(Rotation2d.fromDegrees(stowInput.get()));
         break;
       case SYSID:
         // TODO
@@ -162,6 +167,11 @@ public class Arm extends SubsystemBase {
   /** Returns a command to move the arm to amp state. */
   public Command amp() {
     return stateCommand(State.AMP);
+  }
+
+  /** Returns a command to move the arm to stow state. */
+  public Command stow() {
+    return stateCommand(State.STOW);
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */
