@@ -163,6 +163,14 @@ public class Vision extends SubsystemBase {
     }
 
     EstimatedRobotPose result = poseResult.get();
+    if (!checkPoseLocation(result.estimatedPose)) {
+      Logger.recordOutput("Vision/" + name + "/Pose", new Pose3d());
+      Logger.recordOutput("Vision/" + name + "/Strategy", "Invalid Pose Location");
+      Logger.recordOutput("Vision/" + name + "/StdDevs", new double[0]);
+      Logger.recordOutput("Vision/" + name + "/UsedTargetPoses", new Pose3d[0]);
+      Logger.recordOutput("Vision/" + name + "/TargetIDsUsed", new int[0]);
+      return;
+    }
 
     Matrix<N3, N1> stdDevs = getStdDevs(inputs.pipelineResult.targets, result.estimatedPose);
     if (stdDevs == null) {
@@ -184,5 +192,31 @@ public class Vision extends SubsystemBase {
         result.targetsUsed.stream().mapToInt(target -> target.getFiducialId()).toArray());
 
     consumer.accept(new VisionData(result.estimatedPose, result.timestampSeconds, stdDevs));
+  }
+
+  private boolean checkPoseLocation(Pose3d pose) {
+    // Filter invalid heights
+    if (pose.getZ() < -0.5 || pose.getZ() > 0.5)
+      return false;
+
+    // Filter invalid lenghts
+    if (pose.getX() < -0.5 && pose.getX() > 17.1)
+      return false;
+
+    // Filter invalid widths
+    if (pose.getY() < -0.5 && pose.getX() > 8.7)
+      return false;
+
+    // Filter invalid rolls
+    Rotation2d roll = Rotation2d.fromRadians(pose.getRotation().getX());
+    if (roll.getDegrees() < -30.0 || roll.getDegrees() > 30.0)
+      return false;
+
+    // Filter invalid pitches
+    Rotation2d pitch = Rotation2d.fromRadians(pose.getRotation().getY());
+    if (pitch.getDegrees() < -30.0 || pitch.getDegrees() > 30.0)
+      return false;
+
+    return true;
   }
 }
