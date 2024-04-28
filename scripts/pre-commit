@@ -1,0 +1,17 @@
+#!/bin/sh
+
+echo "**Performing pre-commit actions**"
+
+echo "- Formatting code with spotless"
+# This will format ALL FILES, even unstaged, but that's fine - everything should be formatted when eventually pushed.
+./gradlew spotlessApply
+
+echo "- Adding any changes from reformat"
+# Add formatting changes to the commit for any files already staged (added)
+git update-index --again
+
+status=$?
+
+echo "**Done with pre-commit**"
+
+exit $status
