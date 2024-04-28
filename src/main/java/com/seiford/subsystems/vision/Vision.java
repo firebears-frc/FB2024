@@ -1,17 +1,6 @@
 package com.seiford.subsystems.vision;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-
-import org.littletonrobotics.junction.LogTable;
-import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.seiford.util.VisionData;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -25,40 +14,52 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.seiford.subsystems.vision.VisionIOInputsAutoLogged;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.Logger;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision extends SubsystemBase {
   public static final class Constants {
-    public static final Transform3d FRONT_CAMERA_OFFSET = new Transform3d(
-        new Translation3d(
-            Units.inchesToMeters(-11.50),
-            Units.inchesToMeters(0.00),
-            Units.inchesToMeters(13.00)),
-        new Rotation3d(
-            Rotation2d.fromDegrees(180.0).getRadians(),
-            Rotation2d.fromDegrees(-30.0).getRadians(),
-            Rotation2d.fromDegrees(180.0).getRadians()));
-    public static final Transform3d REAR_LEFT_CAMERA_OFFSET = new Transform3d(
-        new Translation3d(
-            Units.inchesToMeters(6.00),
-            Units.inchesToMeters(10.00),
-            Units.inchesToMeters(13.00)),
-        new Rotation3d(
-            Rotation2d.fromDegrees(180.0).getRadians(),
-            Rotation2d.fromDegrees(-30.0).getRadians(),
-            Rotation2d.fromDegrees(-60.0).getRadians()));
-    public static final Transform3d REAR_RIGHT_CAMERA_OFFSET = new Transform3d(
-        new Translation3d(
-            Units.inchesToMeters(6.00),
-            Units.inchesToMeters(-10.00),
-            Units.inchesToMeters(13.00)),
-        new Rotation3d(
-            Rotation2d.fromDegrees(180.0).getRadians(),
-            Rotation2d.fromDegrees(-30.0).getRadians(),
-            Rotation2d.fromDegrees(60.0).getRadians()));
+    public static final Transform3d FRONT_CAMERA_OFFSET =
+        new Transform3d(
+            new Translation3d(
+                Units.inchesToMeters(-11.50),
+                Units.inchesToMeters(0.00),
+                Units.inchesToMeters(13.00)),
+            new Rotation3d(
+                Rotation2d.fromDegrees(180.0).getRadians(),
+                Rotation2d.fromDegrees(-30.0).getRadians(),
+                Rotation2d.fromDegrees(180.0).getRadians()));
+    public static final Transform3d REAR_LEFT_CAMERA_OFFSET =
+        new Transform3d(
+            new Translation3d(
+                Units.inchesToMeters(6.00),
+                Units.inchesToMeters(10.00),
+                Units.inchesToMeters(13.00)),
+            new Rotation3d(
+                Rotation2d.fromDegrees(180.0).getRadians(),
+                Rotation2d.fromDegrees(-30.0).getRadians(),
+                Rotation2d.fromDegrees(-60.0).getRadians()));
+    public static final Transform3d REAR_RIGHT_CAMERA_OFFSET =
+        new Transform3d(
+            new Translation3d(
+                Units.inchesToMeters(6.00),
+                Units.inchesToMeters(-10.00),
+                Units.inchesToMeters(13.00)),
+            new Rotation3d(
+                Rotation2d.fromDegrees(180.0).getRadians(),
+                Rotation2d.fromDegrees(-30.0).getRadians(),
+                Rotation2d.fromDegrees(60.0).getRadians()));
 
-    public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
-    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(1.50, 1.50, 2 * Math.PI);
+    public static final AprilTagFieldLayout FIELD_LAYOUT =
+        AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS =
+        VecBuilder.fill(1.50, 1.50, 2 * Math.PI);
     public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.30, 0.30, Math.PI);
     public static final Matrix<N3, N1> INVALID_STD_DEVS = VecBuilder.fill(0.0, 0.0, 0.0);
   }
@@ -77,8 +78,11 @@ public class Vision extends SubsystemBase {
     this.name = name;
 
     LogTable.disableProtobufWarning(); // TODO: This may cause loop overruns
-    poseEstimator = new PhotonPoseEstimator(Constants.FIELD_LAYOUT,
-        PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraOffset);
+    poseEstimator =
+        new PhotonPoseEstimator(
+            Constants.FIELD_LAYOUT,
+            PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            cameraOffset);
     poseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
   }
 
@@ -148,8 +152,11 @@ public class Vision extends SubsystemBase {
       return;
     }
 
-    Logger.recordOutput("Vision/" + name + "/TargetIDs",
-        inputs.pipelineResult.targets.stream().mapToInt(target -> target.getFiducialId()).toArray());
+    Logger.recordOutput(
+        "Vision/" + name + "/TargetIDs",
+        inputs.pipelineResult.targets.stream()
+            .mapToInt(target -> target.getFiducialId())
+            .toArray());
 
     Optional<EstimatedRobotPose> poseResult = poseEstimator.update(inputs.pipelineResult);
     Logger.recordOutput("Vision/" + name + "/HasPose", poseResult.isPresent());
@@ -185,10 +192,18 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput("Vision/" + name + "/Pose", result.estimatedPose);
     Logger.recordOutput("Vision/" + name + "/Strategy", result.strategy);
     Logger.recordOutput("Vision/" + name + "/StdDevs", stdDevs.transpose().getData());
-    Logger.recordOutput("Vision/" + name + "/UsedTargetPoses", result.targetsUsed.stream().map(
-        target -> result.estimatedPose.transformBy(cameraOffset).transformBy(target.getBestCameraToTarget()))
-        .toArray(Pose3d[]::new));
-    Logger.recordOutput("Vision/" + name + "/TargetIDsUsed",
+    Logger.recordOutput(
+        "Vision/" + name + "/UsedTargetPoses",
+        result.targetsUsed.stream()
+            .map(
+                target ->
+                    result
+                        .estimatedPose
+                        .transformBy(cameraOffset)
+                        .transformBy(target.getBestCameraToTarget()))
+            .toArray(Pose3d[]::new));
+    Logger.recordOutput(
+        "Vision/" + name + "/TargetIDsUsed",
         result.targetsUsed.stream().mapToInt(target -> target.getFiducialId()).toArray());
 
     consumer.accept(new VisionData(result.estimatedPose, result.timestampSeconds, stdDevs));
@@ -196,26 +211,21 @@ public class Vision extends SubsystemBase {
 
   private boolean checkPoseLocation(Pose3d pose) {
     // Filter invalid heights
-    if (pose.getZ() < -0.5 || pose.getZ() > 0.5)
-      return false;
+    if (pose.getZ() < -0.5 || pose.getZ() > 0.5) return false;
 
     // Filter invalid lenghts
-    if (pose.getX() < -0.5 && pose.getX() > 17.1)
-      return false;
+    if (pose.getX() < -0.5 && pose.getX() > 17.1) return false;
 
     // Filter invalid widths
-    if (pose.getY() < -0.5 && pose.getX() > 8.7)
-      return false;
+    if (pose.getY() < -0.5 && pose.getX() > 8.7) return false;
 
     // Filter invalid rolls
     Rotation2d roll = Rotation2d.fromRadians(pose.getRotation().getX());
-    if (roll.getDegrees() < -30.0 || roll.getDegrees() > 30.0)
-      return false;
+    if (roll.getDegrees() < -30.0 || roll.getDegrees() > 30.0) return false;
 
     // Filter invalid pitches
     Rotation2d pitch = Rotation2d.fromRadians(pose.getRotation().getY());
-    if (pitch.getDegrees() < -30.0 || pitch.getDegrees() > 30.0)
-      return false;
+    if (pitch.getDegrees() < -30.0 || pitch.getDegrees() > 30.0) return false;
 
     return true;
   }

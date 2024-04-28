@@ -13,17 +13,14 @@
 
 package com.seiford.subsystems.drive;
 
+import com.seiford.Configuration;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import com.seiford.subsystems.drive.ModuleIOInputsAutoLogged;
-
 import org.littletonrobotics.junction.Logger;
-
-import com.seiford.Configuration;
 
 public class Module {
   private static final double WHEEL_RADIUS = Units.inchesToMeters(1.5);
@@ -71,8 +68,7 @@ public class Module {
   }
 
   /**
-   * Update inputs without running the rest of the periodic logic. This is useful
-   * since these
+   * Update inputs without running the rest of the periodic logic. This is useful since these
    * updates need to be properly thread-locked.
    */
   public void updateInputs() {
@@ -116,16 +112,14 @@ public class Module {
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
       double positionMeters = inputs.odometryDrivePositionsRad[i] * WHEEL_RADIUS;
-      Rotation2d angle = inputs.odometryTurnPositions[i].plus(
-          turnRelativeOffset != null ? turnRelativeOffset : new Rotation2d());
+      Rotation2d angle =
+          inputs.odometryTurnPositions[i].plus(
+              turnRelativeOffset != null ? turnRelativeOffset : new Rotation2d());
       odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
     }
   }
 
-  /**
-   * Runs the module with the specified setpoint state. Returns the optimized
-   * state.
-   */
+  /** Runs the module with the specified setpoint state. Returns the optimized state. */
   public SwerveModuleState runSetpoint(SwerveModuleState state) {
     // Optimize state based on current angle
     // Controllers run in "periodic" when the setpoint is not null
@@ -138,9 +132,7 @@ public class Module {
     return optimizedState;
   }
 
-  /**
-   * Runs the module with the specified voltage while controlling to zero degrees.
-   */
+  /** Runs the module with the specified voltage while controlling to zero degrees. */
   public void runCharacterization(double volts) {
     // Closed loop turn control
     angleSetpoint = new Rotation2d();

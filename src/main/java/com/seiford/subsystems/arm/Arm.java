@@ -2,14 +2,7 @@ package com.seiford.subsystems.arm;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-
 import com.seiford.Configuration;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,6 +10,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Arm extends SubsystemBase {
   public static final class Constants {
@@ -34,8 +31,9 @@ public class Arm extends SubsystemBase {
     STOW,
     SYSID
   }
-  
-  private final LoggedDashboardNumber intakeInput = new LoggedDashboardNumber("Arm/Intake Angle", 0.0);
+
+  private final LoggedDashboardNumber intakeInput =
+      new LoggedDashboardNumber("Arm/Intake Angle", 0.0);
   private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Arm/Amp Angle", 90.0);
   private final LoggedDashboardNumber stowInput = new LoggedDashboardNumber("Arm/Stow Angle", 45.0);
 
@@ -48,6 +46,7 @@ public class Arm extends SubsystemBase {
 
   @AutoLogOutput(key = "Arm/State")
   private State state = State.STARTUP;
+
   @AutoLogOutput(key = "Arm/Setpoint")
   private Rotation2d setpoint;
 
@@ -74,13 +73,14 @@ public class Arm extends SubsystemBase {
     }
 
     // Configure SysId
-    sysId = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,
-            null,
-            null,
-            (state) -> Logger.recordOutput("Arm/SysIdState", state.toString())),
-        new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
+    sysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Arm/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -91,8 +91,7 @@ public class Arm extends SubsystemBase {
     switch (state) {
       case STARTUP:
         // On init, set the setpoint to the current position
-        if (setpoint == null)
-          setAngle(inputs.position);
+        if (setpoint == null) setAngle(inputs.position);
         break;
       case INTAKE:
         setAngle(Rotation2d.fromDegrees(intakeInput.get()));
@@ -137,12 +136,9 @@ public class Arm extends SubsystemBase {
   }
 
   private void setAngle(Rotation2d angle) {
-    if (angle.getDegrees() > Constants.MAXIMUM.getDegrees())
-      setpoint = Constants.MAXIMUM;
-    else if (angle.getDegrees() < Constants.MINIMUM.getDegrees())
-      setpoint = Constants.MINIMUM;
-    else
-      setpoint = angle;
+    if (angle.getDegrees() > Constants.MAXIMUM.getDegrees()) setpoint = Constants.MAXIMUM;
+    else if (angle.getDegrees() < Constants.MINIMUM.getDegrees()) setpoint = Constants.MINIMUM;
+    else setpoint = angle;
   }
 
   /** Returns a command to move the arm to the specified state. */
@@ -150,8 +146,7 @@ public class Arm extends SubsystemBase {
     return Commands.sequence(
         runOnce(() -> this.state = state),
         Commands.waitSeconds(0.25),
-        run(() -> {
-        }).until(this::onTarget));
+        run(() -> {}).until(this::onTarget));
   }
 
   /** Returns a command to move the arm to intake state. */
@@ -177,18 +172,11 @@ public class Arm extends SubsystemBase {
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return Commands.sequence(
-      runOnce(() -> state = State.SYSID),
-      sysId.quasistatic(direction),
-      amp()
-    );
+        runOnce(() -> state = State.SYSID), sysId.quasistatic(direction), amp());
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return Commands.sequence(
-      runOnce(() -> state = State.SYSID),
-      sysId.dynamic(direction),
-      amp()
-    );
+    return Commands.sequence(runOnce(() -> state = State.SYSID), sysId.dynamic(direction), amp());
   }
 }

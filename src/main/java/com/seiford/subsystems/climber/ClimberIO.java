@@ -4,18 +4,14 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimberIO {
   @AutoLog
-  public static class ClimberIOInputs {
-  }
+  public static class ClimberIOInputs {}
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(ClimberIOInputs inputs) {
-  }
+  public default void updateInputs(ClimberIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
-  public default void setVoltage(double volts) {
-  }
+  public default void setVoltage(double volts) {}
 
   /** Stop in open loop. */
-  public default void stop() {
-  }
+  public default void stop() {}
 }

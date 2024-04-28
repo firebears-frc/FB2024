@@ -15,28 +15,28 @@ package com.seiford.subsystems.intake;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.seiford.Configuration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import com.seiford.subsystems.intake.IntakeIOInputsAutoLogged;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-
-import com.seiford.Configuration;
 
 public class Intake extends SubsystemBase {
   public final class Constants {
     public static final double GEAR_RATIO = 3.0;
   }
 
-  private final LoggedDashboardNumber intakeSpeedInput = new LoggedDashboardNumber("Intake/Intake Speed", 2000.0);
-  private final LoggedDashboardNumber shootSpeedInput = new LoggedDashboardNumber("Intake/Shoot Speed", 2625.0);
-  private final LoggedDashboardNumber ejectSpeedInput = new LoggedDashboardNumber("Intake/Eject Speed", -1375.0);
+  private final LoggedDashboardNumber intakeSpeedInput =
+      new LoggedDashboardNumber("Intake/Intake Speed", 2000.0);
+  private final LoggedDashboardNumber shootSpeedInput =
+      new LoggedDashboardNumber("Intake/Shoot Speed", 2625.0);
+  private final LoggedDashboardNumber ejectSpeedInput =
+      new LoggedDashboardNumber("Intake/Eject Speed", -1375.0);
 
   private final IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
@@ -68,13 +68,14 @@ public class Intake extends SubsystemBase {
     }
 
     // Configure SysId
-    sysId = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,
-            null,
-            null,
-            (state) -> Logger.recordOutput("Intake/SysIdState", state.toString())),
-        new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
+    sysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Intake/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -139,10 +140,7 @@ public class Intake extends SubsystemBase {
   /** Returns a command to run the intake at intake speed until it has a note. */
   public Command autoIntake() {
     return Commands.sequence(
-        intake(),
-        Commands.waitSeconds(0.05),
-        run(() -> {
-        }).until(() -> hasNote));
+        intake(), Commands.waitSeconds(0.05), run(() -> {}).until(() -> hasNote));
   }
 
   /** Returns a command to run a quasistatic test in the specified direction. */

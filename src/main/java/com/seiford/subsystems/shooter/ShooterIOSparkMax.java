@@ -22,8 +22,7 @@ import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
 
 /**
- * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of
- * "CANSparkMax" with
+ * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
 public class ShooterIOSparkMax implements ShooterIO {
@@ -57,15 +56,19 @@ public class ShooterIOSparkMax implements ShooterIO {
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
-    inputs.velocitiesRadPerSec = new double[] {
-        Units.rotationsPerMinuteToRadiansPerSecond(topEncoder.getVelocity() / Shooter.Constants.GEAR_RATIO),
-        Units.rotationsPerMinuteToRadiansPerSecond(bottomEncoder.getVelocity() / Shooter.Constants.GEAR_RATIO)
-    };
-    inputs.appliedVolts = new double[] {
-        topMotor.getAppliedOutput() * topMotor.getBusVoltage(),
-        bottomMotor.getAppliedOutput() * bottomMotor.getBusVoltage()
-    };
-    inputs.currentAmps = new double[] { topMotor.getOutputCurrent(), bottomMotor.getOutputCurrent() };
+    inputs.velocitiesRadPerSec =
+        new double[] {
+          Units.rotationsPerMinuteToRadiansPerSecond(
+              topEncoder.getVelocity() / Shooter.Constants.GEAR_RATIO),
+          Units.rotationsPerMinuteToRadiansPerSecond(
+              bottomEncoder.getVelocity() / Shooter.Constants.GEAR_RATIO)
+        };
+    inputs.appliedVolts =
+        new double[] {
+          topMotor.getAppliedOutput() * topMotor.getBusVoltage(),
+          bottomMotor.getAppliedOutput() * bottomMotor.getBusVoltage()
+        };
+    inputs.currentAmps = new double[] {topMotor.getOutputCurrent(), bottomMotor.getOutputCurrent()};
   }
 
   @Override
@@ -77,13 +80,15 @@ public class ShooterIOSparkMax implements ShooterIO {
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
     topPID.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * Shooter.Constants.GEAR_RATIO,
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec)
+            * Shooter.Constants.GEAR_RATIO,
         ControlType.kVelocity,
         0,
         ffVolts,
         ArbFFUnits.kVoltage);
     bottomPID.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec) * Shooter.Constants.GEAR_RATIO,
+        Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec)
+            * Shooter.Constants.GEAR_RATIO,
         ControlType.kVelocity,
         0,
         ffVolts,

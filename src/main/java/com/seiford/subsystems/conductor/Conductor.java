@@ -1,18 +1,15 @@
 package com.seiford.subsystems.conductor;
 
-import java.util.List;
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-
 import com.seiford.util.Util;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.List;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Conductor extends SubsystemBase {
   private static final class Constants {
@@ -20,18 +17,20 @@ public class Conductor extends SubsystemBase {
     public static final Translation2d RED_SPEAKER = new Translation2d(16.541, 5.550);
   }
 
-  private final List<Shot> shots = List.of(
-    new Shot("Subwoofer", 1.29, 14.50, 2400.00), // Tuned subwoofer shot
-    new Shot("Podium", 2.94, 20.00, 3200.00), // Not tuned podium shot
-    new Shot("Bottom", 3.75, 33.75, 3300.00), // Partially tuned bottom side shot
-    new Shot("Top", 4.68, 35.00, 3300.00), // Not tuned top side shot
-    new Shot("Far", 6.60, 36.25, 3300.00) // Not tuned far shot
-  );
+  private final List<Shot> shots =
+      List.of(
+          new Shot("Subwoofer", 1.29, 14.50, 2400.00), // Tuned subwoofer shot
+          new Shot("Podium", 2.94, 20.00, 3200.00), // Not tuned podium shot
+          new Shot("Bottom", 3.75, 33.75, 3300.00), // Partially tuned bottom side shot
+          new Shot("Top", 4.68, 35.00, 3300.00), // Not tuned top side shot
+          new Shot("Far", 6.60, 36.25, 3300.00) // Not tuned far shot
+          );
 
   private final Supplier<Pose2d> poseSupplier;
 
   @AutoLogOutput(key = "Conductor/SpeakerTranslation")
   private Translation2d speakerTranslation;
+
   private Rotation2d armAngle;
   private double shooterRPM;
 
@@ -75,7 +74,7 @@ public class Conductor extends SubsystemBase {
     shooterRPM = interpolator.speed(getSpeakerDistance());
   }
 
-  private final static class Shot {
+  private static final class Shot {
     private final LoggedDashboardNumber distance;
     private final LoggedDashboardNumber angle;
     private final LoggedDashboardNumber speed;
@@ -99,7 +98,7 @@ public class Conductor extends SubsystemBase {
     }
   }
 
-  private final static class Interpolator {
+  private static final class Interpolator {
     private final InterpolatingDoubleTreeMap angleInterpolator = new InterpolatingDoubleTreeMap();
     private final InterpolatingDoubleTreeMap speedInterpolator = new InterpolatingDoubleTreeMap();
 

@@ -1,7 +1,7 @@
 package com.seiford.subsystems.climber;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 
 public class ClimberIOSparkMax implements ClimberIO {
   private final CANSparkMax right = new CANSparkMax(14, MotorType.kBrushless);
@@ -29,8 +29,7 @@ public class ClimberIOSparkMax implements ClimberIO {
   }
 
   @Override
-  public void updateInputs(ClimberIOInputs inputs) {
-  }
+  public void updateInputs(ClimberIOInputs inputs) {}
 
   @Override
   public void setVoltage(double volts) {

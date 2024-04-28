@@ -25,22 +25,17 @@ public interface IntakeIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(IntakeIOInputs inputs) {
-  }
+  public default void updateInputs(IntakeIOInputs inputs) {}
 
   /** Run open loop at the specified voltage. */
-  public default void setVoltage(double volts) {
-  }
+  public default void setVoltage(double volts) {}
 
   /** Run closed loop at the specified velocity. */
-  public default void setVelocity(double velocityRadPerSec, double ffVolts) {
-  }
+  public default void setVelocity(double velocityRadPerSec, double ffVolts) {}
 
   /** Stop in open loop. */
-  public default void stop() {
-  }
+  public default void stop() {}
 
   /** Set velocity PID constants. */
-  public default void configurePID(double kP, double kI, double kD) {
-  }
+  public default void configurePID(double kP, double kI, double kD) {}
 }

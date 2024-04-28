@@ -13,17 +13,18 @@
 
 package com.seiford.subsystems.intake;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
 
 public class IntakeIOSim implements IntakeIO {
-  private final FlywheelSim sim = new FlywheelSim(DCMotor.getNeo550(1), Intake.Constants.GEAR_RATIO, 0.001);
+  private final FlywheelSim sim =
+      new FlywheelSim(DCMotor.getNeo550(1), Intake.Constants.GEAR_RATIO, 0.001);
   private final PIDController pid = new PIDController(0.0, 0.0, 0.0);
-  private final LoggedDashboardBoolean beakBrakeSim = new LoggedDashboardBoolean("Intake/Beam Brake Simulation", false);
+  private final LoggedDashboardBoolean beakBrakeSim =
+      new LoggedDashboardBoolean("Intake/Beam Brake Simulation", false);
 
   private boolean closedLoop = false;
   private double ffVolts = 0.0;
@@ -32,7 +33,8 @@ public class IntakeIOSim implements IntakeIO {
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     if (closedLoop) {
-      appliedVolts = MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+      appliedVolts =
+          MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
       sim.setInputVoltage(appliedVolts);
     }
 

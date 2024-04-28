@@ -1,8 +1,7 @@
 package com.seiford.subsystems.arm;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface ArmIO {
   @AutoLog
@@ -13,18 +12,14 @@ public interface ArmIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(ArmIOInputs inputs) {
-  }
+  public default void updateInputs(ArmIOInputs inputs) {}
 
   /** Run closed loop to the specified velocity. */
-  public default void setPosition(Rotation2d angle, double ffVolts) {
-  }
+  public default void setPosition(Rotation2d angle, double ffVolts) {}
 
   /** Run open loop at the specified voltage. */
-  public default void setVoltage(double volts) {
-  }
+  public default void setVoltage(double volts) {}
 
   /** Set velocity PID constants. */
-  public default void configurePID(double kP, double kI, double kD) {
-  }
+  public default void configurePID(double kP, double kI, double kD) {}
 }

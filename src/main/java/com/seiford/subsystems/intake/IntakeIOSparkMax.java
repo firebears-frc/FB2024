@@ -23,8 +23,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
- * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of
- * "CANSparkMax" with
+ * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
 public class IntakeIOSparkMax implements IntakeIO {
@@ -49,8 +48,9 @@ public class IntakeIOSparkMax implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.velocityRadPerSec = Units
-        .rotationsPerMinuteToRadiansPerSecond(encoder.getVelocity() / Intake.Constants.GEAR_RATIO);
+    inputs.velocityRadPerSec =
+        Units.rotationsPerMinuteToRadiansPerSecond(
+            encoder.getVelocity() / Intake.Constants.GEAR_RATIO);
     inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
     inputs.currentAmps = motor.getOutputCurrent();
     inputs.beamBrake = sensor.get();

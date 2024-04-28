@@ -1,14 +1,13 @@
 package com.seiford.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import java.util.function.Supplier;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
 
 public class VisionIOSim implements VisionIO {
   private final Supplier<Pose2d> poseSupplier;
@@ -16,7 +15,11 @@ public class VisionIOSim implements VisionIO {
   private final VisionSystemSim visionSim;
   private final PhotonCamera visionSystem;
 
-  public VisionIOSim(Supplier<Pose2d> poseSupplier, Transform3d cameraOffset, String name, SimCameraProperties properties) {
+  public VisionIOSim(
+      Supplier<Pose2d> poseSupplier,
+      Transform3d cameraOffset,
+      String name,
+      SimCameraProperties properties) {
     this.poseSupplier = poseSupplier;
 
     visionSim = new VisionSystemSim(name + "_sim");

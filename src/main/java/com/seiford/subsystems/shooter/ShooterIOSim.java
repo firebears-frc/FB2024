@@ -19,7 +19,8 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
 public class ShooterIOSim implements ShooterIO {
-  private final FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), Shooter.Constants.GEAR_RATIO, 0.004);
+  private final FlywheelSim sim =
+      new FlywheelSim(DCMotor.getNEO(1), Shooter.Constants.GEAR_RATIO, 0.004);
   private final PIDController pid = new PIDController(0.0, 0.0, 0.0);
 
   private boolean closedLoop = false;
@@ -29,15 +30,16 @@ public class ShooterIOSim implements ShooterIO {
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
     if (closedLoop) {
-      appliedVolts = MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
+      appliedVolts =
+          MathUtil.clamp(pid.calculate(sim.getAngularVelocityRadPerSec()) + ffVolts, -12.0, 12.0);
       sim.setInputVoltage(appliedVolts);
     }
 
     sim.update(0.02);
 
-    inputs.velocitiesRadPerSec = new double[] { sim.getAngularVelocityRadPerSec() };
-    inputs.appliedVolts = new double[] { appliedVolts };
-    inputs.currentAmps = new double[] { sim.getCurrentDrawAmps() };
+    inputs.velocitiesRadPerSec = new double[] {sim.getAngularVelocityRadPerSec()};
+    inputs.appliedVolts = new double[] {appliedVolts};
+    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
   }
 
   @Override

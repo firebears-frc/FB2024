@@ -1,12 +1,11 @@
 package com.seiford.subsystems.arm;
 
+import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
-
+import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ArmIOSparkMax implements ArmIO {
@@ -39,21 +38,17 @@ public class ArmIOSparkMax implements ArmIO {
   @Override
   public void updateInputs(ArmIOInputs inputs) {
     inputs.position = Rotation2d.fromRotations(encoder.getPosition());
-    inputs.appliedVolts = new double[] {
-        leader.getAppliedOutput() * leader.getBusVoltage(),
-        follower.getAppliedOutput() * follower.getBusVoltage()
-    };
-    inputs.currentAmps = new double[] { leader.getOutputCurrent(), follower.getOutputCurrent() };
+    inputs.appliedVolts =
+        new double[] {
+          leader.getAppliedOutput() * leader.getBusVoltage(),
+          follower.getAppliedOutput() * follower.getBusVoltage()
+        };
+    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
   }
 
   @Override
   public void setPosition(Rotation2d angle, double ffVolts) {
-    pid.setReference(
-        angle.getRotations(),
-        ControlType.kPosition,
-        0,
-        ffVolts,
-        ArbFFUnits.kVoltage);
+    pid.setReference(angle.getRotations(), ControlType.kPosition, 0, ffVolts, ArbFFUnits.kVoltage);
   }
 
   @Override

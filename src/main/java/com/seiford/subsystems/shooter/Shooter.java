@@ -15,8 +15,7 @@ package com.seiford.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.function.DoubleSupplier;
-
+import com.seiford.Configuration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
@@ -24,13 +23,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import com.seiford.subsystems.shooter.ShooterIOInputsAutoLogged;
-
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
-
-import com.seiford.Configuration;
 
 public class Shooter extends SubsystemBase {
   public static final class Constants {
@@ -45,8 +41,10 @@ public class Shooter extends SubsystemBase {
     SYSID
   }
 
-  private final LoggedDashboardNumber ampInput = new LoggedDashboardNumber("Shooter/Amp Speed", 625.0);
-  private final LoggedDashboardNumber ejectInput = new LoggedDashboardNumber("Shooter/Eject Speed", -625.0);
+  private final LoggedDashboardNumber ampInput =
+      new LoggedDashboardNumber("Shooter/Amp Speed", 625.0);
+  private final LoggedDashboardNumber ejectInput =
+      new LoggedDashboardNumber("Shooter/Eject Speed", -625.0);
 
   private final ShooterIO io;
   private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
@@ -57,6 +55,7 @@ public class Shooter extends SubsystemBase {
 
   @AutoLogOutput(key = "Shooter/State")
   private State state = State.STOPPED;
+
   @AutoLogOutput(key = "Shooter/Setpoint")
   private double setpoint = 0.0;
 
@@ -83,13 +82,14 @@ public class Shooter extends SubsystemBase {
     }
 
     // Configure SysId
-    sysId = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,
-            null,
-            null,
-            (state) -> Logger.recordOutput("Shooter/SysIdState", state.toString())),
-        new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
+    sysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Shooter/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
   }
 
   @Override
@@ -164,8 +164,7 @@ public class Shooter extends SubsystemBase {
     return Commands.sequence(
         runOnce(() -> this.state = state),
         Commands.waitSeconds(0.25),
-        run(() -> {
-        }).until(this::onTarget));
+        run(() -> {}).until(this::onTarget));
   }
 
   /** Returns a command to run the shooter at speaker state. */
@@ -191,18 +190,11 @@ public class Shooter extends SubsystemBase {
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return Commands.sequence(
-      runOnce(() -> state = State.SYSID),
-      sysId.quasistatic(direction),
-      stop()
-    );
+        runOnce(() -> state = State.SYSID), sysId.quasistatic(direction), stop());
   }
 
   /** Returns a command to run a dynamic test in the specified direction. */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return Commands.sequence(
-      runOnce(() -> state = State.SYSID),
-      sysId.dynamic(direction),
-      stop()
-    );
+    return Commands.sequence(runOnce(() -> state = State.SYSID), sysId.dynamic(direction), stop());
   }
 }

@@ -24,7 +24,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import com.seiford.util.LocalADStarAK;
 import com.seiford.util.Util;
 import com.seiford.util.VisionData;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -43,13 +42,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import com.seiford.subsystems.drive.GyroIOInputsAutoLogged;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardBoolean;
@@ -62,19 +58,22 @@ public class Drive extends SubsystemBase {
     public static final double WHEEL_OFFSET = Units.inchesToMeters(1.75);
     public static final double TRACK_WIDTH_X = ROBOT_WIDTH - (2 * WHEEL_OFFSET);
     public static final double TRACK_WIDTH_Y = ROBOT_LENGTH - (2 * WHEEL_OFFSET);
-    public static final double DRIVE_BASE_RADIUS = Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
-    public static final Translation2d[] MODULE_TRANSLATIONS = new Translation2d[] {
-        new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-        new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
-        new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
-        new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
-    };
+    public static final double DRIVE_BASE_RADIUS =
+        Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
+    public static final Translation2d[] MODULE_TRANSLATIONS =
+        new Translation2d[] {
+          new Translation2d(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
+          new Translation2d(TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0),
+          new Translation2d(-TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0),
+          new Translation2d(-TRACK_WIDTH_X / 2.0, -TRACK_WIDTH_Y / 2.0)
+        };
 
     // Drive base limits
     public static final double MAX_LINEAR_SPEED = 7.8; // meters per second
     public static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;
     public static final double MAX_LINEAR_ACCELERATION = 4.5; // meters per second squared
-    public static final double MAX_ANGULAR_ACCELERATION = MAX_LINEAR_ACCELERATION / DRIVE_BASE_RADIUS;
+    public static final double MAX_ANGULAR_ACCELERATION =
+        MAX_LINEAR_ACCELERATION / DRIVE_BASE_RADIUS;
 
     // Orbit positions
     public static final Translation2d BLUE_SPEAKER = new Translation2d(0.00, 5.55);
@@ -83,23 +82,34 @@ public class Drive extends SubsystemBase {
     public static final Translation2d RED_AMP = new Translation2d(14.70, 8.20);
 
     // Pathfind positions
-    public static final Pose2d BLUE_SUBWOOFER_CENTER = new Pose2d(1.45, 5.55, Rotation2d.fromDegrees(0.0));
-    public static final Pose2d BLUE_SUBWOOFER_LEFT = new Pose2d(0.80, 6.65, Rotation2d.fromDegrees(60.0));
-    public static final Pose2d BLUE_SUBWOOFER_RIGHT = new Pose2d(0.80, 4.45, Rotation2d.fromDegrees(-60.0));
+    public static final Pose2d BLUE_SUBWOOFER_CENTER =
+        new Pose2d(1.45, 5.55, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d BLUE_SUBWOOFER_LEFT =
+        new Pose2d(0.80, 6.65, Rotation2d.fromDegrees(60.0));
+    public static final Pose2d BLUE_SUBWOOFER_RIGHT =
+        new Pose2d(0.80, 4.45, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d BLUE_PODIUM = new Pose2d(2.70, 4.10, Rotation2d.fromDegrees(-28.0));
-    public static final Pose2d BLUE_TOP_SHOOTING = new Pose2d(4.50, 6.50, Rotation2d.fromDegrees(11.25));
-    public static final Pose2d BLUE_BOTTOM_SHOOTING = new Pose2d(2.50, 2.70, Rotation2d.fromDegrees(-56.25));
-    public static final Pose2d BLUE_FAR_SHOOTING = new Pose2d(6.80,6.65, Rotation2d.fromDegrees(11.25));
-    public static final Pose2d BLUE_PASS_SHOOTING = new Pose2d(9.50, 1.75, Rotation2d.fromDegrees(-30.0));
-    public static final Pose2d BLUE_AMP_PLACEMENT = new Pose2d(1.84, 7.75, Rotation2d.fromDegrees(-90.0));
+    public static final Pose2d BLUE_TOP_SHOOTING =
+        new Pose2d(4.50, 6.50, Rotation2d.fromDegrees(11.25));
+    public static final Pose2d BLUE_BOTTOM_SHOOTING =
+        new Pose2d(2.50, 2.70, Rotation2d.fromDegrees(-56.25));
+    public static final Pose2d BLUE_FAR_SHOOTING =
+        new Pose2d(6.80, 6.65, Rotation2d.fromDegrees(11.25));
+    public static final Pose2d BLUE_PASS_SHOOTING =
+        new Pose2d(9.50, 1.75, Rotation2d.fromDegrees(-30.0));
+    public static final Pose2d BLUE_AMP_PLACEMENT =
+        new Pose2d(1.84, 7.75, Rotation2d.fromDegrees(-90.0));
     public static final Pose2d BLUE_SOURCE = new Pose2d(15.08, 1.00, Rotation2d.fromDegrees(0.0));
     public static final Pose2d BLUE_STAGE_FAR = new Pose2d(5.85, 4.10, Rotation2d.fromDegrees(0.0));
-    public static final Pose2d BLUE_STAGE_LEFT = new Pose2d(4.25, 5.00, Rotation2d.fromDegrees(120.0));
-    public static final Pose2d BLUE_STAGE_RIGHT = new Pose2d(4.25, 3.20, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d BLUE_STAGE_LEFT =
+        new Pose2d(4.25, 5.00, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d BLUE_STAGE_RIGHT =
+        new Pose2d(4.25, 3.20, Rotation2d.fromDegrees(-120.0));
 
     // Gamepad deadband
     private static final double DEADBAND = 0.1;
-  };
+  }
+  ;
 
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
@@ -107,20 +117,22 @@ public class Drive extends SubsystemBase {
   private final Module[] modules = new Module[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
 
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(Constants.MODULE_TRANSLATIONS);
+  private SwerveDriveKinematics kinematics =
+      new SwerveDriveKinematics(Constants.MODULE_TRANSLATIONS);
   private Rotation2d rawGyroRotation = new Rotation2d();
   private SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
-          new SwerveModulePosition(),
-          new SwerveModulePosition(),
-          new SwerveModulePosition(),
-          new SwerveModulePosition()
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition(),
+        new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
-      lastModulePositions, new Pose2d());
-  private SwerveDrivePoseEstimator fusedVision = new SwerveDrivePoseEstimator(kinematics, rawGyroRotation,
-      lastModulePositions, new Pose2d());
-  private final LoggedDashboardBoolean useVision = new LoggedDashboardBoolean("Localization/UseVision", true);
+  private SwerveDrivePoseEstimator odometry =
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+  private SwerveDrivePoseEstimator fusedVision =
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+  private final LoggedDashboardBoolean useVision =
+      new LoggedDashboardBoolean("Localization/UseVision", true);
 
   public Drive(
       GyroIO gyroIO,
@@ -143,8 +155,8 @@ public class Drive extends SubsystemBase {
         this::setPose,
         this::getRobotVelocity,
         this::runRobotVelocity,
-        new HolonomicPathFollowerConfig(Constants.MAX_LINEAR_SPEED, Constants.DRIVE_BASE_RADIUS,
-            new ReplanningConfig()),
+        new HolonomicPathFollowerConfig(
+            Constants.MAX_LINEAR_SPEED, Constants.DRIVE_BASE_RADIUS, new ReplanningConfig()),
         Util::isRedAlliance,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
@@ -159,20 +171,21 @@ public class Drive extends SubsystemBase {
         });
 
     // Configure SysId
-    sysId = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            null,
-            null,
-            null,
-            (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
-        new SysIdRoutine.Mechanism(
-            (voltage) -> {
-              for (int i = 0; i < 4; i++) {
-                modules[i].runCharacterization(voltage.in(Volts));
-              }
-            },
-            null,
-            this));
+    sysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism(
+                (voltage) -> {
+                  for (int i = 0; i < 4; i++) {
+                    modules[i].runCharacterization(voltage.in(Volts));
+                  }
+                },
+                null,
+                this));
   }
 
   public void periodic() {
@@ -200,7 +213,8 @@ public class Drive extends SubsystemBase {
     }
 
     // Update odometry
-    double[] sampleTimestamps = modules[0].getOdometryTimestamps(); // All signals are sampled together
+    double[] sampleTimestamps =
+        modules[0].getOdometryTimestamps(); // All signals are sampled together
     int sampleCount = sampleTimestamps.length;
     for (int i = 0; i < sampleCount; i++) {
       // Read wheel positions and deltas from each module
@@ -208,10 +222,11 @@ public class Drive extends SubsystemBase {
       SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
       for (int moduleIndex = 0; moduleIndex < 4; moduleIndex++) {
         modulePositions[moduleIndex] = modules[moduleIndex].getOdometryPositions()[i];
-        moduleDeltas[moduleIndex] = new SwerveModulePosition(
-            modulePositions[moduleIndex].distanceMeters
-                - lastModulePositions[moduleIndex].distanceMeters,
-            modulePositions[moduleIndex].angle);
+        moduleDeltas[moduleIndex] =
+            new SwerveModulePosition(
+                modulePositions[moduleIndex].distanceMeters
+                    - lastModulePositions[moduleIndex].distanceMeters,
+                modulePositions[moduleIndex].angle);
         lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
       }
 
@@ -231,10 +246,7 @@ public class Drive extends SubsystemBase {
     }
   }
 
-  /**
-   * Returns the module states (turn angles and drive velocities) for all of the
-   * modules.
-   */
+  /** Returns the module states (turn angles and drive velocities) for all of the modules. */
   @AutoLogOutput(key = "SwerveStates/Measured")
   private SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
@@ -244,10 +256,7 @@ public class Drive extends SubsystemBase {
     return states;
   }
 
-  /**
-   * Returns the module positions (turn angles and drive positions) for all of the
-   * modules.
-   */
+  /** Returns the module positions (turn angles and drive positions) for all of the modules. */
   private SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] states = new SwerveModulePosition[4];
     for (int i = 0; i < 4; i++) {
@@ -291,8 +300,10 @@ public class Drive extends SubsystemBase {
    * @param speeds Speeds in meters/sec
    */
   private void runFieldVelocity(ChassisSpeeds speeds) {
-    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds,
-        Util.isRedAlliance() ? getRotation().plus(new Rotation2d(Math.PI)) : getRotation());
+    speeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+            speeds,
+            Util.isRedAlliance() ? getRotation().plus(new Rotation2d(Math.PI)) : getRotation());
     runRobotVelocity(speeds);
   }
 
@@ -325,10 +336,8 @@ public class Drive extends SubsystemBase {
   }
 
   /**
-   * Stops the drive and turns the modules to an X arrangement to resist movement.
-   * The modules will
-   * return to their normal orientations the next time a nonzero velocity is
-   * requested.
+   * Stops the drive and turns the modules to an X arrangement to resist movement. The modules will
+   * return to their normal orientations the next time a nonzero velocity is requested.
    */
   private void stopDriveWithX() {
     Rotation2d[] headings = new Rotation2d[4];
@@ -348,9 +357,9 @@ public class Drive extends SubsystemBase {
   /**
    * Adds a vision measurement to the pose estimator.
    *
-   * @param data.pose      The pose of the robot as measured by the vision camera.
+   * @param data.pose The pose of the robot as measured by the vision camera.
    * @param data.timestamp The timestamp of the vision measurement in seconds.
-   * @param data.stdDevs   The standard deviations to use for this vision pose.
+   * @param data.stdDevs The standard deviations to use for this vision pose.
    */
   public void addVisionMeasurement(VisionData data) {
     fusedVision.addVisionMeasurement(data.pose.toPose2d(), data.timestamp, data.stdDevs);
@@ -365,8 +374,10 @@ public class Drive extends SubsystemBase {
     linearMagnitude = linearMagnitude * linearMagnitude;
 
     // Calcaulate new linear velocity
-    Translation2d linearVelocity = new Pose2d(new Translation2d(), linearDirection)
-        .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d())).getTranslation();
+    Translation2d linearVelocity =
+        new Pose2d(new Translation2d(), linearDirection)
+            .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+            .getTranslation();
 
     return linearVelocity.times(linearSpeed);
   }
@@ -382,20 +393,20 @@ public class Drive extends SubsystemBase {
   }
 
   /**
-   * Field relative drive command using two joysticks (controlling linear and
-   * angular velocities).
+   * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
   public Command joystickDrive(
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      DoubleSupplier omegaSupplier) {
+      DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
     return run(
         () -> {
-          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(),
-              Constants.MAX_LINEAR_SPEED);
-          double rotationSpeed = calculateRotationSpeed(omegaSupplier.getAsDouble(), Constants.MAX_ANGULAR_SPEED);
+          Translation2d linearSpeeds =
+              calculateLinearSpeeds(
+                  xSupplier.getAsDouble(), ySupplier.getAsDouble(), Constants.MAX_LINEAR_SPEED);
+          double rotationSpeed =
+              calculateRotationSpeed(omegaSupplier.getAsDouble(), Constants.MAX_ANGULAR_SPEED);
 
-          runFieldVelocity(new ChassisSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed));
+          runFieldVelocity(
+              new ChassisSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed));
         });
   }
 
@@ -405,51 +416,57 @@ public class Drive extends SubsystemBase {
   }
 
   public Command zeroHeading() {
-    return runOnce(() -> setPose(new Pose2d(getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true);
+    return runOnce(() -> setPose(new Pose2d(getPose().getTranslation(), new Rotation2d())))
+        .ignoringDisable(true);
   }
 
   /**
-   * Field relative drive command using one joystick (controlling linear
-   * velocities) and pointed at the target.
+   * Field relative drive command using one joystick (controlling linear velocities) and pointed at
+   * the target.
    */
   private Command orbit(
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier,
-      Supplier<Translation2d> target) {
-    ProfiledPIDController pid = new ProfiledPIDController(10.0, 0, 0,
-        new TrapezoidProfile.Constraints(Constants.MAX_ANGULAR_SPEED, Constants.MAX_ANGULAR_ACCELERATION));
+      DoubleSupplier xSupplier, DoubleSupplier ySupplier, Supplier<Translation2d> target) {
+    ProfiledPIDController pid =
+        new ProfiledPIDController(
+            10.0,
+            0,
+            0,
+            new TrapezoidProfile.Constraints(
+                Constants.MAX_ANGULAR_SPEED, Constants.MAX_ANGULAR_ACCELERATION));
     pid.enableContinuousInput(-Math.PI, Math.PI);
     return run(
         () -> {
-          Translation2d linearSpeeds = calculateLinearSpeeds(xSupplier.getAsDouble(), ySupplier.getAsDouble(),
-              Constants.MAX_LINEAR_SPEED);
+          Translation2d linearSpeeds =
+              calculateLinearSpeeds(
+                  xSupplier.getAsDouble(), ySupplier.getAsDouble(), Constants.MAX_LINEAR_SPEED);
 
           Translation2d targetTranslation = getPose().getTranslation().minus(target.get());
           Rotation2d delta = getPose().getRotation().minus(targetTranslation.getAngle());
           double rotationSpeed = pid.calculate(delta.getRadians());
 
-          runFieldVelocity(new ChassisSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed));
+          runFieldVelocity(
+              new ChassisSpeeds(linearSpeeds.getX(), linearSpeeds.getY(), rotationSpeed));
         });
   }
 
   /**
-   * Field relative drive command using one joysticks (controlling linear
-   * velocities) and pointed at the speaker.
+   * Field relative drive command using one joysticks (controlling linear velocities) and pointed at
+   * the speaker.
    */
-  public Command orbitSpeaker(
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier) {
-    return orbit(xSupplier, ySupplier, () -> Util.isRedAlliance() ? Constants.RED_SPEAKER : Constants.BLUE_SPEAKER);
+  public Command orbitSpeaker(DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return orbit(
+        xSupplier,
+        ySupplier,
+        () -> Util.isRedAlliance() ? Constants.RED_SPEAKER : Constants.BLUE_SPEAKER);
   }
 
   /**
-   * Field relative drive command using one joysticks (controlling linear
-   * velocities) and pointed at the amp.
+   * Field relative drive command using one joysticks (controlling linear velocities) and pointed at
+   * the amp.
    */
-  public Command orbitAmp(
-      DoubleSupplier xSupplier,
-      DoubleSupplier ySupplier) {
-    return orbit(xSupplier, ySupplier, () -> Util.isRedAlliance() ? Constants.RED_AMP : Constants.BLUE_AMP);
+  public Command orbitAmp(DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return orbit(
+        xSupplier, ySupplier, () -> Util.isRedAlliance() ? Constants.RED_AMP : Constants.BLUE_AMP);
   }
 
   /** Pathfind to the specified end pose */
