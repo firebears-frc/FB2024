@@ -26,6 +26,7 @@ public class ShooterIOSim implements ShooterIO {
   private boolean closedLoop = false;
   private double ffVolts = 0.0;
   private double appliedVolts = 0.0;
+  private double positionRadians = 0.0;
 
   @Override
   public void updateInputs(ShooterIOInputs inputs) {
@@ -37,6 +38,9 @@ public class ShooterIOSim implements ShooterIO {
 
     sim.update(0.02);
 
+    positionRadians += sim.getAngularVelocityRadPerSec() * 0.02;
+
+    inputs.positionsRadians = new double[] {positionRadians};
     inputs.velocitiesRadPerSec = new double[] {sim.getAngularVelocityRadPerSec()};
     inputs.appliedVolts = new double[] {appliedVolts};
     inputs.currentAmps = new double[] {sim.getCurrentDrawAmps()};
