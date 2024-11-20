@@ -26,7 +26,7 @@ import com.seiford.subsystems.climber.ClimberIOSparkMax;
 import com.seiford.subsystems.conductor.Conductor;
 import com.seiford.subsystems.drive.Drive;
 import com.seiford.subsystems.drive.GyroIO;
-import com.seiford.subsystems.drive.GyroIONavX;
+import com.seiford.subsystems.drive.GyroIOCanandgyro;
 import com.seiford.subsystems.drive.ModuleIO;
 import com.seiford.subsystems.drive.ModuleIOMAXSwerve;
 import com.seiford.subsystems.drive.ModuleIOSim;
@@ -86,7 +86,7 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
-                new GyroIONavX(),
+                new GyroIOCanandgyro(),
                 new ModuleIOMAXSwerve(0),
                 new ModuleIOMAXSwerve(1),
                 new ModuleIOMAXSwerve(2),
