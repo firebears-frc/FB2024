@@ -1,153 +1,200 @@
+// Copyright 2021-2024 FRC 6328
+// http://github.com/Mechanical-Advantage
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
 package com.seiford.subsystems.shooter;
 
-import java.util.function.Supplier;
+import static edu.wpi.first.units.Units.*;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.seiford.util.spark.ClosedLoopConfiguration;
-import com.seiford.util.spark.CurrentLimitConfiguration;
-import com.seiford.util.spark.FeedbackConfiguration;
-import com.seiford.util.spark.SparkConfiguration;
-import com.seiford.util.spark.StatusFrameConfiguration;
-
+import com.seiford.Configuration;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Shooter extends SubsystemBase {
-    // Constants
-    private static final class Constants {
-        public static final int TOP_CAN_ID = 10;
-        public static final int BOTTOM_CAN_ID = 11;
+  public static final class Constants {
+    public static final double GEAR_RATIO = 1.5;
+  }
 
-        public static final SparkConfiguration CONFIG = new SparkConfiguration(
-                false,
-                IdleMode.kCoast,
-                CurrentLimitConfiguration.complex(50, 30, 10, 60.0),
-                StatusFrameConfiguration.normal(),
-                ClosedLoopConfiguration.outputConstraints(0.0003, 0.0000001, 0.0, 0.0001875, 0.0, 1.0),
-                FeedbackConfiguration.builtInEncoder(1));
+  private static enum State {
+    STOPPED,
+    SPEAKER,
+    AMP,
+    EJECT,
+    SYSID
+  }
 
-        public static final double AMP_SPEED = 1000; // rotations per minute
-        public static final double EJECT_SPEED = -1000; // rotations per minute
+  private final LoggedDashboardNumber ampInput =
+      new LoggedDashboardNumber("Shooter/Amp Speed", 625.0);
+  private final LoggedDashboardNumber ejectInput =
+      new LoggedDashboardNumber("Shooter/Eject Speed", -625.0);
 
-        public static final double TOLERANCE = 100; // rotations per minute
+  private final ShooterIO io;
+  private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+  private final SimpleMotorFeedforward ffModel;
+  private final Debouncer debouncer = new Debouncer(0.2);
+  private final DoubleSupplier speedSupplier;
+  private final SysIdRoutine sysId;
 
-        public static final double DEBOUNCE_TIME = 0.05;
+  @AutoLogOutput(key = "Shooter/State")
+  private State state = State.STOPPED;
+
+  @AutoLogOutput(key = "Shooter/Setpoint")
+  private double setpoint = 0.0;
+
+  /** Creates a new Shooter. */
+  public Shooter(ShooterIO io, DoubleSupplier speedSupplier) {
+    this.io = io;
+    this.speedSupplier = speedSupplier;
+
+    // Switch constants based on mode (the physics simulator is treated as a
+    // separate robot with different tuning)
+    switch (Configuration.currentMode) {
+      case REAL:
+      case REPLAY:
+        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
+        io.configurePID(1.0, 0.0, 0.0);
+        break;
+      case SIM:
+        ffModel = new SimpleMotorFeedforward(0.0, 0.03);
+        io.configurePID(0.5, 0.0, 0.0);
+        break;
+      default:
+        ffModel = new SimpleMotorFeedforward(0.0, 0.0);
+        break;
     }
 
-    private static enum State {
-        STOPPED,
-        SPEAKER,
-        AMP,
-        EJECT
-    };
+    // Configure SysId
+    sysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Shooter/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volts)), null, this));
+  }
 
-    // Objects
-    private final CANSparkMax topMotor, bottomMotor;
-    private final RelativeEncoder topEncoder, bottomEncoder;
-    private final SparkPIDController topPID, bottomPID;
-    private final Debouncer debouncer;
-    private final Supplier<Double> speedSupplier;
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Shooter", inputs);
 
-    @AutoLogOutput(key = "Shooter/State")
-    private State state = State.STOPPED;
-
-    // Constructor
-    public Shooter(Supplier<Double> speedSupplier) {
-        topMotor = new CANSparkMax(Constants.TOP_CAN_ID, MotorType.kBrushless);
-        bottomMotor = new CANSparkMax(Constants.BOTTOM_CAN_ID, MotorType.kBrushless);
-        topEncoder = topMotor.getEncoder();
-        bottomEncoder = bottomMotor.getEncoder();
-        topPID = topMotor.getPIDController();
-        bottomPID = bottomMotor.getPIDController();
-        debouncer = new Debouncer(Constants.DEBOUNCE_TIME);
-        this.speedSupplier = speedSupplier;
-
-        Constants.CONFIG.apply(topMotor, bottomMotor);
-
-        topMotor.burnFlash();
-        bottomMotor.burnFlash();
+    switch (state) {
+      case AMP:
+        runVelocity(ampInput.get());
+        break;
+      case EJECT:
+        runVelocity(ejectInput.get());
+        break;
+      case SPEAKER:
+        runVelocity(speedSupplier.getAsDouble());
+        break;
+      case STOPPED:
+        stopShooter();
+        break;
+      case SYSID:
+        break;
     }
+  }
 
-    // Interface functions
-    @AutoLogOutput(key = "Shooter/Setpoint")
-    private double getTargetVelocity() {
-        return switch (state) {
-            case AMP -> Constants.AMP_SPEED;
-            case EJECT -> Constants.EJECT_SPEED;
-            case SPEAKER -> speedSupplier.get();
-            case STOPPED -> 0.0;
-        };
+  @AutoLogOutput(key = "Shooter/Speed")
+  private double getSpeed() {
+    double result = 0;
+    for (double value : inputs.velocitiesRadPerSec) {
+      result += value;
     }
+    result /= inputs.velocitiesRadPerSec.length;
+    return Units.radiansPerSecondToRotationsPerMinute(result);
+  }
 
-    @AutoLogOutput(key = "Shooter/Top/Velocity")
-    private double getTopVelocity() {
-        return topEncoder.getVelocity();
-    }
+  @AutoLogOutput(key = "Shooter/Error")
+  private double getError() {
+    return getSpeed() - setpoint;
+  }
 
-    @AutoLogOutput(key = "Shooter/Bottom/Velocity")
-    private double getBottomVelocity() {
-        return bottomEncoder.getVelocity();
-    }
+  @AutoLogOutput(key = "Shooter/AtSpeed")
+  private boolean atSpeed() {
+    return Math.abs(getError()) < 100.0;
+  }
 
-    @AutoLogOutput(key = "Shooter/Velocity")
-    private double getVelocity() {
-        return (getTopVelocity() + getBottomVelocity()) / 2;
-    }
+  @AutoLogOutput(key = "Shooter/OnTarget")
+  private boolean onTarget() {
+    return debouncer.calculate(atSpeed());
+  }
 
-    @AutoLogOutput(key = "Shooter/Error")
-    private double getError() {
-        return getVelocity() - getTargetVelocity();
-    }
+  /** Run open loop at the specified voltage. */
+  private void runVolts(double volts) {
+    io.setVoltage(volts);
+  }
 
-    @AutoLogOutput(key = "Shooter/NearTarget")
-    private boolean nearTarget() {
-        return Math.abs(getError()) < Constants.TOLERANCE;
-    }
+  /** Run closed loop at the specified velocity. */
+  private void runVelocity(double velocityRPM) {
+    double velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
+    io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
 
-    @AutoLogOutput(key = "Shooter/OnTarget")
-    private boolean onTarget() {
-        return debouncer.calculate(nearTarget());
-    }
+    setpoint = velocityRPM;
+  }
 
-    @Override
-    public void periodic() {
-        topPID.setReference(getTargetVelocity(), ControlType.kVelocity);
-        bottomPID.setReference(getTargetVelocity(), ControlType.kVelocity);
+  /** Stops the shooter. */
+  private void stopShooter() {
+    state = State.STOPPED;
+    io.stop();
+  }
 
-        Logger.recordOutput("Shooter/Top/Output", topMotor.getAppliedOutput());
-        Logger.recordOutput("Shooter/Bottom/Output", bottomMotor.getAppliedOutput());
-    }
+  /** Returns a command to run the shooter at a set state. */
+  private Command stateCommand(State state) {
+    return Commands.sequence(
+        runOnce(() -> this.state = state),
+        Commands.waitSeconds(0.25),
+        run(() -> {}).until(this::onTarget));
+  }
 
-    private Command stateCommand(State target) {
-        return Commands.sequence(
-                runOnce(() -> state = target),
-                Commands.waitSeconds(Constants.DEBOUNCE_TIME),
-                run(() -> {}).until(this::onTarget));
-    }
+  /** Returns a command to run the shooter at speaker state. */
+  public Command speaker() {
+    return stateCommand(State.SPEAKER);
+  }
 
-    public Command speaker() {
-        return stateCommand(State.SPEAKER);
-    }
+  /** Returns a command to run the shooter at amp state. */
+  public Command amp() {
+    return stateCommand(State.AMP);
+  }
 
-    public Command amp() {
-        return stateCommand(State.AMP);
-    }
+  /** Returns a command to run the shooter at eject state. */
+  public Command eject() {
+    return stateCommand(State.EJECT);
+  }
 
-    public Command eject() {
-        return stateCommand(State.EJECT);
-    }
+  /** Returns a command to stop the shooter. */
+  public Command stop() {
+    return runOnce(this::stopShooter);
+  }
 
-    public Command stop() {
-        return runOnce(() -> state = State.STOPPED);
-    }
+  /** Returns a command to run a quasistatic test in the specified direction. */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return Commands.sequence(
+        runOnce(() -> state = State.SYSID), sysId.quasistatic(direction), stop());
+  }
+
+  /** Returns a command to run a dynamic test in the specified direction. */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return Commands.sequence(runOnce(() -> state = State.SYSID), sysId.dynamic(direction), stop());
+  }
 }
