@@ -1,140 +1,137 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class UpBeat extends SubsystemBase {
-    private CANSparkMax topMotor;
-    private SparkPIDController topPid;
-    private CANSparkMax bottomMotor;
-    private SparkPIDController bottomPid;
-    @AutoLogOutput(key = "upBeat/setPoint")
-    private double setPoint = 0;
-    private Debouncer debounce = new Debouncer(0.2);
+  private CANSparkMax topMotor;
+  private SparkPIDController topPid;
+  private CANSparkMax bottomMotor;
+  private SparkPIDController bottomPid;
 
-    public UpBeat() {
-        topMotor = new CANSparkMax(10, MotorType.kBrushless);
-        topMotor.setSmartCurrentLimit(50, 50);
-        topMotor.setSecondaryCurrentLimit(60);
-        topMotor.restoreFactoryDefaults();
-        topMotor.setInverted(false);
-        topMotor.setIdleMode(IdleMode.kCoast);
-        topPid = topMotor.getPIDController();
-        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-        topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+  @AutoLogOutput(key = "upBeat/setPoint")
+  private double setPoint = 0;
 
-        bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
-        bottomMotor.setSmartCurrentLimit(50, 50);
-        bottomMotor.setSecondaryCurrentLimit(60);
-        bottomMotor.restoreFactoryDefaults();
-        bottomMotor.setInverted(false);
-        bottomMotor.setIdleMode(IdleMode.kCoast);
-        bottomPid = bottomMotor.getPIDController();
-        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-        bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+  private Debouncer debounce = new Debouncer(0.2);
 
-        topPid.setP(0.0003);
-        topPid.setI(0.0000001);
-        topPid.setD(0.0);
-        topPid.setFF(0.0001875);
-        topPid.setIZone(100);
-        topPid.setOutputRange(0.0, 1.0);
-        topMotor.burnFlash();
+  public UpBeat() {
+    topMotor = new CANSparkMax(10, MotorType.kBrushless);
+    topMotor.setSmartCurrentLimit(50, 50);
+    topMotor.setSecondaryCurrentLimit(60);
+    topMotor.restoreFactoryDefaults();
+    topMotor.setInverted(false);
+    topMotor.setIdleMode(IdleMode.kCoast);
+    topPid = topMotor.getPIDController();
+    topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+    topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+    topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
-        bottomPid.setP(0.0003);
-        bottomPid.setI(0.0000001);
-        bottomPid.setD(0.0);
-        bottomPid.setFF(0.0001875);
-        bottomPid.setIZone(100);
-        bottomPid.setOutputRange(0.0, 1.0);
-        bottomMotor.burnFlash();
-    }
+    bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
+    bottomMotor.setSmartCurrentLimit(50, 50);
+    bottomMotor.setSecondaryCurrentLimit(60);
+    bottomMotor.restoreFactoryDefaults();
+    bottomMotor.setInverted(false);
+    bottomMotor.setIdleMode(IdleMode.kCoast);
+    bottomPid = bottomMotor.getPIDController();
+    bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+    bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+    bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
-    private final static class Constants {
-        private static final double stop = 0.00;
-        private static final double reverse = -1000.00;
-        private static final double shoot = 3600.00;
-        private static final double amp = 1000.00;
-        private static final double straightShot = 3600.00;
-        private static final double magicNumber = 5000.0;
-    }
+    topPid.setP(0.0003);
+    topPid.setI(0.0000001);
+    topPid.setD(0.0);
+    topPid.setFF(0.0001875);
+    topPid.setIZone(100);
+    topPid.setOutputRange(0.0, 1.0);
+    topMotor.burnFlash();
 
-    @AutoLogOutput(key = "upBeat/speed")
-    private double getSpeed() {
-        return bottomMotor.getEncoder().getVelocity();
-    }
+    bottomPid.setP(0.0003);
+    bottomPid.setI(0.0000001);
+    bottomPid.setD(0.0);
+    bottomPid.setFF(0.0001875);
+    bottomPid.setIZone(100);
+    bottomPid.setOutputRange(0.0, 1.0);
+    bottomMotor.burnFlash();
+  }
 
-    @AutoLogOutput(key = "upBeat/error")
-    private double getError() {
-        return setPoint - getSpeed();
-    }
+  private static final class Constants {
+    private static final double stop = 0.00;
+    private static final double reverse = -1000.00;
+    private static final double shoot = 3600.00;
+    private static final double amp = 1000.00;
+    private static final double straightShot = 3600.00;
+    private static final double magicNumber = 5000.0;
+  }
 
-    @AutoLogOutput(key = "upBeat/at speed")
-    private boolean atSpeed() {
-        return Math.abs(getError()) < 100;
-    }
+  @AutoLogOutput(key = "upBeat/speed")
+  private double getSpeed() {
+    return bottomMotor.getEncoder().getVelocity();
+  }
 
-    @AutoLogOutput(key = "upBeat/at debouncespeed")
-    private boolean debounceSpeend() {
-        return debounce.calculate(atSpeed());
-    }
+  @AutoLogOutput(key = "upBeat/error")
+  private double getError() {
+    return setPoint - getSpeed();
+  }
 
-    private Command speedCommand(double speed) {
-        return Commands.sequence(
-            runOnce(() -> setPoint = speed),
-            Commands.waitSeconds(0.1),
-            run(() -> {}).until(this::debounceSpeend)
-        );
-    }
+  @AutoLogOutput(key = "upBeat/at speed")
+  private boolean atSpeed() {
+    return Math.abs(getError()) < 100;
+  }
 
-    public Command shootNote() {
-        return startEnd(
-                () -> setPoint = Constants.magicNumber,
-                () -> setPoint = Constants.stop);
-    }
+  @AutoLogOutput(key = "upBeat/at debouncespeed")
+  private boolean debounceSpeend() {
+    return debounce.calculate(atSpeed());
+  }
 
-    public Command reverseShootNote() {
-        return speedCommand(Constants.reverse);
-    }
+  private Command speedCommand(double speed) {
+    return Commands.sequence(
+        runOnce(() -> setPoint = speed),
+        Commands.waitSeconds(0.1),
+        run(() -> {}).until(this::debounceSpeend));
+  }
 
-    public Command pauseUpBeat() {
-        return speedCommand(Constants.stop);
-    }
+  public Command shootNote() {
+    return startEnd(() -> setPoint = Constants.magicNumber, () -> setPoint = Constants.stop);
+  }
 
-    public Command ampSpeed() {
-        return speedCommand(Constants.amp);
-    }
+  public Command reverseShootNote() {
+    return speedCommand(Constants.reverse);
+  }
 
-    public Command autoShoot() {
-        return speedCommand(Constants.shoot);
-    }
+  public Command pauseUpBeat() {
+    return speedCommand(Constants.stop);
+  }
 
-    public Command straightAutoShot() {
-        return speedCommand(Constants.straightShot);
-    }
+  public Command ampSpeed() {
+    return speedCommand(Constants.amp);
+  }
 
-    @Override
-    public void periodic() {
-        topPid.setReference(setPoint, ControlType.kVelocity);
-        bottomPid.setReference(setPoint, ControlType.kVelocity);
+  public Command autoShoot() {
+    return speedCommand(Constants.shoot);
+  }
 
-        Logger.recordOutput("upBeat/topOutput", topMotor.getAppliedOutput());
-        Logger.recordOutput("upBeat/bottomOutput", bottomMotor.getAppliedOutput());
-        Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
-        Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
-    }
+  public Command straightAutoShot() {
+    return speedCommand(Constants.straightShot);
+  }
+
+  @Override
+  public void periodic() {
+    topPid.setReference(setPoint, ControlType.kVelocity);
+    bottomPid.setReference(setPoint, ControlType.kVelocity);
+
+    Logger.recordOutput("upBeat/topOutput", topMotor.getAppliedOutput());
+    Logger.recordOutput("upBeat/bottomOutput", bottomMotor.getAppliedOutput());
+    Logger.recordOutput("upBeat/topSpeed", topMotor.getEncoder().getVelocity());
+    Logger.recordOutput("upBeat/bottomSpeed", bottomMotor.getEncoder().getVelocity());
+  }
 }
