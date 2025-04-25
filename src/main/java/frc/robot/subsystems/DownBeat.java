@@ -1,21 +1,24 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.utils.SparkUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class DownBeat extends SubsystemBase {
-  private CANSparkMax downBeatMotor;
-  private SparkPIDController pid;
+  private SparkMax downBeatMotor;
+  private SparkClosedLoopController pid;
   private DigitalInput sensor;
   private double setPoint = 0;
 
@@ -23,23 +26,28 @@ public class DownBeat extends SubsystemBase {
   private boolean hasNote = false;
 
   public DownBeat() {
-    downBeatMotor = new CANSparkMax(9, MotorType.kBrushless);
-    downBeatMotor.setSmartCurrentLimit(10, 10);
-    downBeatMotor.setSecondaryCurrentLimit(20);
-    downBeatMotor.restoreFactoryDefaults();
-    downBeatMotor.setInverted(true);
-    downBeatMotor.setIdleMode(IdleMode.kBrake);
-    pid = downBeatMotor.getPIDController();
-    downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-    downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+    downBeatMotor = new SparkMax(9, MotorType.kBrushless);
+    pid = downBeatMotor.getClosedLoopController();
 
-    pid.setP(0.00001);
-    pid.setI(0.0);
-    pid.setD(0.0);
-    pid.setFF(0.000115);
-    pid.setIZone(100);
-    downBeatMotor.burnFlash();
+    var downBeatMotorConfig = new SparkMaxConfig();
+    downBeatMotorConfig
+        .inverted(true)
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(10, 10)
+        .secondaryCurrentLimit(20);
+    downBeatMotorConfig.closedLoop.pidf(0.00001, 0.0, 0.0, 0.000115).iZone(100);
+    SparkUtil.tryUntilOk(
+        downBeatMotor,
+        5,
+        () ->
+            downBeatMotor.configure(
+                downBeatMotorConfig,
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters));
+
+    // downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+    // downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+    // downBeatMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
 
     // sensor
     sensor = new DigitalInput(0);

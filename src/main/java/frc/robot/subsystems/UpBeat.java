@@ -1,23 +1,26 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.utils.SparkUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class UpBeat extends SubsystemBase {
-  private CANSparkMax topMotor;
-  private SparkPIDController topPid;
-  private CANSparkMax bottomMotor;
-  private SparkPIDController bottomPid;
+  private SparkMax topMotor;
+  private SparkClosedLoopController topPid;
+  private SparkMax bottomMotor;
+  private SparkClosedLoopController bottomPid;
 
   @AutoLogOutput(key = "upBeat/setPoint")
   private double setPoint = 0;
@@ -25,43 +28,53 @@ public class UpBeat extends SubsystemBase {
   private Debouncer debounce = new Debouncer(0.2);
 
   public UpBeat() {
-    topMotor = new CANSparkMax(10, MotorType.kBrushless);
-    topMotor.setSmartCurrentLimit(50, 50);
-    topMotor.setSecondaryCurrentLimit(60);
-    topMotor.restoreFactoryDefaults();
-    topMotor.setInverted(false);
-    topMotor.setIdleMode(IdleMode.kCoast);
-    topPid = topMotor.getPIDController();
-    topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-    topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+    topMotor = new SparkMax(10, MotorType.kBrushless);
+    bottomMotor = new SparkMax(11, MotorType.kBrushless);
+    topPid = topMotor.getClosedLoopController();
+    bottomPid = bottomMotor.getClosedLoopController();
 
-    bottomMotor = new CANSparkMax(11, MotorType.kBrushless);
-    bottomMotor.setSmartCurrentLimit(50, 50);
-    bottomMotor.setSecondaryCurrentLimit(60);
-    bottomMotor.restoreFactoryDefaults();
-    bottomMotor.setInverted(false);
-    bottomMotor.setIdleMode(IdleMode.kCoast);
-    bottomPid = bottomMotor.getPIDController();
-    bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-    bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+    var topMotorConfig = new SparkMaxConfig();
+    topMotorConfig
+        .smartCurrentLimit(50, 50)
+        .secondaryCurrentLimit(60)
+        .inverted(false)
+        .idleMode(IdleMode.kCoast);
+    topMotorConfig
+        .closedLoop
+        .pidf(0.0003, 0.0000001, 0.0, 0.0001875)
+        .iZone(100)
+        .outputRange(0.0, 1.0);
+    SparkUtil.tryUntilOk(
+        topMotor,
+        5,
+        () ->
+            topMotor.configure(
+                topMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
-    topPid.setP(0.0003);
-    topPid.setI(0.0000001);
-    topPid.setD(0.0);
-    topPid.setFF(0.0001875);
-    topPid.setIZone(100);
-    topPid.setOutputRange(0.0, 1.0);
-    topMotor.burnFlash();
+    var bottomMotorConfig = new SparkMaxConfig();
+    bottomMotorConfig
+        .smartCurrentLimit(50, 50)
+        .secondaryCurrentLimit(60)
+        .inverted(false)
+        .idleMode(IdleMode.kCoast);
+    bottomMotorConfig
+        .closedLoop
+        .pidf(0.0003, 0.0000001, 0.0, 0.0001875)
+        .iZone(100)
+        .outputRange(0.0, 1.0);
+    SparkUtil.tryUntilOk(
+        bottomMotor,
+        5,
+        () ->
+            bottomMotor.configure(
+                bottomMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
-    bottomPid.setP(0.0003);
-    bottomPid.setI(0.0000001);
-    bottomPid.setD(0.0);
-    bottomPid.setFF(0.0001875);
-    bottomPid.setIZone(100);
-    bottomPid.setOutputRange(0.0, 1.0);
-    bottomMotor.burnFlash();
+    // topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+    // topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+    // topMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
+    // bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+    // bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+    // bottomMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
   }
 
   private static final class Constants {
