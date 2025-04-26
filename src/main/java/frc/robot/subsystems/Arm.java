@@ -69,7 +69,7 @@ public class Arm extends SubsystemBase {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(STALL_CURRENT_LIMIT_SHOULDER, FREE_CURRENT_LIMIT_SHOULDER)
         .secondaryCurrentLimit(SECONDARY_CURRENT_LIMIT_SHOULDER)
-        .follow(shoulderMotorRight);
+        .follow(shoulderMotorRight, true);
     SparkUtil.tryUntilOk(
         shoulderMotorLeft,
         5,
