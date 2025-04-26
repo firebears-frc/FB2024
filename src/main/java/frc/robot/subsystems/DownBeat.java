@@ -4,10 +4,10 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -15,9 +15,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.SparkUtil;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class DownBeat extends SubsystemBase {
-  private SparkMax downBeatMotor;
+  private SparkFlex downBeatMotor;
   private SparkClosedLoopController pid;
   private DigitalInput sensor;
   private double setPoint = 0;
@@ -25,17 +26,20 @@ public class DownBeat extends SubsystemBase {
   @AutoLogOutput(key = "downBeat/hasNote")
   private boolean hasNote = false;
 
+  private final LoggedNetworkNumber shootSpeed =
+      new LoggedNetworkNumber("downBeat/shootSpeed", 2700);
+
   public DownBeat() {
-    downBeatMotor = new SparkMax(9, MotorType.kBrushless);
+    downBeatMotor = new SparkFlex(9, MotorType.kBrushless);
     pid = downBeatMotor.getClosedLoopController();
 
-    var downBeatMotorConfig = new SparkMaxConfig();
+    var downBeatMotorConfig = new SparkFlexConfig();
     downBeatMotorConfig
         .inverted(true)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(35, 35)
-        .secondaryCurrentLimit(40);
-    downBeatMotorConfig.closedLoop.pidf(0.00001, 0.0, 0.0, 0.000115).iZone(100);
+        .smartCurrentLimit(40, 50)
+        .secondaryCurrentLimit(60);
+    downBeatMotorConfig.closedLoop.pidf(0.00001, 0.0, 0.0, 1 / 6700).iZone(100);
     SparkUtil.tryUntilOk(
         downBeatMotor,
         5,
@@ -74,21 +78,21 @@ public class DownBeat extends SubsystemBase {
   public Command intakeNote() {
     return runOnce(
         () -> {
-          setPoint = 7000;
+          setPoint = 2100;
         });
   }
 
   public Command shootNote() {
     return runOnce(
         () -> {
-          setPoint = 8000;
+          setPoint = shootSpeed.get();
         });
   }
 
   public Command dischargeNote() {
     return runOnce(
         () -> {
-          setPoint = -7000;
+          setPoint = -2100;
         });
   }
 
@@ -101,7 +105,8 @@ public class DownBeat extends SubsystemBase {
 
   public Command autoIntake(double timeOut) {
     return Commands.sequence(
-        runOnce(() -> setPoint = 7000), run(() -> {}).until(() -> hasNote).withTimeout(timeOut));
+        runOnce(() -> setPoint = shootSpeed.get()),
+        run(() -> {}).until(() -> hasNote).withTimeout(timeOut));
   }
 
   @Override
