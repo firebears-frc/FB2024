@@ -7,14 +7,24 @@ package frc.robot;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.UpBeat;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIONavX;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOSpark;
 
 public class RobotContainer {
+  private final Drive drive;
   private final DownBeat m_intake = new DownBeat();
   private final UpBeat m_shooter = new UpBeat();
   private final Arm m_arm = new Arm();
@@ -24,12 +34,61 @@ public class RobotContainer {
   private final CommandXboxController xboxController = new CommandXboxController(2);
 
   public RobotContainer() {
+    switch (Constants.currentMode) {
+      case REAL:
+        // Real robot, instantiate hardware IO implementations
+        drive =
+            new Drive(
+                new GyroIONavX(),
+                new ModuleIOSpark(0),
+                new ModuleIOSpark(1),
+                new ModuleIOSpark(2),
+                new ModuleIOSpark(3));
+        break;
+
+      case SIM:
+        // Sim robot, instantiate physics sim IO implementations
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+        break;
+
+      default:
+        // Replayed robot, disable IO implementations
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+        break;
+    }
     usbcamera = CameraServer.startAutomaticCapture();
     usbcamera.setResolution(320, 240);
     configureBindings();
   }
 
   private void configureBindings() {
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive, () -> -one.getY(), () -> -one.getX(), () -> -two.getX()));
+
+    // Reset gyro to 0° when triger is pressed
+    two.trigger()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                    drive)
+                .ignoringDisable(true));
+
     xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
     xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
     xboxController.y().toggleOnTrue(m_shooter.shootNote());

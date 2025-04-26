@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.utils;
+package frc.robot.util;
 
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.SparkBase;

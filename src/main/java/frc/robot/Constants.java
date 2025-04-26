@@ -6,8 +6,23 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public class Constants {
+  public static final Mode simMode = Mode.SIM;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+
   public static final class ArmConstants {
     public static final double shoulderP = 0.02;
     public static final double shoulderI = 0.0;
