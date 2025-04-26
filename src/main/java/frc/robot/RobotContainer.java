@@ -8,18 +8,13 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Bass;
 import frc.robot.subsystems.DownBeat;
 import frc.robot.subsystems.UpBeat;
 
 public class RobotContainer {
-  private final Bass m_robotDrive = new Bass();
   private final DownBeat m_intake = new DownBeat();
   private final UpBeat m_shooter = new UpBeat();
   private final Arm m_arm = new Arm();
@@ -32,24 +27,9 @@ public class RobotContainer {
     usbcamera = CameraServer.startAutomaticCapture();
     usbcamera.setResolution(320, 240);
     configureBindings();
-
-    m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () ->
-                m_robotDrive.drive(
-                    -MathUtil.applyDeadband(one.getY(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(one.getX(), OIConstants.kDriveDeadband),
-                    -MathUtil.applyDeadband(two.getX(), OIConstants.kDriveDeadband),
-                    true,
-                    true),
-            m_robotDrive));
   }
 
   private void configureBindings() {
-    one.trigger().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading(), m_robotDrive));
-
     xboxController.a().onTrue(m_intake.intakeNote()).onFalse(m_intake.pauseDownBeat());
     xboxController.x().onTrue(m_intake.dischargeNote()).onFalse(m_intake.pauseDownBeat());
     xboxController.y().toggleOnTrue(m_shooter.shootNote());
