@@ -20,6 +20,7 @@ import frc.utils.SparkUtil;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Arm extends SubsystemBase {
   private static int STALL_CURRENT_LIMIT_SHOULDER = 20;
@@ -32,6 +33,8 @@ public class Arm extends SubsystemBase {
 
   @AutoLogOutput(key = "arm/setPoint")
   private Rotation2d shoulderSetpoint = new Rotation2d();
+
+  private final LoggedNetworkNumber shootAngle = new LoggedNetworkNumber("arm/shootAngle", 13.5);
 
   private Debouncer debounce = new Debouncer(0.2);
 
@@ -91,11 +94,9 @@ public class Arm extends SubsystemBase {
     setShoulderSetpoint(getShoulderAngle());
   }
 
-  private static final class Constants { // arm setpoints
+  private static final class Constants {
     private static final Rotation2d pickUp = Rotation2d.fromDegrees(0);
-    private static final Rotation2d speakerShoot = Rotation2d.fromDegrees(13.5);
     private static final Rotation2d ampShoot = Rotation2d.fromDegrees(90);
-    // private static final Rotation2d stow = Rotation2d.fromDegrees(20);
     private static final Rotation2d sideShoot = Rotation2d.fromDegrees(33.75);
     private static final Rotation2d straightShot = Rotation2d.fromDegrees(14.5);
   }
@@ -127,23 +128,23 @@ public class Arm extends SubsystemBase {
   }
 
   public Command pickUp() {
-    return positionCommand(Constants.pickUp, 1);
+    return positionCommand(() -> Constants.pickUp, () -> 1.0);
   }
 
   public Command speakerShoot() {
-    return positionCommand(Constants.speakerShoot, 1);
+    return positionCommand(() -> Rotation2d.fromDegrees(shootAngle.get()), () -> 1.0);
   }
 
   public Command ampShoot() {
-    return positionCommand(Constants.ampShoot, 1);
+    return positionCommand(() -> Constants.ampShoot, () -> 1.0);
   }
 
   public Command sideShoot() {
-    return positionCommand(Constants.sideShoot, 1);
+    return positionCommand(() -> Constants.sideShoot, () -> 1.0);
   }
 
   public Command straightShot() {
-    return positionCommand(Constants.straightShot, 1);
+    return positionCommand(() -> Constants.straightShot, () -> 1.0);
   }
 
   private boolean onTarget(double tolerance) {
@@ -154,11 +155,11 @@ public class Arm extends SubsystemBase {
     return debounced;
   }
 
-  private Command positionCommand(Rotation2d position, double tolerance) {
+  private Command positionCommand(Supplier<Rotation2d> position, Supplier<Double> tolerance) {
     return Commands.sequence(
-        runOnce(() -> setShoulderSetpoint(position)),
+        runOnce(() -> setShoulderSetpoint(position.get())),
         Commands.waitSeconds(0.1),
-        run(() -> {}).until(() -> onTarget(tolerance)));
+        run(() -> {}).until(() -> onTarget(tolerance.get())));
   }
 
   public Command groundSlam() {
@@ -178,6 +179,7 @@ public class Arm extends SubsystemBase {
     Logger.recordOutput("arm/MotorLeftCurrent", shoulderMotorLeft.getOutputCurrent());
     Logger.recordOutput("arm/MotorRightCurrent", shoulderMotorRight.getOutputCurrent());
     Logger.recordOutput("arm/setPointDegrees", shoulderSetpoint.getDegrees());
+    Logger.recordOutput("arm/angleDegrees", getShoulderAngle().getDegrees());
     Logger.recordOutput("arm/FeedForward", feedForward);
   }
 }
