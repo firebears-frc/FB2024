@@ -33,8 +33,8 @@ public class DownBeat extends SubsystemBase {
     downBeatMotorConfig
         .inverted(true)
         .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(10, 10)
-        .secondaryCurrentLimit(20);
+        .smartCurrentLimit(35, 35)
+        .secondaryCurrentLimit(40);
     downBeatMotorConfig.closedLoop.pidf(0.00001, 0.0, 0.0, 0.000115).iZone(100);
     SparkUtil.tryUntilOk(
         downBeatMotor,
