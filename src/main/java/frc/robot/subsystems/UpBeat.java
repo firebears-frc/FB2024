@@ -13,8 +13,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.utils.SparkUtil;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class UpBeat extends SubsystemBase {
   private SparkMax topMotor;
@@ -24,6 +26,8 @@ public class UpBeat extends SubsystemBase {
 
   @AutoLogOutput(key = "upBeat/setPoint")
   private double setPoint = 0;
+
+  private final LoggedNetworkNumber shootSpeed = new LoggedNetworkNumber("upBeat/shootSpeed", 3600);
 
   private Debouncer debounce = new Debouncer(0.2);
 
@@ -80,10 +84,7 @@ public class UpBeat extends SubsystemBase {
   private static final class Constants {
     private static final double stop = 0.00;
     private static final double reverse = -1000.00;
-    private static final double shoot = 3600.00;
     private static final double amp = 1000.00;
-    private static final double straightShot = 3600.00;
-    private static final double magicNumber = 5000.0;
   }
 
   @AutoLogOutput(key = "upBeat/speed")
@@ -106,35 +107,31 @@ public class UpBeat extends SubsystemBase {
     return debounce.calculate(atSpeed());
   }
 
-  private Command speedCommand(double speed) {
+  private Command speedCommand(Supplier<Double> speed) {
     return Commands.sequence(
-        runOnce(() -> setPoint = speed),
+        runOnce(() -> setPoint = speed.get()),
         Commands.waitSeconds(0.1),
         run(() -> {}).until(this::debounceSpeend));
   }
 
   public Command shootNote() {
-    return startEnd(() -> setPoint = Constants.magicNumber, () -> setPoint = Constants.stop);
+    return startEnd(() -> setPoint = shootSpeed.get(), () -> setPoint = Constants.stop);
   }
 
   public Command reverseShootNote() {
-    return speedCommand(Constants.reverse);
+    return speedCommand(() -> Constants.reverse);
   }
 
   public Command pauseUpBeat() {
-    return speedCommand(Constants.stop);
+    return speedCommand(() -> Constants.stop);
   }
 
   public Command ampSpeed() {
-    return speedCommand(Constants.amp);
+    return speedCommand(() -> Constants.amp);
   }
 
   public Command autoShoot() {
-    return speedCommand(Constants.shoot);
-  }
-
-  public Command straightAutoShot() {
-    return speedCommand(Constants.straightShot);
+    return speedCommand(shootSpeed::get);
   }
 
   @Override
