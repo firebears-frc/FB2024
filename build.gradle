@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2025.3.2"
+    id "edu.wpi.first.GradleRIO" version "2026.1.1"
     id "com.peterabeles.gversion" version "1.10"
     id "com.diffplug.spotless" version "6.12.0"
 }
@@ -34,7 +34,6 @@ deploy {
                     jvmArgs.add("-XX:+UseSerialGC")
                     jvmArgs.add("-XX:MaxGCPauseMillis=50")
 
-
                     // The options below may improve performance, but should only be enabled on the RIO 2
                     //
                     // final MAX_JAVA_HEAP_SIZE_MB = 100;
@@ -49,7 +48,7 @@ deploy {
                     directory = '/home/lvuser/deploy'
                     // Change to true to delete files on roboRIO that no
                     // longer exist in deploy directory on roboRIO
-                    deleteOldFiles = true
+                    deleteOldFiles = false
                 }
             }
         }
@@ -58,7 +57,8 @@ deploy {
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
-// Set to true to use debug for JNI.
+// Set to true to use debug for all targets including JNI, which will drastically impact
+// performance.
 wpi.java.debugJni = false
 
 // Set this to true to enable desktop support.
@@ -71,7 +71,7 @@ task(replayWatch, type: JavaExec) {
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
-// Also defines JUnit 5.
+// Also defines JUnit 4.
 dependencies {
     annotationProcessor wpi.java.deps.wpilibAnnotations()
     implementation wpi.java.deps.wpilib()
@@ -106,9 +106,8 @@ test {
 // Simulation configuration (e.g. environment variables).
 //
 // The sim GUI is *disabled* by default to support running
-// AdvantageKit log replay from the command line. Set the
-// value to "true" to enable the sim GUI by default (this
-// is the standard WPILib behavior).
+// AdvantageKit log replay, which requires that all HAL
+// sim extensions be disabled.
 wpi.sim.addGui().defaultEnabled = false
 wpi.sim.addDriverstation()
 
@@ -143,7 +142,6 @@ gversion {
     indent       = "  "
 }
 
-
 // Create commit with working changes on event branches
 task(eventDeploy) {
     doLast {
@@ -151,7 +149,6 @@ task(eventDeploy) {
             def branchPrefix = "event"
             def branch = 'git branch --show-current'.execute().text.trim()
             def commitMessage = "Update at '${new Date().toString()}'"
-
 
             if (branch.startsWith(branchPrefix)) {
                 exec {
@@ -166,7 +163,6 @@ task(eventDeploy) {
                     ignoreExitValue = true
                 }
 
-
                 println "Committed to branch: '$branch'"
                 println "Commit message: '$commitMessage'"
             } else {
@@ -178,7 +174,6 @@ task(eventDeploy) {
     }
 }
 createVersionFile.dependsOn(eventDeploy)
-
 
 // Spotless formatting
 project.compileJava.dependsOn(spotlessApply)
@@ -207,7 +202,7 @@ spotless {
     json {
         target fileTree(".") {
             include "**/*.json"
-            exclude "**/build/**", "**/build-*/**"
+            exclude "**/build/**", "**/build-*/**", ".wpilib/**"
         }
         gson().indentWithSpaces(2)
     }
